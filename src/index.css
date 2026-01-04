@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* ========================================
+   STAGGERED ANIMATION SYSTEM
+   ======================================== */
+
+/* Base animation state - elements start invisible */
+.animate-on-load {
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+/* ----------------------------------------
+   ANIMATION DIRECTIONS
+   ---------------------------------------- */
+
+/* Fade Up */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation-name: fadeUp; }
+
+/* Fade Down */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-down { animation-name: fadeDown; }
+
+/* Fade Left */
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.fade-left { animation-name: fadeLeft; }
+
+/* Fade Right */
+@keyframes fadeRight {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.fade-right { animation-name: fadeRight; }
+
+/* Zoom In */
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+.zoom-in { animation-name: zoomIn; }
+
+/* Zoom Out */
+@keyframes zoomOut {
+  from { opacity: 0; transform: scale(1.2); }
+  to { opacity: 1; transform: scale(1); }
+}
+.zoom-out { animation-name: zoomOut; }
+
+/* Flip Up */
+@keyframes flipUp {
+  from { opacity: 0; transform: perspective(400px) rotateX(90deg); }
+  to { opacity: 1; transform: perspective(400px) rotateX(0); }
+}
+.flip-up { animation-name: flipUp; }
+
+/* Flip Down */
+@keyframes flipDown {
+  from { opacity: 0; transform: perspective(400px) rotateX(-90deg); }
+  to { opacity: 1; transform: perspective(400px) rotateX(0); }
+}
+.flip-down { animation-name: flipDown; }
+
+/* ----------------------------------------
+   ANIMATION DURATIONS
+   ---------------------------------------- */
+.duration-very-fast { animation-duration: 200ms; }
+.duration-fast { animation-duration: 400ms; }
+.duration-normal { animation-duration: 600ms; }
+.duration-light-slow { animation-duration: 800ms; }
+.duration-slow { animation-duration: 1000ms; }
+.duration-very-slow { animation-duration: 1200ms; }
+
