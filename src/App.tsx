@@ -1,5 +1,6 @@
 // Main App Component - Routing handled via useNavigate in components
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
 import LandingPage from './pages/landing-page';
 import UserDashboard from './pages/user-dashboard';
 import MerchantDashboard from './pages/merchant-dashboard';
@@ -13,17 +14,19 @@ import PrivacyPolicy from './pages/privacy-policy';
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/dashboard/:userId" element={<UserDashboard />} />
-        <Route path="/merchant/:merchantId" element={<MerchantDashboard />} />
-        <Route path="/admin/skus" element={<AdminSKUs />} />
-        <Route path="/admin/gift-cards" element={<AdminGiftCards />} />
-        <Route path="/admin/transactions" element={<AdminTransactions />} />
-        <Route path="/admin/export" element={<AdminExport />} />
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard/:userId" element={<UserDashboard />} />
+          <Route path="/merchant/:merchantId" element={<MerchantDashboard />} />
+          <Route path="/admin/skus" element={<AdminSKUs />} />
+          <Route path="/admin/gift-cards" element={<AdminGiftCards />} />
+          <Route path="/admin/transactions" element={<AdminTransactions />} />
+          <Route path="/admin/export" element={<AdminExport />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }

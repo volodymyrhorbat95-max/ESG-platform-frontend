@@ -1,7 +1,10 @@
 // Footer Section Component - Trust & Compliance
 // Logos, ESG notes, and legal links
+import { useNavigate } from 'react-router-dom';
 
 export default function FooterSection() {
+  const navigate = useNavigate();
+
   return (
     <footer className="mt-12 border-t border-gray-200 pt-8 animate-on-load fade-up duration-slow">
       {/* Trust Logos */}
@@ -49,19 +52,19 @@ export default function FooterSection() {
 
       {/* Legal Links */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm animate-on-load fade-up duration-slow">
-        <a
-          href="/privacy-policy"
+        <button
+          onClick={() => navigate('/privacy-policy')}
           className="text-gray-600 hover:text-emerald-600 underline underline-offset-2 transition-colors"
         >
           Privacy Policy
-        </a>
+        </button>
         <span className="hidden sm:inline text-gray-300">|</span>
-        <a
-          href="/terms-and-conditions"
+        <button
+          onClick={() => navigate('/terms-and-conditions')}
           className="text-gray-600 hover:text-emerald-600 underline underline-offset-2 transition-colors"
         >
           Terms and Conditions of Service
-        </a>
+        </button>
       </div>
 
       {/* Data Processing Notice */}

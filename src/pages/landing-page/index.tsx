@@ -7,6 +7,7 @@ import { fetchSKUByCode } from '../../store/skuSlice';
 import { registerUser } from '../../store/userSlice';
 import { createTransaction } from '../../store/transactionSlice';
 import { validateGiftCard } from '../../store/giftCardSlice';
+import { FaLeaf } from 'react-icons/fa';
 import HeaderSection from './HeaderSection';
 import DynamicMessage from './DynamicMessage';
 import TechnicalBlock from './TechnicalBlock';
@@ -215,7 +216,9 @@ export default function LandingPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full animate-on-load zoom-in duration-normal">
           <div className="text-center mb-6">
-            <div className="text-5xl mb-4">🌿</div>
+            <div className="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <FaLeaf className="w-8 h-8 text-white" />
+            </div>
             <h1 className="text-2xl font-bold text-gray-800 mb-2">CSR26 Impact Processor</h1>
             <p className="text-gray-600">Enter your SKU code to start your environmental journey</p>
           </div>

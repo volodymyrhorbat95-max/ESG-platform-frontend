@@ -74,7 +74,7 @@ export default function SKUTable({ skus, loading, error, onEdit, onDelete }: SKU
                 {sku.gramsWeight}g
               </td>
               <td className="py-3 px-4 text-sm text-gray-800 text-right animate-on-load zoom-out duration-slow">
-                {sku.price > 0 ? `€${sku.price.toFixed(2)}` : '-'}
+                {Number(sku.price) > 0 ? `€${Number(sku.price).toFixed(2)}` : '-'}
               </td>
               <td className="py-3 px-4 text-center animate-on-load flip-down duration-light-slow">
                 <button
