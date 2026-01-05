@@ -7,6 +7,8 @@ import AdminSKUs from './pages/admin-skus';
 import AdminGiftCards from './pages/admin-giftcards';
 import AdminTransactions from './pages/admin-transactions';
 import AdminExport from './pages/admin-export';
+import TermsAndConditions from './pages/terms-and-conditions';
+import PrivacyPolicy from './pages/privacy-policy';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path="/admin/gift-cards" element={<AdminGiftCards />} />
         <Route path="/admin/transactions" element={<AdminTransactions />} />
         <Route path="/admin/export" element={<AdminExport />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
     </BrowserRouter>
   );
