@@ -269,23 +269,41 @@ export default function RegistrationForm({ onSubmit, loading }: RegistrationForm
         </div>
       </div>
 
-      {/* Terms and Conditions */}
-      <div className="flex items-start animate-on-load fade-up duration-slow">
+      {/* Terms and Conditions - Mandatory Checkbox */}
+      <div className="flex items-start animate-on-load fade-up duration-slow bg-gray-50 p-4 rounded-lg border border-gray-200">
         <input
           type="checkbox"
           id="termsAccepted"
           name="termsAccepted"
           checked={formData.termsAccepted}
           onChange={handleChange}
-          className="mt-1 mr-2 animate-on-load zoom-in duration-fast"
+          className="mt-1 mr-3 w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 animate-on-load zoom-in duration-fast"
           disabled={loading}
         />
-        <label htmlFor="termsAccepted" className="text-sm text-gray-700 animate-on-load fade-right duration-normal">
-          I accept the terms and conditions and privacy policy *
+        <label htmlFor="termsAccepted" className="text-sm text-gray-700 leading-relaxed animate-on-load fade-right duration-normal">
+          I accept the{' '}
+          <a
+            href="/terms-and-conditions"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-emerald-600 hover:text-emerald-700 underline font-medium"
+          >
+            Terms of Service
+          </a>{' '}
+          and confirm that I have read the{' '}
+          <a
+            href="/privacy-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-emerald-600 hover:text-emerald-700 underline font-medium"
+          >
+            Privacy Policy
+          </a>
+          . *
         </label>
       </div>
       {errors.termsAccepted && (
-        <p className="text-red-500 text-xs animate-on-load fade-left duration-very-fast">{errors.termsAccepted}</p>
+        <p className="text-red-500 text-xs mt-2 animate-on-load fade-left duration-very-fast">{errors.termsAccepted}</p>
       )}
 
       {/* Submit Button */}
