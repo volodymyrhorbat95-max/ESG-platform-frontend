@@ -99,6 +99,8 @@ const userSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.loading = false;
         state.currentUser = action.payload;
+        // Save userId to localStorage for dashboard access
+        localStorage.setItem('csr26_userId', action.payload.id);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

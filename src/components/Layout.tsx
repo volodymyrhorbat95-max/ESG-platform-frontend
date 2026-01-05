@@ -1,4 +1,5 @@
 // Layout Component with Navigation Header
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   FiHome,
@@ -7,7 +8,8 @@ import {
   FiCreditCard,
   FiDownload,
   FiShield,
-  FiFileText
+  FiFileText,
+  FiUser
 } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
 
@@ -18,6 +20,13 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Check for saved userId in localStorage
+  useEffect(() => {
+    const savedUserId = localStorage.getItem('csr26_userId');
+    setUserId(savedUserId);
+  }, [location.pathname]); // Re-check when route changes
 
   // Only hide navigation on terms and privacy pages (legal pages)
   const hideNav = ['/terms-and-conditions', '/privacy-policy'].includes(location.pathname);
@@ -42,20 +51,20 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navigation Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-emerald-600/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-14">
             {/* Logo */}
             <button
               onClick={() => navigate('/')}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
-                <FaLeaf className="w-5 h-5" />
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-white">
+                <FaLeaf className="w-4 h-4" />
               </div>
               <div className="flex flex-col items-start">
-                <span className="font-bold text-gray-800 leading-tight">CSR26</span>
-                <span className="text-xs text-gray-500 leading-tight">Impact Processor</span>
+                <span className="font-bold text-white leading-tight">CSR26</span>
+                <span className="text-xs text-emerald-100 leading-tight">Impact Processor</span>
               </div>
             </button>
 
@@ -69,8 +78,8 @@ export default function Layout({ children }: LayoutProps) {
                     onClick={() => navigate(item.path)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive(item.path)
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+                        ? 'bg-white/20 text-white'
+                        : 'text-emerald-100 hover:bg-white/10 hover:text-white'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -78,6 +87,21 @@ export default function Layout({ children }: LayoutProps) {
                   </button>
                 );
               })}
+
+              {/* My Dashboard - shown when user has registered */}
+              {userId && (
+                <button
+                  onClick={() => navigate(`/dashboard/${userId}`)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 ${
+                    location.pathname.startsWith('/dashboard')
+                      ? 'bg-white/20 text-white'
+                      : 'text-emerald-100 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <FiUser className="w-4 h-4" />
+                  <span className="hidden sm:inline">My Dashboard</span>
+                </button>
+              )}
             </nav>
           </div>
         </div>
