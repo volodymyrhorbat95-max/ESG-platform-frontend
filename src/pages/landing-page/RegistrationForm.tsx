@@ -63,6 +63,13 @@ export default function RegistrationForm({ onSubmit, loading }: RegistrationForm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Info Banner */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load fade-down duration-normal">
+        <p className="text-sm text-blue-800">
+          <strong>Note:</strong> If you already have an account with this email, we'll use your existing information and create a new transaction for you.
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* First Name */}
         <div className="animate-on-load fade-right duration-fast">
