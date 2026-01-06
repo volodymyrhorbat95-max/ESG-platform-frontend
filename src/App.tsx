@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import GlobalLoadingSpinner from './components/GlobalLoadingSpinner';
 import LandingPage from './pages/landing-page';
 import UserDashboard from './pages/user-dashboard';
 import MerchantDashboard from './pages/merchant-dashboard';
@@ -15,6 +16,7 @@ import PrivacyPolicy from './pages/privacy-policy';
 function App() {
   return (
     <BrowserRouter>
+      <GlobalLoadingSpinner />
       <Layout>
         <Routes>
           <Route path="/" element={<LandingPage />} />
