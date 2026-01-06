@@ -51,7 +51,7 @@ export default function LandingPage() {
   const { currentUser } = useAppSelector((state) => state.users);
   const { loading: transactionLoading } = useAppSelector((state) => state.transactions);
   const { validatedCode, loading: giftCardLoading } = useAppSelector((state) => state.giftCards);
-  const { currentMerchant, loading: merchantLoading } = useAppSelector((state) => state.merchants);
+  const { currentMerchant } = useAppSelector((state) => state.merchants);
 
   // Local state
   const [step, setStep] = useState<StepType>('loading');
