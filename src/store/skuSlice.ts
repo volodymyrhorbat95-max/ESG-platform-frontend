@@ -34,9 +34,20 @@ const initialState: SKUState = {
 // Get API URL from environment
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('csr26_admin_token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+};
+
 // Async thunks for API calls
 export const fetchSKUs = createAsyncThunk('skus/fetchAll', async () => {
-  const response = await fetch(`${API_URL}/admin/skus`);
+  const response = await fetch(`${API_URL}/admin/skus`, {
+    headers: getAuthHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch SKUs');
   const data = await response.json();
   return data.data;
@@ -57,7 +68,7 @@ export const createSKU = createAsyncThunk(
   async (skuData: Partial<SKU>) => {
     const response = await fetch(`${API_URL}/admin/skus`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(skuData),
     });
     if (!response.ok) throw new Error('Failed to create SKU');
@@ -71,7 +82,7 @@ export const updateSKU = createAsyncThunk(
   async ({ id, updates }: { id: string; updates: Partial<SKU> }) => {
     const response = await fetch(`${API_URL}/admin/skus/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(updates),
     });
     if (!response.ok) throw new Error('Failed to update SKU');
@@ -83,6 +94,7 @@ export const updateSKU = createAsyncThunk(
 export const deleteSKU = createAsyncThunk('skus/delete', async (id: string) => {
   const response = await fetch(`${API_URL}/admin/skus/${id}`, {
     method: 'DELETE',
+    headers: getAuthHeaders(),
   });
   if (!response.ok) throw new Error('Failed to delete SKU');
   return id;

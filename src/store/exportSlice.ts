@@ -24,6 +24,14 @@ const initialState: ExportState = {
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('csr26_admin_token');
+  return {
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+};
+
 // Async thunks
 export const exportAmplivoData = createAsyncThunk(
   'export/amplivo',
@@ -39,7 +47,9 @@ export const exportAmplivoData = createAsyncThunk(
 
     const url = `${API_URL}/admin/export?${params.toString()}`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) throw new Error('Export failed');
 
     const blob = await response.blob();

@@ -9,6 +9,7 @@ export type StepType =
   | 'sku-input'         // No SKU in URL - ask user to enter
   | 'amount-input'      // ALLOCATION without amount - ask user to choose
   | 'giftcard-input'    // GIFT_CARD - ask for secret code
+  | 'admin-login'       // ADMIN SKU - ask for admin secret code
   | 'registration'      // Show registration form
   | 'payment'           // PAY mode - show Stripe payment
   | 'success';          // Transaction completed

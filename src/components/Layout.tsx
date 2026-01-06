@@ -1,6 +1,8 @@
 // Layout Component with Navigation Header
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { logout } from '../store/authSlice';
 import {
   FiHome,
   FiPackage,
@@ -9,7 +11,8 @@ import {
   FiDownload,
   FiShield,
   FiFileText,
-  FiUser
+  FiUser,
+  FiLogOut
 } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
 
@@ -20,6 +23,8 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [userId, setUserId] = useState<string | null>(null);
   const [merchantId, setMerchantId] = useState<string | null>(null);
 
@@ -31,12 +36,21 @@ export default function Layout({ children }: LayoutProps) {
     setMerchantId(savedMerchantId);
   }, [location.pathname]); // Re-check when route changes
 
+  // Handle admin logout
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  };
+
+  // Navigation items - conditionally show admin items
   const navItems = [
-    { path: '/', label: 'Home', icon: FiHome },
-    { path: '/admin/skus', label: 'SKUs', icon: FiPackage },
-    { path: '/admin/gift-cards', label: 'Gift Cards', icon: FiGift },
-    { path: '/admin/transactions', label: 'Transactions', icon: FiCreditCard },
-    { path: '/admin/export', label: 'Export', icon: FiDownload },
+    { path: '/', label: 'Home', icon: FiHome, adminOnly: false },
+    ...(isAuthenticated ? [
+      { path: '/admin/skus', label: 'SKUs', icon: FiPackage, adminOnly: true },
+      { path: '/admin/gift-cards', label: 'Gift Cards', icon: FiGift, adminOnly: true },
+      { path: '/admin/transactions', label: 'Transactions', icon: FiCreditCard, adminOnly: true },
+      { path: '/admin/export', label: 'Export', icon: FiDownload, adminOnly: true },
+    ] : []),
   ];
 
   const isActive = (path: string) => {
@@ -111,6 +125,18 @@ export default function Layout({ children }: LayoutProps) {
                 >
                   <FiShield className="w-4 h-4" />
                   <span className="hidden sm:inline">Merchant Dashboard</span>
+                </button>
+              )}
+
+              {/* Admin Logout - shown when admin is authenticated */}
+              {isAuthenticated && (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 text-emerald-100 hover:bg-red-500/20 hover:text-white"
+                  title="Logout"
+                >
+                  <FiLogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Logout</span>
                 </button>
               )}
             </nav>

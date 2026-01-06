@@ -44,6 +44,15 @@ const initialState: TransactionState = {
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('csr26_admin_token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+};
+
 // Async thunks
 export const createTransaction = createAsyncThunk(
   'transactions/create',
@@ -70,7 +79,9 @@ export const fetchTransactions = createAsyncThunk(
     if (filters?.merchantId) params.append('merchantId', filters.merchantId);
     if (filters?.partnerId) params.append('partnerId', filters.partnerId);
 
-    const response = await fetch(`${API_URL}/transactions?${params.toString()}`);
+    const response = await fetch(`${API_URL}/transactions?${params.toString()}`, {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) throw new Error('Failed to fetch transactions');
     const data = await response.json();
     return data.data;

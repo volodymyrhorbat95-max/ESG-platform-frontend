@@ -39,6 +39,15 @@ const initialState: GiftCardState = {
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('csr26_admin_token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+};
+
 // Async thunks
 export const validateGiftCard = createAsyncThunk(
   'giftCards/validate',
@@ -62,7 +71,7 @@ export const createBulkGiftCards = createAsyncThunk(
   async (data: CreateBulkCodesData) => {
     const response = await fetch(`${API_URL}/gift-cards/bulk`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error('Failed to create gift cards');
@@ -79,7 +88,9 @@ export const fetchGiftCards = createAsyncThunk(
       params.append('isRedeemed', String(filters.isRedeemed));
     if (filters?.skuId) params.append('skuId', filters.skuId);
 
-    const response = await fetch(`${API_URL}/gift-cards?${params.toString()}`);
+    const response = await fetch(`${API_URL}/gift-cards?${params.toString()}`, {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) throw new Error('Failed to fetch gift cards');
     const data = await response.json();
     return data.data;

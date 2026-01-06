@@ -9,6 +9,7 @@ import { fetchSKUByCode } from '../../store/skuSlice';
 import { registerUser } from '../../store/userSlice';
 import { createTransaction } from '../../store/transactionSlice';
 import { validateGiftCard } from '../../store/giftCardSlice';
+import { loginAdmin } from '../../store/authSlice';
 
 // Types and utils
 import type { CaseType, StepType } from './types';
@@ -28,6 +29,7 @@ import TechnicalBlock from './TechnicalBlock';
 import FooterSection from './FooterSection';
 import RegistrationForm from './RegistrationForm';
 import GiftCardInput from './GiftCardInput';
+import AdminLogin from './AdminLogin';
 import StripePayment from './StripePayment';
 
 export default function LandingPage() {
@@ -54,15 +56,24 @@ export default function LandingPage() {
   const [finalAmount, setFinalAmount] = useState<number>(0);
   const [caseType, setCaseType] = useState<CaseType>('E');
   const [giftCardValidated, setGiftCardValidated] = useState(false);
+  const [adminError, setAdminError] = useState<string>('');
+
+  // Get admin SKU from environment
+  const ADMIN_SKU = import.meta.env.VITE_ADMIN_SKU;
 
   // Fetch SKU on mount when skuCode is present
   useEffect(() => {
     if (skuCode) {
-      dispatch(fetchSKUByCode(skuCode));
+      // Check if this is admin SKU
+      if (skuCode === ADMIN_SKU) {
+        setStep('admin-login');
+      } else {
+        dispatch(fetchSKUByCode(skuCode));
+      }
     } else {
       setStep('sku-input');
     }
-  }, [skuCode, dispatch]);
+  }, [skuCode, dispatch, ADMIN_SKU]);
 
   // Process SKU data and determine flow
   useEffect(() => {
@@ -142,6 +153,18 @@ export default function LandingPage() {
       setStep('registration');
     } catch (error) {
       console.error('Gift card validation failed:', error);
+    }
+  };
+
+  const handleAdminLogin = async (code: string) => {
+    try {
+      setAdminError('');
+      await dispatch(loginAdmin(code)).unwrap();
+      // Redirect to admin SKUs page after successful login
+      navigate('/admin/skus');
+    } catch (error: any) {
+      console.error('Admin login failed:', error);
+      setAdminError(error || 'Invalid admin code');
     }
   };
 
@@ -261,6 +284,14 @@ export default function LandingPage() {
             <GiftCardInput
               onValidate={handleGiftCardValidate}
               loading={giftCardLoading}
+            />
+          )}
+
+          {step === 'admin-login' && (
+            <AdminLogin
+              onLogin={handleAdminLogin}
+              loading={false}
+              error={adminError}
             />
           )}
 
