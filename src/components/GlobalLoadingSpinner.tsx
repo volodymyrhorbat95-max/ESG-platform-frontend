@@ -9,6 +9,7 @@ export default function GlobalLoadingSpinner() {
   const { loading: walletLoading } = useAppSelector((state) => state.wallets);
   const { loading: paymentLoading } = useAppSelector((state) => state.payment);
   const { loading: exportLoading } = useAppSelector((state) => state.export);
+  const { loading: merchantLoading } = useAppSelector((state) => state.merchants);
 
   const isLoading =
     skuLoading ||
@@ -17,7 +18,8 @@ export default function GlobalLoadingSpinner() {
     giftCardLoading ||
     walletLoading ||
     paymentLoading ||
-    exportLoading;
+    exportLoading ||
+    merchantLoading;
 
   if (!isLoading) return null;
 

@@ -10,11 +10,13 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
 interface StripePaymentProps {
   amount: number;
   userId: string;
+  transactionId: string;
   merchantId?: string;
+  merchantStripeAccountId?: string;
   onSuccess: (paymentIntentId: string) => void;
 }
 
-function PaymentForm({ amount, merchantId, onSuccess }: StripePaymentProps) {
+function PaymentForm({ amount, transactionId, merchantId, merchantStripeAccountId, onSuccess }: StripePaymentProps) {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useAppDispatch();
@@ -28,14 +30,20 @@ function PaymentForm({ amount, merchantId, onSuccess }: StripePaymentProps) {
 
   // Create payment intent on mount via Redux
   useEffect(() => {
+    // Validate merchant has Stripe account for PAY mode
+    if (merchantId && !merchantStripeAccountId) {
+      setError('Merchant payment account not configured. Please contact support.');
+      return;
+    }
+
     dispatch(
       createPaymentIntent({
         amount,
-        transactionId: `temp_${Date.now()}`,
-        merchantStripeAccountId: merchantId,
+        transactionId,
+        merchantStripeAccountId,
       })
     );
-  }, [amount, merchantId, dispatch]);
+  }, [amount, transactionId, merchantId, merchantStripeAccountId, dispatch]);
 
   // Update error from Redux state
   useEffect(() => {

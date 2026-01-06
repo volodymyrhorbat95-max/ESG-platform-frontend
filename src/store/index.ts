@@ -9,6 +9,8 @@ import giftCardReducer from './giftCardSlice';
 import paymentReducer from './paymentSlice';
 import loadingReducer from './loadingSlice';
 import exportReducer from './exportSlice';
+import merchantReducer from './merchantSlice';
+import partnerReducer from './partnerSlice';
 
 // Global error handling middleware
 const errorLoggingMiddleware: Middleware = () => (next) => (action: any) => {
@@ -33,6 +35,8 @@ export const store = configureStore({
     payment: paymentReducer,
     loading: loadingReducer,
     export: exportReducer,
+    merchants: merchantReducer,
+    partners: partnerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(errorLoggingMiddleware),

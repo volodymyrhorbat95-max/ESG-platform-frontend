@@ -1,4 +1,6 @@
 // Success State Component - Shown after transaction completed
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { CaseType } from './types';
 import { AMPLIVO_THRESHOLD } from './types';
 import HeaderSection from './HeaderSection';
@@ -12,6 +14,8 @@ interface SuccessStateProps {
   partnerId?: string;
   calculatedImpact: number;
   finalAmount: number;
+  userId?: string;
+  skuCode?: string;
 }
 
 export default function SuccessState({
@@ -20,7 +24,21 @@ export default function SuccessState({
   partnerId,
   calculatedImpact,
   finalAmount,
+  userId,
+  skuCode,
 }: SuccessStateProps) {
+  const navigate = useNavigate();
+
+  // Auto-redirect to dashboard after 3 seconds
+  useEffect(() => {
+    if (userId) {
+      const timer = setTimeout(() => {
+        navigate(`/dashboard/${userId}`);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [userId, navigate]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -42,15 +60,27 @@ export default function SuccessState({
             impactGrams={calculatedImpact}
             amount={finalAmount}
             threshold={AMPLIVO_THRESHOLD}
+            skuCode={skuCode}
+            skuName={skuName}
           />
 
           <div className="mt-6">
             <ImpactDisplay impact={calculatedImpact} />
           </div>
 
-          <p className="text-sm text-gray-500 mt-6">
-            Redirecting to your dashboard...
-          </p>
+          {userId && (
+            <div className="mt-8">
+              <button
+                onClick={() => navigate(`/dashboard/${userId}`)}
+                className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg"
+              >
+                View Your Portfolio
+              </button>
+              <p className="text-sm text-gray-500 mt-4">
+                Or wait 3 seconds to be redirected automatically...
+              </p>
+            </div>
+          )}
         </div>
 
         <FooterSection />

@@ -10,6 +10,7 @@ import { registerUser } from '../../store/userSlice';
 import { createTransaction } from '../../store/transactionSlice';
 import { validateGiftCard } from '../../store/giftCardSlice';
 import { loginAdmin } from '../../store/authSlice';
+import { fetchMerchantById } from '../../store/merchantSlice';
 
 // Types and utils
 import type { CaseType, StepType } from './types';
@@ -28,6 +29,7 @@ import DynamicMessage from './DynamicMessage';
 import TechnicalBlock from './TechnicalBlock';
 import FooterSection from './FooterSection';
 import RegistrationForm from './RegistrationForm';
+import MinimalRegistrationForm from './MinimalRegistrationForm';
 import GiftCardInput from './GiftCardInput';
 import AdminLogin from './AdminLogin';
 import StripePayment from './StripePayment';
@@ -49,6 +51,7 @@ export default function LandingPage() {
   const { currentUser } = useAppSelector((state) => state.users);
   const { loading: transactionLoading } = useAppSelector((state) => state.transactions);
   const { validatedCode, loading: giftCardLoading } = useAppSelector((state) => state.giftCards);
+  const { currentMerchant, loading: merchantLoading } = useAppSelector((state) => state.merchants);
 
   // Local state
   const [step, setStep] = useState<StepType>('loading');
@@ -57,6 +60,7 @@ export default function LandingPage() {
   const [caseType, setCaseType] = useState<CaseType>('E');
   const [giftCardValidated, setGiftCardValidated] = useState(false);
   const [adminError, setAdminError] = useState<string>('');
+  const [pendingTransactionId, setPendingTransactionId] = useState<string | null>(null);
 
   // Get admin SKU from environment
   const ADMIN_SKU = import.meta.env.VITE_ADMIN_SKU;
@@ -74,6 +78,13 @@ export default function LandingPage() {
       setStep('sku-input');
     }
   }, [skuCode, dispatch, ADMIN_SKU]);
+
+  // Fetch merchant data when merchantId is present
+  useEffect(() => {
+    if (merchantId && !currentMerchant) {
+      dispatch(fetchMerchantById(merchantId));
+    }
+  }, [merchantId, currentMerchant, dispatch]);
 
   // Process SKU data and determine flow
   useEffect(() => {
@@ -168,14 +179,49 @@ export default function LandingPage() {
     }
   };
 
+  const handleMinimalRegister = async (email: string) => {
+    try {
+      // Use minimal user registration for CLAIM type (email only)
+      const user = await dispatch(registerUser({
+        firstName: 'Guest',
+        lastName: 'User',
+        email: email,
+        dateOfBirth: '1900-01-01',
+        street: 'N/A',
+        city: 'N/A',
+        postalCode: '00000',
+        country: 'N/A',
+        termsAccepted: true,
+      })).unwrap();
+
+      if (currentSKU && currentSKU.paymentMode === 'CLAIM') {
+        await handleCreateTransaction(user.id);
+      }
+    } catch (error) {
+      console.error('Minimal registration failed:', error);
+    }
+  };
+
   const handleRegister = async (userData: any) => {
     try {
       const user = await dispatch(registerUser(userData)).unwrap();
 
       if (currentSKU) {
-        if (currentSKU.paymentMode === 'CLAIM' || currentSKU.paymentMode === 'ALLOCATION') {
+        if (currentSKU.paymentMode === 'ALLOCATION') {
           await handleCreateTransaction(user.id);
         } else if (currentSKU.paymentMode === 'PAY') {
+          // Create PENDING transaction FIRST for PAY mode
+          const transaction = await dispatch(createTransaction({
+            userId: user.id,
+            skuCode: currentSKU.code,
+            amount: finalAmount,
+            partnerId: partnerId || undefined,
+            merchantId: merchantId || undefined,
+            orderId: orderId || undefined,
+          })).unwrap();
+
+          // Store transaction ID for payment step
+          setPendingTransactionId(transaction.id);
           setStep('payment');
         } else if (currentSKU.paymentMode === 'GIFT_CARD') {
           await handleCreateTransaction(user.id, validatedCode?.code);
@@ -208,9 +254,11 @@ export default function LandingPage() {
   };
 
   const handlePaymentSuccess = async (_paymentIntentId: string) => {
-    if (currentUser) {
-      await handleCreateTransaction(currentUser.id);
-    }
+    // Transaction already created with PENDING status
+    // Webhook will update it to COMPLETED
+    // Just navigate to success page
+    setStep('success');
+    setTimeout(() => navigate(`/dashboard/${currentUser?.id}`), 3000);
   };
 
   const handleRetry = () => {
@@ -238,6 +286,8 @@ export default function LandingPage() {
         partnerId={partnerId || undefined}
         calculatedImpact={calculatedImpact}
         finalAmount={finalAmount}
+        userId={currentUser?.id}
+        skuCode={currentSKU.code}
       />
     );
   }
@@ -258,6 +308,8 @@ export default function LandingPage() {
             impactGrams={calculatedImpact}
             amount={finalAmount}
             threshold={AMPLIVO_THRESHOLD}
+            skuCode={currentSKU.code}
+            skuName={currentSKU.name}
           />
         </div>
 
@@ -304,17 +356,31 @@ export default function LandingPage() {
                 {caseType === 'D' && 'Complete Your Registration'}
                 {caseType === 'E' && 'Build Your Environmental Portfolio'}
               </h3>
-              <RegistrationForm onSubmit={handleRegister} loading={transactionLoading} />
+
+              {/* Conditional Form Rendering - Minimal for CLAIM, Complete for others */}
+              {currentSKU?.paymentMode === 'CLAIM' ? (
+                <MinimalRegistrationForm
+                  onSubmit={handleMinimalRegister}
+                  loading={transactionLoading}
+                />
+              ) : (
+                <RegistrationForm
+                  onSubmit={handleRegister}
+                  loading={transactionLoading}
+                />
+              )}
             </div>
           )}
 
-          {step === 'payment' && currentUser && (
+          {step === 'payment' && currentUser && pendingTransactionId && (
             <div>
               <h3 className="text-xl font-bold text-gray-800 mb-4">Complete Payment</h3>
               <StripePayment
                 amount={finalAmount}
                 userId={currentUser.id}
+                transactionId={pendingTransactionId}
                 merchantId={merchantId || undefined}
+                merchantStripeAccountId={currentMerchant?.stripeAccountId || undefined}
                 onSuccess={handlePaymentSuccess}
               />
             </div>
