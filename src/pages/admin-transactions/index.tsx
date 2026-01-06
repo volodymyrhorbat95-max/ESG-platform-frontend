@@ -36,7 +36,7 @@ export default function AdminTransactions() {
   const amplivoCount = transactions.filter((t) => t.amplivoFlag).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">

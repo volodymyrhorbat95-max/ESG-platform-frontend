@@ -16,6 +16,14 @@
   --radius-xl: 6px;
   --radius-2xl: 6px;
   --radius-3xl: 6px;
+
+  /* Subtle & Soft shadows - barely noticeable, modern minimalist */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 2px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 4px 4px -1px rgba(0, 0, 0, 0.05), 0 2px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 8px 8px -2px rgba(0, 0, 0, 0.05), 0 4px 8px -4px rgba(0, 0, 0, 0.03);
+  --shadow-2xl: 0 12px 10px -2px rgba(0, 0, 0, 0.06);
 }
 
 :root {
@@ -28,6 +36,69 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}
+
+/* ========================================
+   CLEAN INPUT STYLES
+   ======================================== */
+
+/* Reset and style all input, textarea, select elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+input[type="search"],
+textarea,
+select {
+  /* Clean border - subtle gray */
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+
+  /* Remove default outline */
+  outline: none;
+
+  /* Smooth transitions */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Focus state - emerald ring */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Disabled state */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Error state */
+input.error,
+textarea.error,
+select.error {
+  border-color: #ef4444;
+}
+
+input.error:focus,
+textarea.error:focus,
+select.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 /* ========================================

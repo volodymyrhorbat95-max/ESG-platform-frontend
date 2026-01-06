@@ -21,19 +21,15 @@ export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [userId, setUserId] = useState<string | null>(null);
+  const [merchantId, setMerchantId] = useState<string | null>(null);
 
-  // Check for saved userId in localStorage
+  // Check for saved userId and merchantId in localStorage
   useEffect(() => {
     const savedUserId = localStorage.getItem('csr26_userId');
+    const savedMerchantId = localStorage.getItem('csr26_merchantId');
     setUserId(savedUserId);
+    setMerchantId(savedMerchantId);
   }, [location.pathname]); // Re-check when route changes
-
-  // Only hide navigation on terms and privacy pages (legal pages)
-  const hideNav = ['/terms-and-conditions', '/privacy-policy'].includes(location.pathname);
-
-  if (hideNav) {
-    return <>{children}</>;
-  }
 
   const navItems = [
     { path: '/', label: 'Home', icon: FiHome },
@@ -49,9 +45,9 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex flex-col">
       {/* Navigation Header */}
-      <header className="bg-emerald-600/90 backdrop-blur-sm sticky top-0 z-50">
+      <header className="bg-emerald-600/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             {/* Logo */}
@@ -100,6 +96,21 @@ export default function Layout({ children }: LayoutProps) {
                 >
                   <FiUser className="w-4 h-4" />
                   <span className="hidden sm:inline">My Dashboard</span>
+                </button>
+              )}
+
+              {/* Merchant Dashboard - shown when merchant is logged in */}
+              {merchantId && (
+                <button
+                  onClick={() => navigate(`/merchant/${merchantId}`)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 ${
+                    location.pathname.startsWith('/merchant')
+                      ? 'bg-white/20 text-white'
+                      : 'text-emerald-100 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <FiShield className="w-4 h-4" />
+                  <span className="hidden sm:inline">Merchant Dashboard</span>
                 </button>
               )}
             </nav>

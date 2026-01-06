@@ -24,7 +24,7 @@ export default function UserDashboard() {
 
   if (userLoading || walletLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center animate-on-load zoom-in duration-fast">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600 animate-on-load fade-up duration-normal">Loading your dashboard...</p>
@@ -35,7 +35,7 @@ export default function UserDashboard() {
 
   if (!currentUser || !userWallet) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center animate-on-load fade-down duration-normal">
           <p className="text-red-600 animate-on-load zoom-out duration-fast">Failed to load dashboard data</p>
         </div>
@@ -48,7 +48,7 @@ export default function UserDashboard() {
   const totalAccumulatedKg = (Number(wallet.totalAccumulated) / 1000).toFixed(3);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
