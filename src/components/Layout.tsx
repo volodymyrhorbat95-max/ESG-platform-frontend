@@ -57,7 +57,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Logo */}
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
             >
               <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-white">
                 <FaLeaf className="w-4 h-4" />
@@ -76,10 +76,10 @@ export default function Layout({ children }: LayoutProps) {
                   <button
                     key={item.path}
                     onClick={() => navigate(item.path)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
                       isActive(item.path)
-                        ? 'bg-white/20 text-white'
-                        : 'text-emerald-100 hover:bg-white/10 hover:text-white'
+                        ? 'bg-white/20 text-white shadow-md'
+                        : 'text-emerald-100 hover:bg-white/15 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -92,7 +92,7 @@ export default function Layout({ children }: LayoutProps) {
               {currentUser?.id && (
                 <button
                   onClick={() => navigate(`/dashboard/${currentUser.id}`)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 ${
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 cursor-pointer ${
                     location.pathname.startsWith('/dashboard')
                       ? 'bg-white/20 text-white'
                       : 'text-emerald-100 hover:bg-white/10 hover:text-white'
@@ -107,7 +107,7 @@ export default function Layout({ children }: LayoutProps) {
               {isAuthenticated && (
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 text-emerald-100 hover:bg-red-500/20 hover:text-white"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 text-emerald-100 hover:bg-red-500/20 hover:text-white cursor-pointer"
                   title="Logout"
                 >
                   <FiLogOut className="w-4 h-4" />
@@ -135,7 +135,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/privacy-policy')}
-                className="flex items-center gap-1 hover:text-emerald-600 transition-colors"
+                className="flex items-center gap-1 hover:text-emerald-600 transition-colors cursor-pointer"
               >
                 <FiShield className="w-4 h-4" />
                 Privacy Policy
@@ -143,7 +143,7 @@ export default function Layout({ children }: LayoutProps) {
               <span className="text-gray-300">|</span>
               <button
                 onClick={() => navigate('/terms-and-conditions')}
-                className="flex items-center gap-1 hover:text-emerald-600 transition-colors"
+                className="flex items-center gap-1 hover:text-emerald-600 transition-colors cursor-pointer"
               >
                 <FiFileText className="w-4 h-4" />
                 Terms & Conditions
