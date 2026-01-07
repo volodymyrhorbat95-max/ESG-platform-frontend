@@ -1,8 +1,15 @@
-// Admin Export Interface - Generate Amplivo and Partner reports
+// Admin Export Interface - Generate all report types
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { exportAmplivoData, exportPartnerReport } from '../../store/exportSlice';
-import ExportTypeSelector from './ExportTypeSelector';
+import {
+  exportAmplivoData,
+  exportPartnerReport,
+  exportStripeReconciliation,
+  exportImpactReport,
+  exportTrendAnalysis,
+  exportSKUPerformance,
+} from '../../store/exportSlice';
+import ExportTypeSelector, { type ExportType } from './ExportTypeSelector';
 import FormatSelector from './FormatSelector';
 import ExportFilters from './ExportFilters';
 
@@ -10,7 +17,7 @@ export default function AdminExport() {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.export);
 
-  const [exportType, setExportType] = useState<'amplivo' | 'partner'>('amplivo');
+  const [exportType, setExportType] = useState<ExportType>('amplivo');
   const [format, setFormat] = useState<'xlsx' | 'csv'>('xlsx');
   const [filters, setFilters] = useState({
     startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
@@ -24,13 +31,33 @@ export default function AdminExport() {
   const handleExport = async () => {
     if (exportType === 'amplivo') {
       await dispatch(exportAmplivoData({ filters, format }));
-    } else {
+    } else if (exportType === 'partner') {
       if (!filters.partnerId) {
         alert('Please enter a Partner ID');
         return;
       }
       await dispatch(exportPartnerReport({ partnerId: filters.partnerId, filters, format }));
+    } else if (exportType === 'reconciliation') {
+      await dispatch(exportStripeReconciliation({ filters, format }));
+    } else if (exportType === 'impact') {
+      await dispatch(exportImpactReport({ filters, format }));
+    } else if (exportType === 'trends') {
+      await dispatch(exportTrendAnalysis({ filters, format }));
+    } else if (exportType === 'skuPerformance') {
+      await dispatch(exportSKUPerformance({ filters, format }));
     }
+  };
+
+  const getExportButtonLabel = () => {
+    const labels: Record<ExportType, string> = {
+      amplivo: 'Amplivo Export',
+      partner: 'Partner Report',
+      reconciliation: 'Stripe Reconciliation',
+      impact: 'Impact Report',
+      trends: 'Trend Analysis',
+      skuPerformance: 'SKU Performance',
+    };
+    return labels[exportType];
   };
 
   return (
@@ -66,7 +93,7 @@ export default function AdminExport() {
             disabled={loading}
             className="w-full bg-primary text-white py-4 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors text-lg disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load zoom-in duration-slow"
           >
-            {loading ? 'Generating...' : `Generate ${exportType === 'amplivo' ? 'Amplivo Export' : 'Partner Report'} (${format.toUpperCase()})`}
+            {loading ? 'Generating...' : `Generate ${getExportButtonLabel()} (${format.toUpperCase()})`}
           </button>
 
           <div className="mt-4 p-4 bg-blue-50 rounded-lg animate-on-load flip-up duration-light-slow">
@@ -74,6 +101,10 @@ export default function AdminExport() {
               <strong className="animate-on-load zoom-out duration-fast">Note:</strong> The file will download automatically when you click the button.
               {exportType === 'amplivo' && ' Amplivo exports include all transaction details, user information, and impact calculations.'}
               {exportType === 'partner' && ' Partner reports include transaction summaries and totals for invoicing.'}
+              {exportType === 'reconciliation' && ' Stripe reconciliation reports show payment details with platform fees for financial reconciliation.'}
+              {exportType === 'impact' && ' Impact reports aggregate environmental metrics across all merchants and partners.'}
+              {exportType === 'trends' && ' Trend analysis reports show monthly metrics with month-over-month growth for strategic planning.'}
+              {exportType === 'skuPerformance' && ' SKU performance reports analyze individual product metrics for product development decisions.'}
             </p>
           </div>
         </div>

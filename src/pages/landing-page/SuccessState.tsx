@@ -16,6 +16,7 @@ interface SuccessStateProps {
   finalAmount: number;
   userId?: string;
   skuCode?: string;
+  transactionId?: string;
 }
 
 export default function SuccessState({
@@ -26,8 +27,10 @@ export default function SuccessState({
   finalAmount,
   userId,
   skuCode,
+  transactionId,
 }: SuccessStateProps) {
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
   // Auto-redirect to dashboard after 3 seconds
   useEffect(() => {
@@ -69,7 +72,26 @@ export default function SuccessState({
           </div>
 
           {userId && (
-            <div className="mt-8">
+            <div className="mt-8 space-y-4">
+              {/* Certificate Download - Show for CLAIM type */}
+              {transactionId && caseType === 'A' && (
+                <div className="mb-4">
+                  <a
+                    href={`${API_URL}/certificates/${transactionId}`}
+                    download
+                    className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md hover:shadow-lg"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Download Your Certificate
+                  </a>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Your environmental impact certificate is ready to download
+                  </p>
+                </div>
+              )}
+
               <button
                 onClick={() => navigate(`/dashboard/${userId}`)}
                 className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg"

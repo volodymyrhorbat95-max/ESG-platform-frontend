@@ -1,17 +1,19 @@
 // Export Type Selector Component
+type ExportType = 'amplivo' | 'partner' | 'reconciliation' | 'impact' | 'trends' | 'skuPerformance';
+
 interface ExportTypeSelectorProps {
-  exportType: 'amplivo' | 'partner';
-  onTypeChange: (type: 'amplivo' | 'partner') => void;
+  exportType: ExportType;
+  onTypeChange: (type: ExportType) => void;
 }
 
 export default function ExportTypeSelector({ exportType, onTypeChange }: ExportTypeSelectorProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-up duration-normal">
-      <h2 className="text-xl font-bold text-gray-800 mb-4 animate-on-load fade-right duration-fast">Export Type</h2>
-      <div className="flex gap-4 animate-on-load zoom-in duration-light-slow">
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Export Type</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <button
           onClick={() => onTypeChange('amplivo')}
-          className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors animate-on-load fade-left duration-normal ${
+          className={`py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
             exportType === 'amplivo'
               ? 'bg-primary text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -21,7 +23,7 @@ export default function ExportTypeSelector({ exportType, onTypeChange }: ExportT
         </button>
         <button
           onClick={() => onTypeChange('partner')}
-          className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors animate-on-load fade-right duration-light-slow ${
+          className={`py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
             exportType === 'partner'
               ? 'bg-primary text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -29,7 +31,49 @@ export default function ExportTypeSelector({ exportType, onTypeChange }: ExportT
         >
           Partner Report
         </button>
+        <button
+          onClick={() => onTypeChange('reconciliation')}
+          className={`py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
+            exportType === 'reconciliation'
+              ? 'bg-purple-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Stripe Reconciliation
+        </button>
+        <button
+          onClick={() => onTypeChange('impact')}
+          className={`py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
+            exportType === 'impact'
+              ? 'bg-emerald-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Impact Report
+        </button>
+        <button
+          onClick={() => onTypeChange('trends')}
+          className={`py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
+            exportType === 'trends'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Trend Analysis
+        </button>
+        <button
+          onClick={() => onTypeChange('skuPerformance')}
+          className={`py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
+            exportType === 'skuPerformance'
+              ? 'bg-orange-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          SKU Performance
+        </button>
       </div>
     </div>
   );
 }
+
+export type { ExportType };

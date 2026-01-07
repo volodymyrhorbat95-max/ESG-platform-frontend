@@ -1,0 +1,34 @@
+// QR Code Display Component
+interface QRCodeDisplayProps {
+  qrCodes: any[];
+  onDownload: (qrCode: any) => void;
+}
+
+export default function QRCodeDisplay({ qrCodes, onDownload }: QRCodeDisplayProps) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {qrCodes.map((qrCode, index) => (
+        <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+          <img
+            src={qrCode.qrCodeDataUrl}
+            alt={`QR Code for ${qrCode.sku?.code}`}
+            className="w-full h-auto mb-3"
+          />
+          {qrCode.sku && (
+            <div className="mb-3">
+              <p className="font-semibold text-gray-800">{qrCode.sku.name}</p>
+              <p className="text-sm text-gray-600">SKU: {qrCode.sku.code}</p>
+            </div>
+          )}
+          <p className="text-xs text-gray-500 mb-3 break-all">{qrCode.targetUrl}</p>
+          <button
+            onClick={() => onDownload(qrCode)}
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Download PNG
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}

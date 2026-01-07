@@ -95,6 +95,31 @@ export const deleteMerchant = createAsyncThunk('merchants/delete', async (id: st
   return id;
 });
 
+export const exportMerchantESGReport = createAsyncThunk(
+  'merchants/exportESG',
+  async ({ merchantId, startDate, endDate }: { merchantId: string; startDate: string; endDate: string }) => {
+    const response = await fetch(
+      `${API_URL}/merchants/${merchantId}/export/esg?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+    );
+    if (!response.ok) throw new Error('Failed to export ESG report');
+
+    // Get the PDF blob
+    const blob = await response.blob();
+
+    // Create download link
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ESG_Report_${merchantId}_${startDate}_${endDate}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    return { success: true };
+  }
+);
+
 // Slice
 const merchantSlice = createSlice({
   name: 'merchants',
@@ -184,6 +209,20 @@ const merchantSlice = createSlice({
       .addCase(deleteMerchant.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to delete merchant';
+      });
+
+    // Export ESG report
+    builder
+      .addCase(exportMerchantESGReport.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(exportMerchantESGReport.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(exportMerchantESGReport.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to export ESG report';
       });
   },
 });

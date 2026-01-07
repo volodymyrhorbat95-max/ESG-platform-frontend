@@ -12,7 +12,7 @@ export default function HeaderSection({ partnerName }: HeaderSectionProps) {
       <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 leading-tight animate-on-load fade-down duration-normal">
         Your environmental impact finally has a real value, just like the value and weight of every choice.
         <span className="block text-emerald-600 mt-2">
-          Today, that weight is plastic removed.
+          Today that burden has been removed from plastic.
         </span>
       </h1>
 

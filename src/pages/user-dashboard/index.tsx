@@ -1,15 +1,18 @@
 // User Dashboard - Display wallet balance and transaction history
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchUserWallet } from '../../store/walletSlice';
 import { fetchUserById } from '../../store/userSlice';
+import { fetchUserLinks } from '../../store/shareableLinkSlice';
 import WalletSummary from './WalletSummary';
 import TransactionHistory from './TransactionHistory';
 import ImpactVisualization from './ImpactVisualization';
+import SocialShare from './SocialShare';
 
 export default function UserDashboard() {
   const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const { currentUser, loading: userLoading } = useAppSelector((state) => state.users);
@@ -19,6 +22,7 @@ export default function UserDashboard() {
     if (userId) {
       dispatch(fetchUserById(userId));
       dispatch(fetchUserWallet(userId));
+      dispatch(fetchUserLinks(userId));
     }
   }, [userId, dispatch]);
 
@@ -52,10 +56,20 @@ export default function UserDashboard() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">
-            Welcome, {currentUser.firstName}!
-          </h1>
-          <p className="text-gray-600 animate-on-load fade-left duration-light-slow">{currentUser.email}</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">
+                Welcome, {currentUser.firstName}!
+              </h1>
+              <p className="text-gray-600 animate-on-load fade-left duration-light-slow">{currentUser.email}</p>
+            </div>
+            <button
+              onClick={() => navigate(`/profile/${userId}`)}
+              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors"
+            >
+              Edit Profile
+            </button>
+          </div>
         </div>
 
         <div className="animate-on-load zoom-in duration-light-slow">
@@ -82,6 +96,17 @@ export default function UserDashboard() {
             totalAccumulated={Number(wallet.totalAccumulated)}
           />
         </div>
+
+        {/* Social Sharing */}
+        {userId && (
+          <div className="animate-on-load fade-up duration-very-slow">
+            <SocialShare
+              userId={userId}
+              totalImpactKg={totalAccumulatedKg}
+              plasticBottles={Math.floor(Number(wallet.totalAccumulated) / 25)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

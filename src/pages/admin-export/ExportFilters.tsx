@@ -1,6 +1,8 @@
 // Export Filters Component
+import type { ExportType } from './ExportTypeSelector';
+
 interface ExportFiltersProps {
-  exportType: 'amplivo' | 'partner';
+  exportType: ExportType;
   filters: {
     startDate: string;
     endDate: string;
@@ -108,6 +110,68 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
               className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load zoom-in duration-light-slow"
               required
             />
+          </div>
+        )}
+
+        {exportType === 'reconciliation' && (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
+            <h4 className="font-semibold text-purple-800 mb-2">Stripe Reconciliation Report</h4>
+            <p className="text-sm text-gray-700">
+              This report shows all Stripe payments within the selected date range, including:
+            </p>
+            <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
+              <li>Transaction details and Stripe Payment Intent IDs</li>
+              <li>Gross transaction amounts</li>
+              <li>Platform fees (10% of transaction)</li>
+              <li>Net merchant payouts</li>
+              <li>Summary totals for the period</li>
+            </ul>
+          </div>
+        )}
+
+        {exportType === 'impact' && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
+            <h4 className="font-semibold text-emerald-800 mb-2">Aggregate Impact Report</h4>
+            <p className="text-sm text-gray-700">
+              This report aggregates impact data across all merchants and partners, including:
+            </p>
+            <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
+              <li>Overall summary (total transactions, revenue, trees planted, plastic removed)</li>
+              <li>Breakdown by merchant</li>
+              <li>Breakdown by partner</li>
+              <li>Breakdown by SKU type (e.g., tree_planting, plastic_removal)</li>
+            </ul>
+          </div>
+        )}
+
+        {exportType === 'trends' && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
+            <h4 className="font-semibold text-blue-800 mb-2">Trend Analysis Report</h4>
+            <p className="text-sm text-gray-700">
+              This report provides monthly trend analysis for strategic planning:
+            </p>
+            <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
+              <li>Monthly transaction volume and revenue</li>
+              <li>Month-over-month growth percentages</li>
+              <li>Impact trends over time</li>
+              <li>SKU type breakdown per month</li>
+            </ul>
+          </div>
+        )}
+
+        {exportType === 'skuPerformance' && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
+            <h4 className="font-semibold text-orange-800 mb-2">SKU Performance Report</h4>
+            <p className="text-sm text-gray-700">
+              This report analyzes individual SKU performance for product development:
+            </p>
+            <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
+              <li>Per-SKU transaction volume and revenue</li>
+              <li>Unique user counts per SKU</li>
+              <li>Average transaction value</li>
+              <li>Revenue share percentages</li>
+              <li>Merchant breakdown for top SKUs</li>
+            </ul>
           </div>
         )}
       </div>

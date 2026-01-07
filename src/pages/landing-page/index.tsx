@@ -61,6 +61,7 @@ export default function LandingPage() {
   const [giftCardValidated, setGiftCardValidated] = useState(false);
   const [adminError, setAdminError] = useState<string>('');
   const [pendingTransactionId, setPendingTransactionId] = useState<string | null>(null);
+  const [completedTransactionId, setCompletedTransactionId] = useState<string | null>(null);
 
   // Get admin SKU from environment
   const ADMIN_SKU = import.meta.env.VITE_ADMIN_SKU;
@@ -236,7 +237,7 @@ export default function LandingPage() {
     if (!currentSKU) return;
 
     try {
-      await dispatch(createTransaction({
+      const transaction = await dispatch(createTransaction({
         userId,
         skuCode: currentSKU.code,
         amount: finalAmount,
@@ -246,6 +247,7 @@ export default function LandingPage() {
         giftCardCode: giftCardCode || undefined,
       })).unwrap();
 
+      setCompletedTransactionId(transaction.id);
       setStep('success');
       setTimeout(() => navigate(`/dashboard/${userId}`), 3000);
     } catch (error) {
@@ -256,7 +258,10 @@ export default function LandingPage() {
   const handlePaymentSuccess = async (_paymentIntentId: string) => {
     // Transaction already created with PENDING status
     // Webhook will update it to COMPLETED
-    // Just navigate to success page
+    // Store the pending transaction ID for display
+    if (pendingTransactionId) {
+      setCompletedTransactionId(pendingTransactionId);
+    }
     setStep('success');
     setTimeout(() => navigate(`/dashboard/${currentUser?.id}`), 3000);
   };
@@ -288,6 +293,7 @@ export default function LandingPage() {
         finalAmount={finalAmount}
         userId={currentUser?.id}
         skuCode={currentSKU.code}
+        transactionId={completedTransactionId || undefined}
       />
     );
   }

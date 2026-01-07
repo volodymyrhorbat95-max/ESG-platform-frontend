@@ -84,13 +84,21 @@ export default function MinimalRegistrationForm({ onSubmit, loading }: MinimalRe
       <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg animate-on-load fade-up duration-light-slow">
         <p className="text-xs text-gray-600 animate-on-load fade-left duration-normal">
           By submitting your email, you agree to our{' '}
-          <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+          <button
+            type="button"
+            onClick={() => window.open('/terms-and-conditions', '_blank')}
+            className="text-primary hover:underline underline cursor-pointer bg-transparent border-none p-0 font-inherit"
+          >
             Terms of Service
-          </a>{' '}
+          </button>{' '}
           and{' '}
-          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+          <button
+            type="button"
+            onClick={() => window.open('/privacy-policy', '_blank')}
+            className="text-primary hover:underline underline cursor-pointer bg-transparent border-none p-0 font-inherit"
+          >
             Privacy Policy
-          </a>
+          </button>
           .
         </p>
       </div>

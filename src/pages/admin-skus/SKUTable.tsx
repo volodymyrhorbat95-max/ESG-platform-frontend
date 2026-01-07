@@ -5,9 +5,10 @@ interface SKUTableProps {
   error: string | null;
   onEdit: (sku: any) => void;
   onDelete: (id: string) => void;
+  onManageLocalizations: (sku: any) => void;
 }
 
-export default function SKUTable({ skus, loading, error, onEdit, onDelete }: SKUTableProps) {
+export default function SKUTable({ skus, loading, error, onEdit, onDelete, onManageLocalizations }: SKUTableProps) {
   if (loading && !skus.length) {
     return (
       <div className="text-center py-12 animate-on-load fade-up duration-normal">
@@ -79,13 +80,20 @@ export default function SKUTable({ skus, loading, error, onEdit, onDelete }: SKU
               <td className="py-3 px-4 text-center animate-on-load flip-down duration-light-slow">
                 <button
                   onClick={() => onEdit(sku)}
-                  className="text-blue-600 hover:text-blue-800 mr-3 animate-on-load fade-right duration-fast"
+                  className="text-blue-600 hover:text-blue-800 mr-3 animate-on-load fade-right duration-fast cursor-pointer"
                 >
                   Edit
                 </button>
                 <button
+                  onClick={() => onManageLocalizations(sku)}
+                  className="text-purple-600 hover:text-purple-800 mr-3 animate-on-load zoom-in duration-normal cursor-pointer"
+                  title="Manage market localizations"
+                >
+                  Markets
+                </button>
+                <button
                   onClick={() => onDelete(sku.id)}
-                  className="text-red-600 hover:text-red-800 animate-on-load fade-left duration-fast"
+                  className="text-red-600 hover:text-red-800 animate-on-load fade-left duration-fast cursor-pointer"
                 >
                   Delete
                 </button>

@@ -11,7 +11,9 @@ import {
   FiShield,
   FiUser,
   FiLogOut,
-  FiFileText
+  FiFileText,
+  FiUsers,
+  FiShoppingBag
 } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
 
@@ -38,6 +40,8 @@ export default function Layout({ children }: LayoutProps) {
     ...(isAuthenticated ? [
       { path: '/admin/skus', label: 'SKUs', icon: FiPackage, adminOnly: true },
       { path: '/admin/gift-cards', label: 'Gift Cards', icon: FiGift, adminOnly: true },
+      { path: '/admin/partners', label: 'Partners', icon: FiUsers, adminOnly: true },
+      { path: '/admin/merchants', label: 'Merchants', icon: FiShoppingBag, adminOnly: true },
       { path: '/admin/transactions', label: 'Transactions', icon: FiCreditCard, adminOnly: true },
       { path: '/admin/export', label: 'Export', icon: FiDownload, adminOnly: true },
     ] : []),

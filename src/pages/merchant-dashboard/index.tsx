@@ -1,15 +1,17 @@
 // Merchant Dashboard - Corporate wallet and ESG tracking
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchMerchantWallet } from '../../store/walletSlice';
 import OverallStats from './OverallStats';
 import DateRangeFilter from './DateRangeFilter';
 import TransactionHistory from './TransactionHistory';
 import ESGReport from './ESGReport';
+import ESGExportButton from './ESGExportButton';
 
 export default function MerchantDashboard() {
   const { merchantId } = useParams<{ merchantId: string }>();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const { merchantWallet, loading } = useAppSelector((state) => state.wallets);
@@ -70,8 +72,21 @@ export default function MerchantDashboard() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">Merchant Dashboard</h1>
-          <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Corporate ESG Impact Tracking</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">Merchant Dashboard</h1>
+              <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Corporate ESG Impact Tracking</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate(`/merchant/${merchantId}/qr-generator`)}
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+              >
+                Generate QR Codes
+              </button>
+              {merchantId && <ESGExportButton merchantId={merchantId} />}
+            </div>
+          </div>
         </div>
 
         <div className="animate-on-load zoom-in duration-light-slow">

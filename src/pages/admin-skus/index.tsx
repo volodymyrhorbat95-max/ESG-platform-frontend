@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchSKUs, createSKU, updateSKU, deleteSKU } from '../../store/skuSlice';
 import SKUForm from './SKUForm';
 import SKUTable from './SKUTable';
+import SKULocalizationManager from './SKULocalizationManager';
 
 export default function AdminSKUs() {
   const dispatch = useAppDispatch();
@@ -11,6 +12,7 @@ export default function AdminSKUs() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingSKU, setEditingSKU] = useState<any | null>(null);
+  const [localizingSKU, setLocalizingSKU] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     code: '',
     name: '',
@@ -122,9 +124,21 @@ export default function AdminSKUs() {
               error={error}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onManageLocalizations={setLocalizingSKU}
             />
           </div>
         </div>
+
+        {/* SKU Localization Manager Modal */}
+        {localizingSKU && (
+          <SKULocalizationManager
+            skuId={localizingSKU.id}
+            skuCode={localizingSKU.code}
+            skuName={localizingSKU.name}
+            basePrice={Number(localizingSKU.price)}
+            onClose={() => setLocalizingSKU(null)}
+          />
+        )}
       </div>
     </div>
   );
