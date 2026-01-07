@@ -2,16 +2,18 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 
 // Type definitions (matching backend/database schema)
+// CRITICAL: gramsWeight removed - impact calculated dynamically using CURRENT_CSR_PRICE
+// CRITICAL: amplivoThreshold renamed to corsairThreshold
 interface SKU {
   id: string;
   code: string;
   name: string;
-  gramsWeight: number;
   price: number;
   paymentMode: 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION';
   requiresValidation: boolean;
-  amplivoThreshold: number;
+  corsairThreshold: number;
   impactMultiplier: number;
+  partnerId?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -53,13 +55,20 @@ export const fetchSKUs = createAsyncThunk('skus/fetchAll', async () => {
   return data.data;
 });
 
+// Fetch SKU by code (public endpoint for landing page)
 export const fetchSKUByCode = createAsyncThunk(
   'skus/fetchByCode',
-  async (code: string) => {
-    const response = await fetch(`${API_URL}/impact?code=${code}`);
-    if (!response.ok) throw new Error('Failed to fetch SKU');
-    const data = await response.json();
-    return data.data;
+  async (code: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/skus/code/${code}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch SKU with code: ${code}`);
+      }
+      const data = await response.json();
+      return data.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 

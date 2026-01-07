@@ -14,6 +14,7 @@ import partnerReducer from './partnerSlice';
 import shareableLinkReducer from './shareableLinkSlice';
 import skuLocalizationReducer from './skuLocalizationSlice';
 import qrcodeReducer from './qrcodeSlice';
+import configReducer from './configSlice';
 
 // Global error handling middleware
 const errorLoggingMiddleware: Middleware = () => (next) => (action: any) => {
@@ -43,6 +44,7 @@ export const store = configureStore({
     shareableLinks: shareableLinkReducer,
     skuLocalizations: skuLocalizationReducer,
     qrcode: qrcodeReducer,
+    config: configReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(errorLoggingMiddleware),

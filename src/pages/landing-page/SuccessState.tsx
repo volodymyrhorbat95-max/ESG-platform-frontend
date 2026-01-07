@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CaseType } from './types';
-import { AMPLIVO_THRESHOLD } from './types';
+import { CORSAIR_THRESHOLD } from './types';
 import HeaderSection from './HeaderSection';
 import DynamicMessage from './DynamicMessage';
 import ImpactDisplay from './ImpactDisplay';
@@ -62,7 +62,7 @@ export default function SuccessState({
             partnerName={partnerId}
             impactGrams={calculatedImpact}
             amount={finalAmount}
-            threshold={AMPLIVO_THRESHOLD}
+            threshold={CORSAIR_THRESHOLD}
             skuCode={skuCode}
             skuName={skuName}
           />

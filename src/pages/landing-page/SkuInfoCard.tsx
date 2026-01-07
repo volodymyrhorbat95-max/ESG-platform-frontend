@@ -1,5 +1,5 @@
 // SKU Info Card - Displays SKU information and impact
-import { AMPLIVO_THRESHOLD } from './types';
+import { CORSAIR_THRESHOLD } from './types';
 import ImpactDisplay from './ImpactDisplay';
 
 interface SkuInfoCardProps {
@@ -31,7 +31,7 @@ export default function SkuInfoCard({
           <p className="text-lg font-semibold text-gray-800">
             Amount: €{finalAmount.toFixed(2)}
           </p>
-          {finalAmount >= AMPLIVO_THRESHOLD && (
+          {finalAmount >= CORSAIR_THRESHOLD && (
             <p className="text-sm text-emerald-600 mt-1">
               ✓ Qualifies for Certified Environmental Asset
             </p>

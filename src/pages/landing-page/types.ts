@@ -20,11 +20,10 @@ export interface SKU {
   code: string;
   name: string;
   paymentMode: 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION';
-  gramsWeight: number;
   price: number;
   impactMultiplier: number;
   requiresValidation: boolean;
-  amplivoThreshold: number;
+  corsairThreshold: number;
   isActive: boolean;
 }
 
@@ -37,5 +36,5 @@ export interface URLParams {
   orderId: string | null;
 }
 
-// Amplivo threshold constant
-export const AMPLIVO_THRESHOLD = 10;
+// Corsair threshold constant (€10)
+export const CORSAIR_THRESHOLD = 10;

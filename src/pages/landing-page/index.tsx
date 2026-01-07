@@ -11,10 +11,11 @@ import { createTransaction } from '../../store/transactionSlice';
 import { validateGiftCard } from '../../store/giftCardSlice';
 import { loginAdmin } from '../../store/authSlice';
 import { fetchMerchantById } from '../../store/merchantSlice';
+import { fetchCurrentCSRPrice } from '../../store/configSlice';
 
 // Types and utils
 import type { CaseType, StepType } from './types';
-import { AMPLIVO_THRESHOLD } from './types';
+import { CORSAIR_THRESHOLD } from './types';
 import { determineCaseType } from './utils';
 
 // Components
@@ -52,6 +53,7 @@ export default function LandingPage() {
   const { loading: transactionLoading } = useAppSelector((state) => state.transactions);
   const { validatedCode, loading: giftCardLoading } = useAppSelector((state) => state.giftCards);
   const { currentMerchant } = useAppSelector((state) => state.merchants);
+  const { currentCSRPrice } = useAppSelector((state) => state.config);
 
   // Local state
   const [step, setStep] = useState<StepType>('loading');
@@ -66,8 +68,11 @@ export default function LandingPage() {
   // Get admin SKU from environment
   const ADMIN_SKU = import.meta.env.VITE_ADMIN_SKU;
 
-  // Fetch SKU on mount when skuCode is present
+  // Fetch SKU and config on mount when skuCode is present
   useEffect(() => {
+    // Always fetch current CSR price for dynamic impact calculation
+    dispatch(fetchCurrentCSRPrice());
+
     if (skuCode) {
       // Check if this is admin SKU
       if (skuCode === ADMIN_SKU) {
@@ -89,27 +94,30 @@ export default function LandingPage() {
 
   // Process SKU data and determine flow
   useEffect(() => {
-    if (!currentSKU) return;
+    if (!currentSKU || currentCSRPrice === null) return;
 
     let impact = 0;
     let amount = 0;
 
     switch (currentSKU.paymentMode) {
       case 'CLAIM':
-        impact = currentSKU.gramsWeight;
-        amount = 0;
+        amount = Number(currentSKU.price) || 0;
+        // Dynamic calculation: kg = amount / CURRENT_CSR_PRICE, then convert to grams
+        impact = Math.round((amount / currentCSRPrice) * 1000);
         setStep('registration');
         break;
 
       case 'PAY':
-        impact = currentSKU.gramsWeight;
         amount = Number(currentSKU.price) || 0;
+        // Dynamic calculation: kg = amount / CURRENT_CSR_PRICE, then convert to grams
+        impact = Math.round((amount / currentCSRPrice) * 1000);
         setStep('registration');
         break;
 
       case 'GIFT_CARD':
-        impact = currentSKU.gramsWeight;
         amount = Number(currentSKU.price) || 0;
+        // Dynamic calculation: kg = amount / CURRENT_CSR_PRICE, then convert to grams
+        impact = Math.round((amount / currentCSRPrice) * 1000);
         if (giftCardValidated || validatedCode) {
           setStep('registration');
         } else {
@@ -120,7 +128,8 @@ export default function LandingPage() {
       case 'ALLOCATION':
         if (urlAmount) {
           amount = parseFloat(urlAmount);
-          impact = amount * (currentSKU.impactMultiplier || 1);
+          // For ALLOCATION: kg = amount * impactMultiplier, then convert to grams
+          impact = Math.round(amount * (currentSKU.impactMultiplier || 1) * 1000);
           setStep('registration');
         } else {
           setStep('amount-input');
@@ -128,8 +137,8 @@ export default function LandingPage() {
         break;
 
       default:
-        impact = currentSKU.gramsWeight;
         amount = Number(currentSKU.price) || 0;
+        impact = Math.round((amount / currentCSRPrice) * 1000);
         setStep('registration');
     }
 
@@ -141,7 +150,7 @@ export default function LandingPage() {
       partnerId,
       currentSKU.paymentMode === 'GIFT_CARD'
     ));
-  }, [currentSKU, urlAmount, merchantId, partnerId, giftCardValidated, validatedCode]);
+  }, [currentSKU, currentCSRPrice, urlAmount, merchantId, partnerId, giftCardValidated, validatedCode]);
 
   // Handlers
   const handleSkuSubmit = (sku: string) => {
@@ -313,7 +322,7 @@ export default function LandingPage() {
             partnerName={partnerId || undefined}
             impactGrams={calculatedImpact}
             amount={finalAmount}
-            threshold={AMPLIVO_THRESHOLD}
+            threshold={CORSAIR_THRESHOLD}
             skuCode={currentSKU.code}
             skuName={currentSKU.name}
           />

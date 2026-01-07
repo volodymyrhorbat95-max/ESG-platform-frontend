@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 
 // Type definitions (matching backend/database schema)
+// CRITICAL: amplivoFlag renamed to corsairConnectFlag
 interface Transaction {
   id: string;
   userId: string;
@@ -10,22 +11,35 @@ interface Transaction {
   partnerId?: string;
   orderId?: string;
   amount: number;
-  calculatedImpact: number;
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded';
-  amplivoFlag: boolean;
+  calculatedImpact: number; // in grams, calculated dynamically
+  paymentStatus: 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED' | 'NA';
+  corsairConnectFlag: boolean; // true if amount >= corsairThreshold (€10)
+  giftCardCodeId?: string;
   stripePaymentIntentId?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 interface CreateTransactionData {
-  userId: string;
   skuCode: string;
-  amount?: number;
+  userId?: string;
   merchantId?: string;
   partnerId?: string;
   orderId?: string;
-  giftCardCode?: string;
+  amount?: number; // For ALLOCATION type
+  giftCardCode?: string; // For GIFT_CARD type
+  registrationData?: {
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    street?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+    state?: string;
+    termsAccepted?: boolean;
+  };
 }
 
 interface TransactionState {
@@ -199,3 +213,6 @@ const transactionSlice = createSlice({
 
 export const { clearCurrentTransaction, clearError } = transactionSlice.actions;
 export default transactionSlice.reducer;
+
+// Export types for use in components
+export type { Transaction, CreateTransactionData };

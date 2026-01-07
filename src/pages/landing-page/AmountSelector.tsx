@@ -1,6 +1,6 @@
 // Amount Selector - For ALLOCATION SKUs without amount in URL
 import { useState } from 'react';
-import { AMPLIVO_THRESHOLD } from './types';
+import { CORSAIR_THRESHOLD } from './types';
 
 interface AmountSelectorProps {
   impactMultiplier: number;
@@ -71,13 +71,13 @@ export default function AmountSelector({ impactMultiplier, onSubmit }: AmountSel
             <p className="text-emerald-800 font-medium text-lg">
               Your impact: {(parseFloat(amountInput) * impactMultiplier).toFixed(0)}g of plastic removed
             </p>
-            {parseFloat(amountInput) >= AMPLIVO_THRESHOLD ? (
+            {parseFloat(amountInput) >= CORSAIR_THRESHOLD ? (
               <p className="text-emerald-600 text-sm mt-1">
                 ✓ Qualifies for Certified Environmental Asset
               </p>
             ) : (
               <p className="text-gray-500 text-sm mt-1">
-                Reach €{AMPLIVO_THRESHOLD} to unlock certified asset status
+                Reach €{CORSAIR_THRESHOLD} to unlock certified asset status
               </p>
             )}
           </div>

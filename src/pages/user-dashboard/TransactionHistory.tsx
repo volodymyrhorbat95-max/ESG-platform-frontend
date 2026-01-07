@@ -1,4 +1,6 @@
 // Transaction History Component
+// CRITICAL: Uses calculatedImpact (in grams) from transactions
+
 interface TransactionHistoryProps {
   transactions: any[];
 }
@@ -24,7 +26,7 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
             <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-normal">Amount</th>
             <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-light-slow">Impact</th>
             <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-slow">Status</th>
-            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-very-slow">Amplivo</th>
+            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-very-slow">Corsair</th>
           </tr>
         </thead>
         <tbody>
@@ -47,11 +49,11 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
               <td className="py-3 px-4 text-center animate-on-load zoom-out duration-slow">
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                    transaction.paymentStatus === 'completed'
+                    transaction.paymentStatus === 'COMPLETED'
                       ? 'bg-green-100 text-green-800'
-                      : transaction.paymentStatus === 'pending'
+                      : transaction.paymentStatus === 'PENDING'
                       ? 'bg-yellow-100 text-yellow-800'
-                      : transaction.paymentStatus === 'failed'
+                      : transaction.paymentStatus === 'FAILED'
                       ? 'bg-red-100 text-red-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}
@@ -60,7 +62,7 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
                 </span>
               </td>
               <td className="py-3 px-4 text-center animate-on-load flip-down duration-light-slow">
-                {transaction.amplivoFlag ? (
+                {transaction.corsairConnectFlag ? (
                   <span className="text-green-600 font-semibold">✓</span>
                 ) : (
                   <span className="text-gray-300">-</span>
