@@ -23,13 +23,13 @@ export default function PartnerForm({
   onCancel,
 }: PartnerFormProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-up duration-normal">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 animate-on-load fade-down duration-fast">
         {editingPartner ? 'Edit Partner' : 'Create New Partner'}
       </h2>
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+          <div className="animate-on-load fade-right duration-light-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Partner Name *
             </label>
@@ -43,7 +43,7 @@ export default function PartnerForm({
             />
           </div>
 
-          <div>
+          <div className="animate-on-load fade-left duration-light-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email *
             </label>
@@ -57,7 +57,7 @@ export default function PartnerForm({
             />
           </div>
 
-          <div>
+          <div className="animate-on-load zoom-in duration-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Contact Person *
             </label>
@@ -71,7 +71,7 @@ export default function PartnerForm({
             />
           </div>
 
-          <div>
+          <div className="animate-on-load flip-up duration-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Phone
             </label>
@@ -84,7 +84,7 @@ export default function PartnerForm({
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 animate-on-load fade-up duration-very-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Billing Address
             </label>
@@ -100,7 +100,7 @@ export default function PartnerForm({
 
         {/* URL Parameters Info */}
         {editingPartner && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load zoom-out duration-slow">
             <h4 className="font-semibold text-blue-800 mb-2">Integration URL Parameter</h4>
             <p className="text-sm text-gray-600 mb-2">
               Use this parameter in checkout URLs or QR codes to attribute transactions to this partner:
@@ -114,7 +114,7 @@ export default function PartnerForm({
           </div>
         )}
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 animate-on-load flip-down duration-very-slow">
           <button
             type="submit"
             disabled={loading}

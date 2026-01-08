@@ -59,19 +59,20 @@ export default function MerchantQRGenerator() {
   return (
     <div className="min-h-screen">
       {/* Secondary Navigation */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
+      <div className="bg-white border-b border-gray-200 shadow-sm animate-on-load fade-down duration-fast">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-12">
-            <span className="text-sm font-medium text-gray-600">QR Code Generator</span>
+            <span className="text-sm font-medium text-gray-600 animate-on-load fade-right duration-normal">QR Code Generator</span>
             <nav className="flex items-center gap-1">
-              {navItems.map((item) => {
+              {navItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
+                const durations = ['duration-fast', 'duration-normal', 'duration-light-slow'];
                 return (
                   <button
                     key={item.path}
                     onClick={() => navigate(item.path)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer animate-on-load zoom-in ${durations[index]} ${
                       isActive
                         ? 'bg-emerald-100 text-emerald-700'
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -90,15 +91,15 @@ export default function MerchantQRGenerator() {
       <div className="bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-up duration-normal">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">QR Code Generator</h1>
-                <p className="text-gray-600">Generate QR codes for your products and services</p>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">QR Code Generator</h1>
+                <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Generate QR codes for your products and services</p>
               </div>
               <button
                 onClick={() => navigate(`/merchant/${merchantId}`)}
-                className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors animate-on-load zoom-in duration-slow"
               >
                 Back to Dashboard
               </button>
@@ -106,11 +107,11 @@ export default function MerchantQRGenerator() {
           </div>
 
           {/* Mode Toggle */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-right duration-light-slow">
             <div className="flex gap-4">
               <button
                 onClick={() => setBulkMode(false)}
-                className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-colors animate-on-load zoom-in duration-fast ${
                   !bulkMode
                     ? 'bg-primary text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -120,7 +121,7 @@ export default function MerchantQRGenerator() {
               </button>
               <button
                 onClick={() => setBulkMode(true)}
-                className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-colors animate-on-load zoom-in duration-normal ${
                   bulkMode
                     ? 'bg-primary text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -132,13 +133,13 @@ export default function MerchantQRGenerator() {
           </div>
 
           {/* Generator Form */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-left duration-slow">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               {bulkMode ? 'Select Multiple SKUs' : 'Select SKU'}
             </h2>
 
             {skusLoading ? (
-              <p className="text-gray-600">Loading SKUs...</p>
+              <p className="text-gray-600 animate-on-load fade-up duration-normal">Loading SKUs...</p>
             ) : (
               <SKUSelector
                 skus={activeSKUs}
@@ -153,13 +154,13 @@ export default function MerchantQRGenerator() {
             <button
               onClick={bulkMode ? handleGenerateBulk : handleGenerateSingle}
               disabled={loading || (!bulkMode && !selectedSKU) || (bulkMode && selectedSKUs.length === 0)}
-              className="mt-6 w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="mt-6 w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load zoom-in duration-very-slow"
             >
               {loading ? 'Generating...' : `Generate QR Code${bulkMode ? 's' : ''}`}
             </button>
 
             {error && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg animate-on-load fade-up duration-fast">
                 <p className="text-red-800">{error}</p>
               </div>
             )}
@@ -167,7 +168,7 @@ export default function MerchantQRGenerator() {
 
           {/* Generated QR Codes */}
           {generatedQRCodes.length > 0 && (
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white rounded-xl shadow-lg p-6 animate-on-load fade-up duration-slow">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Generated QR Codes</h2>
               <QRCodeDisplay
                 qrCodes={generatedQRCodes}
@@ -177,7 +178,7 @@ export default function MerchantQRGenerator() {
           )}
 
           {/* Usage Instructions */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-6 animate-on-load flip-up duration-very-slow">
             <h3 className="font-semibold text-blue-800 mb-3">How to Use QR Codes</h3>
             <ul className="text-sm text-gray-700 space-y-2">
               <li>• Print and display QR codes at point-of-sale</li>

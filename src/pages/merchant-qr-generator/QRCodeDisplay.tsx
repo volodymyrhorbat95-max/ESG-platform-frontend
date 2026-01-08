@@ -5,10 +5,13 @@ interface QRCodeDisplayProps {
 }
 
 export default function QRCodeDisplay({ qrCodes, onDownload }: QRCodeDisplayProps) {
+  const animations = ['fade-up', 'fade-down', 'fade-left', 'fade-right', 'zoom-in', 'flip-up'];
+  const durations = ['duration-fast', 'duration-normal', 'duration-light-slow', 'duration-slow', 'duration-very-slow'];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {qrCodes.map((qrCode, index) => (
-        <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+        <div key={index} className={`border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow animate-on-load ${animations[index % animations.length]} ${durations[index % durations.length]}`}>
           <img
             src={qrCode.qrCodeDataUrl}
             alt={`QR Code for ${qrCode.sku?.code}`}

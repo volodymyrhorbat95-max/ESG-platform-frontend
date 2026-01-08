@@ -16,14 +16,14 @@ export default function DataExport({ userId }: DataExportProps) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Download Your Data</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 animate-on-load fade-down duration-fast">Download Your Data</h2>
+      <p className="text-gray-600 mb-6 animate-on-load fade-up duration-normal">
         Download all your personal data in JSON format. This includes your profile information,
         account details, and terms acceptance record.
       </p>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg animate-on-load fade-left duration-fast">
           <p className="text-red-800">{error}</p>
         </div>
       )}
@@ -31,12 +31,12 @@ export default function DataExport({ userId }: DataExportProps) {
       <button
         onClick={handleExport}
         disabled={loading}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load zoom-in duration-light-slow"
       >
         {loading ? 'Preparing Download...' : 'Download My Data (JSON)'}
       </button>
 
-      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg animate-on-load fade-right duration-slow">
         <p className="text-sm text-blue-800">
           <strong>GDPR Compliance:</strong> You have the right to access your personal data at any time.
           This export includes all information we store about you.

@@ -27,30 +27,30 @@ export default function MerchantTable({
 }: MerchantTableProps) {
   if (loading && !merchants.length) {
     return (
-      <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-primary mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading merchants...</p>
+      <div className="text-center py-12 animate-on-load fade-up duration-normal">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-primary mx-auto mb-4 animate-on-load zoom-in duration-fast"></div>
+        <p className="text-gray-600 animate-on-load fade-down duration-light-slow">Loading merchants...</p>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-center py-12 text-red-600">{error}</div>;
+    return <div className="text-center py-12 text-red-600 animate-on-load fade-left duration-fast">{error}</div>;
   }
 
   if (merchants.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
+      <div className="text-center py-12 text-gray-500 animate-on-load zoom-in duration-slow">
         No merchants found. Create your first merchant to get started.
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto animate-on-load fade-up duration-normal">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-gray-200">
+          <tr className="border-b border-gray-200 animate-on-load fade-right duration-fast">
             <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Name</th>
             <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Email</th>
             <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Stripe Account</th>
@@ -61,7 +61,7 @@ export default function MerchantTable({
         </thead>
         <tbody>
           {merchants.map((merchant) => (
-            <tr key={merchant.id} className="border-b border-gray-100 hover:bg-gray-50">
+            <tr key={merchant.id} className="border-b border-gray-100 hover:bg-gray-50 animate-on-load fade-left duration-slow">
               <td className="py-3 px-4">
                 <div className="font-medium text-gray-800">{merchant.name}</div>
               </td>

@@ -78,7 +78,7 @@ export default function RegistrationForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Info Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load fade-down duration-normal">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load fade-down duration-fast">
         <p className="text-sm text-blue-800">
           <strong>Note:</strong> If you already have an account with this email, we'll use your existing information and create a new transaction for you.
         </p>
@@ -86,8 +86,8 @@ export default function RegistrationForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* First Name */}
-        <div className="animate-on-load fade-right duration-fast">
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+        <div className="animate-on-load fade-right duration-normal">
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
             First Name *
           </label>
           <input
@@ -96,17 +96,17 @@ export default function RegistrationForm({
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load zoom-in duration-normal ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.firstName ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
           />
-          {errors.firstName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-very-fast">{errors.firstName}</p>}
+          {errors.firstName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-fast">{errors.firstName}</p>}
         </div>
 
         {/* Last Name */}
-        <div className="animate-on-load fade-left duration-fast">
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+        <div className="animate-on-load fade-left duration-normal">
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
             Last Name *
           </label>
           <input
@@ -115,18 +115,18 @@ export default function RegistrationForm({
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load zoom-in duration-normal ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.lastName ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
           />
-          {errors.lastName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-very-fast">{errors.lastName}</p>}
+          {errors.lastName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-fast">{errors.lastName}</p>}
         </div>
       </div>
 
       {/* Email */}
-      <div className="animate-on-load fade-up duration-normal">
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-right duration-fast">
+      <div className="animate-on-load zoom-in duration-light-slow">
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
           Email Address *
         </label>
         <input
@@ -135,17 +135,17 @@ export default function RegistrationForm({
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load flip-up duration-light-slow ${
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
             errors.email ? 'border-red-500' : 'border-gray-300'
           }`}
           disabled={loading}
         />
-        {errors.email && <p className="text-red-500 text-xs mt-1 animate-on-load fade-left duration-very-fast">{errors.email}</p>}
+        {errors.email && <p className="text-red-500 text-xs mt-1 animate-on-load fade-left duration-fast">{errors.email}</p>}
       </div>
 
       {/* Date of Birth */}
-      <div className="animate-on-load fade-down duration-light-slow">
-        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-left duration-fast">
+      <div className="animate-on-load flip-up duration-slow">
+        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
           Date of Birth *
         </label>
         <input
@@ -154,17 +154,17 @@ export default function RegistrationForm({
           name="dateOfBirth"
           value={formData.dateOfBirth}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load zoom-out duration-normal ${
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
             errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
           }`}
           disabled={loading}
         />
-        {errors.dateOfBirth && <p className="text-red-500 text-xs mt-1 animate-on-load fade-right duration-very-fast">{errors.dateOfBirth}</p>}
+        {errors.dateOfBirth && <p className="text-red-500 text-xs mt-1 animate-on-load fade-right duration-fast">{errors.dateOfBirth}</p>}
       </div>
 
       {/* Street */}
-      <div className="animate-on-load fade-right duration-slow">
-        <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-up duration-fast">
+      <div className="animate-on-load fade-down duration-very-slow">
+        <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
           Street Address *
         </label>
         <input
@@ -173,18 +173,18 @@ export default function RegistrationForm({
           name="street"
           value={formData.street}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load flip-down duration-normal ${
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
             errors.street ? 'border-red-500' : 'border-gray-300'
           }`}
           disabled={loading}
         />
-        {errors.street && <p className="text-red-500 text-xs mt-1 animate-on-load fade-down duration-very-fast">{errors.street}</p>}
+        {errors.street && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-fast">{errors.street}</p>}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* City */}
-        <div className="animate-on-load zoom-in duration-normal">
-          <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-right duration-very-fast">
+        <div className="animate-on-load zoom-out duration-fast">
+          <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
             City *
           </label>
           <input
@@ -193,17 +193,17 @@ export default function RegistrationForm({
             name="city"
             value={formData.city}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load fade-up duration-fast ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.city ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
           />
-          {errors.city && <p className="text-red-500 text-xs mt-1 animate-on-load zoom-in duration-very-fast">{errors.city}</p>}
+          {errors.city && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-fast">{errors.city}</p>}
         </div>
 
         {/* State/Province - Optional */}
-        <div className="animate-on-load zoom-out duration-normal">
-          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-left duration-very-fast">
+        <div className="animate-on-load flip-down duration-normal">
+          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
             State/Province
           </label>
           <input
@@ -212,19 +212,19 @@ export default function RegistrationForm({
             name="state"
             value={formData.state}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load fade-down duration-fast ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.state ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
           />
-          {errors.state && <p className="text-red-500 text-xs mt-1 animate-on-load zoom-out duration-very-fast">{errors.state}</p>}
+          {errors.state && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-fast">{errors.state}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Postal Code */}
-        <div className="animate-on-load flip-up duration-light-slow">
-          <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-fast">
+        <div className="animate-on-load fade-up duration-light-slow">
+          <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
             Postal Code *
           </label>
           <input
@@ -233,17 +233,17 @@ export default function RegistrationForm({
             name="postalCode"
             value={formData.postalCode}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load fade-left duration-normal ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.postalCode ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
           />
-          {errors.postalCode && <p className="text-red-500 text-xs mt-1 animate-on-load flip-up duration-very-fast">{errors.postalCode}</p>}
+          {errors.postalCode && <p className="text-red-500 text-xs mt-1 animate-on-load fade-right duration-fast">{errors.postalCode}</p>}
         </div>
 
         {/* Country */}
-        <div className="animate-on-load flip-down duration-light-slow">
-          <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-up duration-fast">
+        <div className="animate-on-load fade-left duration-slow">
+          <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
             Country *
           </label>
           <select
@@ -251,7 +251,7 @@ export default function RegistrationForm({
             name="country"
             value={formData.country}
             onChange={(e) => setFormData((prev) => ({ ...prev, country: e.target.value }))}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load fade-right duration-normal ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.country ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
@@ -286,22 +286,22 @@ export default function RegistrationForm({
             <option value="Australia">Australia</option>
             <option value="Other">Other</option>
           </select>
-          {errors.country && <p className="text-red-500 text-xs mt-1 animate-on-load flip-down duration-very-fast">{errors.country}</p>}
+          {errors.country && <p className="text-red-500 text-xs mt-1 animate-on-load fade-down duration-fast">{errors.country}</p>}
         </div>
       </div>
 
       {/* Terms and Conditions - Mandatory Checkbox */}
-      <div className="flex items-start animate-on-load fade-up duration-slow bg-gray-50 p-4 rounded-lg border border-gray-200">
+      <div className="flex items-start animate-on-load zoom-in duration-very-slow bg-gray-50 p-4 rounded-lg border border-gray-200">
         <input
           type="checkbox"
           id="termsAccepted"
           name="termsAccepted"
           checked={formData.termsAccepted}
           onChange={handleChange}
-          className="mt-1 mr-3 w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 animate-on-load zoom-in duration-fast"
+          className="mt-1 mr-3 w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
           disabled={loading}
         />
-        <label htmlFor="termsAccepted" className="text-sm text-gray-700 leading-relaxed animate-on-load fade-right duration-normal">
+        <label htmlFor="termsAccepted" className="text-sm text-gray-700 leading-relaxed">
           I accept the{' '}
           <button
             type="button"
@@ -322,14 +322,14 @@ export default function RegistrationForm({
         </label>
       </div>
       {errors.termsAccepted && (
-        <p className="text-red-500 text-xs mt-2 animate-on-load fade-left duration-very-fast">{errors.termsAccepted}</p>
+        <p className="text-red-500 text-xs mt-2 animate-on-load fade-right duration-fast">{errors.termsAccepted}</p>
       )}
 
       {/* Submit Button */}
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none animate-on-load zoom-in duration-slow"
+        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none animate-on-load flip-up duration-very-slow"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">

@@ -97,17 +97,17 @@ function PaymentForm({ amount, userId, skuId, transactionId, merchantId, partner
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 animate-on-load fade-up duration-normal">
-      <div className="bg-blue-50 p-4 rounded-lg animate-on-load zoom-in duration-fast">
-        <p className="text-sm text-gray-700 mb-1 animate-on-load fade-right duration-very-fast">Amount to pay:</p>
-        <p className="text-3xl font-bold text-gray-800 animate-on-load flip-up duration-light-slow">€{amount.toFixed(2)}</p>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-blue-50 p-4 rounded-lg animate-on-load fade-down duration-fast">
+        <p className="text-sm text-gray-700 mb-1">Amount to pay:</p>
+        <p className="text-3xl font-bold text-gray-800 animate-on-load zoom-in duration-normal">€{amount.toFixed(2)}</p>
       </div>
 
-      <div className="animate-on-load fade-left duration-normal">
-        <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-load fade-down duration-fast">
+      <div className="animate-on-load fade-up duration-light-slow">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Card Details
         </label>
-        <div className="border border-gray-300 rounded-lg p-4 bg-white animate-on-load zoom-out duration-light-slow">
+        <div className="border border-gray-300 rounded-lg p-4 bg-white">
           <CardElement
             options={{
               style: {
@@ -128,7 +128,7 @@ function PaymentForm({ amount, userId, skuId, transactionId, merchantId, partner
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg animate-on-load fade-right duration-fast">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg animate-on-load fade-left duration-fast">
           {error}
         </div>
       )}
@@ -136,13 +136,13 @@ function PaymentForm({ amount, userId, skuId, transactionId, merchantId, partner
       <button
         type="submit"
         disabled={!stripe || processing || paymentLoading || !paymentIntent}
-        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load flip-down duration-slow"
+        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load flip-up duration-slow"
       >
         {processing || paymentLoading ? 'Processing...' : `Pay €${amount.toFixed(2)}`}
       </button>
 
-      <div className="text-center animate-on-load fade-up duration-very-slow">
-        <p className="text-xs text-gray-500 animate-on-load zoom-in duration-light-slow">
+      <div className="text-center animate-on-load fade-right duration-very-slow">
+        <p className="text-xs text-gray-500">
           Secured by Stripe. Your payment information is encrypted and secure.
         </p>
       </div>

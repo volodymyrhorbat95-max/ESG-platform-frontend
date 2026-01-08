@@ -80,15 +80,15 @@ export default function AdminPartners() {
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Partner Management</h1>
-              <p className="text-gray-600">Manage partners for transaction attribution and monthly invoicing</p>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">Partner Management</h1>
+              <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Manage partners for transaction attribution and monthly invoicing</p>
             </div>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors cursor-pointer"
+              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors cursor-pointer animate-on-load zoom-in duration-slow"
             >
               {showForm ? 'Cancel' : '+ Add New Partner'}
             </button>
@@ -96,7 +96,7 @@ export default function AdminPartners() {
         </div>
 
         {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 animate-on-load zoom-in duration-normal">
           <h3 className="font-semibold text-blue-800 mb-2">Partner Attribution System</h3>
           <p className="text-sm text-gray-700">
             When you create a partner, they receive a unique Partner ID. Use this ID in checkout URLs
@@ -106,18 +106,20 @@ export default function AdminPartners() {
         </div>
 
         {showForm && (
-          <PartnerForm
-            formData={formData}
-            editingPartner={editingPartner}
-            loading={loading}
-            onFormDataChange={setFormData}
-            onSubmit={handleSubmit}
-            onCancel={resetForm}
-          />
+          <div className="animate-on-load fade-up duration-light-slow">
+            <PartnerForm
+              formData={formData}
+              editingPartner={editingPartner}
+              loading={loading}
+              onFormDataChange={setFormData}
+              onSubmit={handleSubmit}
+              onCancel={resetForm}
+            />
+          </div>
         )}
 
         {/* Partner List */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 animate-on-load fade-up duration-very-slow">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">All Partners</h2>
           <PartnerTable
             partners={partners}

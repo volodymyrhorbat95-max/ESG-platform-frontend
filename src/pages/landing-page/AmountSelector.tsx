@@ -31,34 +31,37 @@ export default function AmountSelector({ impactMultiplier, currentCSRPrice, onSu
 
   return (
     <div>
-      <h3 className="text-xl font-bold text-gray-800 mb-4">
+      <h3 className="text-xl font-bold text-gray-800 mb-4 animate-on-load fade-down duration-fast">
         Choose Your Environmental Allocation
       </h3>
-      <p className="text-gray-600 mb-4">
+      <p className="text-gray-600 mb-4 animate-on-load fade-up duration-normal">
         Select your contribution amount. Every €1 generates {impactPerEuro}g of certified plastic removal.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Preset Amount Buttons */}
         <div className="grid grid-cols-4 gap-2">
-          {presetAmounts.map((preset) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => setAmountInput(preset.toString())}
-              className={`py-3 px-4 rounded-lg font-semibold transition-colors ${
-                amountInput === preset.toString()
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              €{preset}
-            </button>
-          ))}
+          {presetAmounts.map((preset, index) => {
+            const durations = ['duration-fast', 'duration-normal', 'duration-light-slow', 'duration-slow'];
+            return (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setAmountInput(preset.toString())}
+                className={`py-3 px-4 rounded-lg font-semibold transition-colors animate-on-load zoom-in ${durations[index]} ${
+                  amountInput === preset.toString()
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                €{preset}
+              </button>
+            );
+          })}
         </div>
 
         {/* Custom Amount Input */}
-        <div>
+        <div className="animate-on-load fade-right duration-slow">
           <label htmlFor="customAmount" className="block text-sm font-medium text-gray-700 mb-1">
             Or enter custom amount (min. €1) *
           </label>
@@ -76,7 +79,7 @@ export default function AmountSelector({ impactMultiplier, currentCSRPrice, onSu
 
         {/* Impact Preview */}
         {amountInput && parseFloat(amountInput) >= 1 && (
-          <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+          <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200 animate-on-load fade-up duration-light-slow">
             <p className="text-emerald-800 font-medium text-lg">
               Your impact: {calculateImpactGrams(parseFloat(amountInput), currentCSRPrice, impactMultiplier)}g of plastic removed
             </p>
@@ -95,7 +98,7 @@ export default function AmountSelector({ impactMultiplier, currentCSRPrice, onSu
         <button
           type="submit"
           disabled={!amountInput || parseFloat(amountInput) < 1}
-          className="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          className="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors animate-on-load zoom-in duration-very-slow"
         >
           Continue to Registration
         </button>

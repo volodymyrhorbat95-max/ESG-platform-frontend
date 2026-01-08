@@ -71,7 +71,7 @@ export default function StandardRegistrationForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Info Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load fade-down duration-normal">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load fade-down duration-fast">
         <p className="text-sm text-blue-800">
           <strong>Note:</strong> If you already have an account with this email, we'll use your existing information and create a new transaction for you.
         </p>
@@ -79,8 +79,8 @@ export default function StandardRegistrationForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* First Name */}
-        <div className="animate-on-load fade-right duration-fast">
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+        <div className="animate-on-load fade-right duration-normal">
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
             First Name *
           </label>
           <input
@@ -89,17 +89,17 @@ export default function StandardRegistrationForm({
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load zoom-in duration-normal ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.firstName ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
           />
-          {errors.firstName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-very-fast">{errors.firstName}</p>}
+          {errors.firstName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-fast">{errors.firstName}</p>}
         </div>
 
         {/* Last Name */}
-        <div className="animate-on-load fade-left duration-fast">
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+        <div className="animate-on-load fade-left duration-normal">
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
             Last Name *
           </label>
           <input
@@ -108,18 +108,18 @@ export default function StandardRegistrationForm({
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load zoom-in duration-normal ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.lastName ? 'border-red-500' : 'border-gray-300'
             }`}
             disabled={loading}
           />
-          {errors.lastName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-very-fast">{errors.lastName}</p>}
+          {errors.lastName && <p className="text-red-500 text-xs mt-1 animate-on-load fade-up duration-fast">{errors.lastName}</p>}
         </div>
       </div>
 
       {/* Email */}
-      <div className="animate-on-load fade-up duration-normal">
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-right duration-fast">
+      <div className="animate-on-load zoom-in duration-light-slow">
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
           Email Address *
         </label>
         <input
@@ -128,26 +128,26 @@ export default function StandardRegistrationForm({
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load flip-up duration-light-slow ${
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
             errors.email ? 'border-red-500' : 'border-gray-300'
           }`}
           disabled={loading}
         />
-        {errors.email && <p className="text-red-500 text-xs mt-1 animate-on-load fade-left duration-very-fast">{errors.email}</p>}
+        {errors.email && <p className="text-red-500 text-xs mt-1 animate-on-load fade-left duration-fast">{errors.email}</p>}
       </div>
 
       {/* Terms and Conditions - Mandatory Checkbox */}
-      <div className="flex items-start animate-on-load fade-up duration-slow bg-gray-50 p-4 rounded-lg border border-gray-200">
+      <div className="flex items-start animate-on-load flip-up duration-slow bg-gray-50 p-4 rounded-lg border border-gray-200">
         <input
           type="checkbox"
           id="termsAccepted"
           name="termsAccepted"
           checked={formData.termsAccepted}
           onChange={handleChange}
-          className="mt-1 mr-3 w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 animate-on-load zoom-in duration-fast"
+          className="mt-1 mr-3 w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
           disabled={loading}
         />
-        <label htmlFor="termsAccepted" className="text-sm text-gray-700 leading-relaxed animate-on-load fade-right duration-normal">
+        <label htmlFor="termsAccepted" className="text-sm text-gray-700 leading-relaxed">
           I accept the{' '}
           <button
             type="button"
@@ -168,14 +168,14 @@ export default function StandardRegistrationForm({
         </label>
       </div>
       {errors.termsAccepted && (
-        <p className="text-red-500 text-xs mt-2 animate-on-load fade-left duration-very-fast">{errors.termsAccepted}</p>
+        <p className="text-red-500 text-xs mt-2 animate-on-load fade-left duration-fast">{errors.termsAccepted}</p>
       )}
 
       {/* Submit Button */}
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none animate-on-load zoom-in duration-slow"
+        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none animate-on-load zoom-out duration-very-slow"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">

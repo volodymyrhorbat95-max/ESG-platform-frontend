@@ -16,18 +16,20 @@ export default function SkuInfoCard({
   finalAmount,
 }: SkuInfoCardProps) {
   return (
-    <div className="bg-gray-50 rounded-lg p-6 mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">{skuName}</h2>
-      <p className="text-gray-500 text-sm mb-4">SKU: {skuCode}</p>
+    <div className="bg-gray-50 rounded-lg p-6 mb-6 animate-on-load fade-up duration-fast">
+      <h2 className="text-2xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-normal">{skuName}</h2>
+      <p className="text-gray-500 text-sm mb-4 animate-on-load fade-left duration-light-slow">SKU: {skuCode}</p>
 
       {/* Show Impact Display when we have calculated impact */}
       {calculatedImpact > 0 && (
-        <ImpactDisplay impact={calculatedImpact} />
+        <div className="animate-on-load zoom-in duration-slow">
+          <ImpactDisplay impact={calculatedImpact} />
+        </div>
       )}
 
       {/* Show Amount if applicable */}
       {finalAmount > 0 && (
-        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg animate-on-load fade-up duration-very-slow">
           <p className="text-lg font-semibold text-gray-800">
             Amount: €{finalAmount.toFixed(2)}
           </p>

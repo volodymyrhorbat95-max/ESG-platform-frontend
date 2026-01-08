@@ -21,13 +21,13 @@ export default function MerchantForm({
   onCancel,
 }: MerchantFormProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-up duration-normal">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 animate-on-load fade-down duration-fast">
         {editingMerchant ? 'Edit Merchant' : 'Create New Merchant'}
       </h2>
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+          <div className="animate-on-load fade-right duration-light-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Merchant Name *
             </label>
@@ -41,7 +41,7 @@ export default function MerchantForm({
             />
           </div>
 
-          <div>
+          <div className="animate-on-load fade-left duration-light-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email *
             </label>
@@ -55,7 +55,7 @@ export default function MerchantForm({
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 animate-on-load zoom-in duration-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Stripe Connect Account ID
             </label>
@@ -73,7 +73,7 @@ export default function MerchantForm({
         </div>
 
         {/* Stripe Connect Info */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 animate-on-load flip-up duration-very-slow">
           <h4 className="font-semibold text-purple-800 mb-2">Stripe Connect Setup</h4>
           <p className="text-sm text-gray-700 mb-2">
             To enable split payments, the merchant needs a Stripe Connect account:
@@ -90,7 +90,7 @@ export default function MerchantForm({
 
         {/* URL Parameters Info */}
         {editingMerchant && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load zoom-out duration-slow">
             <h4 className="font-semibold text-blue-800 mb-2">Integration URL Parameter</h4>
             <p className="text-sm text-gray-600 mb-2">
               Use this parameter in checkout URLs or QR codes:
@@ -104,7 +104,7 @@ export default function MerchantForm({
           </div>
         )}
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 animate-on-load flip-down duration-very-slow">
           <button
             type="submit"
             disabled={loading}

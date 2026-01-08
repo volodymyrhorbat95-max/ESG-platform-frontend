@@ -84,15 +84,15 @@ export default function AdminMerchants() {
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Merchant Management</h1>
-              <p className="text-gray-600">Manage merchants and Stripe Connect accounts for split payments</p>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">Merchant Management</h1>
+              <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Manage merchants and Stripe Connect accounts for split payments</p>
             </div>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors cursor-pointer"
+              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors cursor-pointer animate-on-load zoom-in duration-slow"
             >
               {showForm ? 'Cancel' : '+ Add New Merchant'}
             </button>
@@ -101,22 +101,22 @@ export default function AdminMerchants() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white animate-on-load fade-up duration-fast">
             <p className="text-sm opacity-90 mb-2">Total Merchants</p>
             <p className="text-4xl font-bold">{totalMerchants}</p>
           </div>
-          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white animate-on-load fade-up duration-normal">
             <p className="text-sm opacity-90 mb-2">Active Merchants</p>
             <p className="text-4xl font-bold">{activeMerchants}</p>
           </div>
-          <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg p-6 text-white animate-on-load fade-up duration-light-slow">
             <p className="text-sm opacity-90 mb-2">Stripe Connected</p>
             <p className="text-4xl font-bold">{stripeConnected}</p>
           </div>
         </div>
 
         {/* Info Box */}
-        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6">
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6 animate-on-load zoom-in duration-slow">
           <h3 className="font-semibold text-purple-800 mb-2">Stripe Split Payments</h3>
           <p className="text-sm text-gray-700">
             When a merchant has a connected Stripe account, payments are automatically split:
@@ -127,18 +127,20 @@ export default function AdminMerchants() {
         </div>
 
         {showForm && (
-          <MerchantForm
-            formData={formData}
-            editingMerchant={editingMerchant}
-            loading={loading}
-            onFormDataChange={setFormData}
-            onSubmit={handleSubmit}
-            onCancel={resetForm}
-          />
+          <div className="animate-on-load fade-up duration-normal">
+            <MerchantForm
+              formData={formData}
+              editingMerchant={editingMerchant}
+              loading={loading}
+              onFormDataChange={setFormData}
+              onSubmit={handleSubmit}
+              onCancel={resetForm}
+            />
+          </div>
         )}
 
         {/* Merchant List */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 animate-on-load fade-up duration-very-slow">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">All Merchants</h2>
           <MerchantTable
             merchants={merchants}

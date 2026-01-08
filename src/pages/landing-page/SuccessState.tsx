@@ -51,14 +51,14 @@ export default function SuccessState({
       <div className="max-w-4xl mx-auto">
         <HeaderSection partnerName={partnerId} />
 
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center my-6">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white p-8 rounded-xl shadow-lg text-center my-6 animate-on-load fade-up duration-normal">
+          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-on-load zoom-in duration-fast">
+            <svg className="w-10 h-10 text-emerald-600 animate-on-load flip-up duration-light-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Success!</h2>
-          <p className="text-gray-600 mb-6">Your environmental impact has been registered.</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2 animate-on-load fade-down duration-normal">Success!</h2>
+          <p className="text-gray-600 mb-6 animate-on-load fade-left duration-slow">Your environmental impact has been registered.</p>
 
           <DynamicMessage
             caseType={caseType}
@@ -76,10 +76,10 @@ export default function SuccessState({
           </div>
 
           {userId && (
-            <div className="mt-8 space-y-4">
+            <div className="mt-8 space-y-4 animate-on-load fade-up duration-slow">
               {/* Certificate Download - Show for CLAIM type */}
               {transactionId && caseType === 'A' && (
-                <div className="mb-4">
+                <div className="mb-4 animate-on-load zoom-in duration-normal">
                   <button
                     onClick={() => {
                       setDownloading(true);
@@ -87,7 +87,7 @@ export default function SuccessState({
                         .finally(() => setDownloading(false));
                     }}
                     disabled={downloading}
-                    className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load fade-right duration-light-slow"
                   >
                     {downloading ? (
                       <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
@@ -101,7 +101,7 @@ export default function SuccessState({
                     )}
                     {downloading ? 'Downloading...' : 'Download Your Certificate'}
                   </button>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 mt-2 animate-on-load fade-left duration-very-slow">
                     Your environmental impact certificate is ready to download
                   </p>
                 </div>
@@ -109,11 +109,11 @@ export default function SuccessState({
 
               <button
                 onClick={() => navigate(`/dashboard/${userId}`)}
-                className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg"
+                className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg animate-on-load flip-down duration-slow"
               >
                 View Your Portfolio
               </button>
-              <p className="text-sm text-gray-500 mt-4">
+              <p className="text-sm text-gray-500 mt-4 animate-on-load fade-down duration-very-slow">
                 Or wait 3 seconds to be redirected automatically...
               </p>
             </div>

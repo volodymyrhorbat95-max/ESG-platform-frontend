@@ -31,8 +31,8 @@ export default function DeleteAccount({ userId }: DeleteAccountProps) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-red-600 mb-4">Delete Account</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="text-2xl font-bold text-red-600 mb-4 animate-on-load fade-down duration-fast">Delete Account</h2>
+      <p className="text-gray-600 mb-6 animate-on-load fade-up duration-normal">
         Permanently delete your account and anonymize all your data. This action cannot be undone.
         Your transaction history will be preserved but your personal information will be removed.
       </p>
@@ -40,19 +40,19 @@ export default function DeleteAccount({ userId }: DeleteAccountProps) {
       {!showConfirmation ? (
         <button
           onClick={() => setShowConfirmation(true)}
-          className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+          className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors animate-on-load zoom-in duration-light-slow"
         >
           Delete My Account
         </button>
       ) : (
-        <div className="border border-red-300 rounded-lg p-6 bg-red-50">
+        <div className="border border-red-300 rounded-lg p-6 bg-red-50 animate-on-load fade-right duration-slow">
           <h3 className="text-lg font-bold text-red-800 mb-4">Confirm Account Deletion</h3>
           <p className="text-red-700 mb-4">
             This will permanently delete your account and anonymize your data. Your transaction
             history will remain for compliance purposes, but your personal information will be removed.
           </p>
 
-          <div className="mb-4">
+          <div className="mb-4 animate-on-load flip-up duration-normal">
             <label className="block text-sm font-semibold text-red-800 mb-2">
               Type "DELETE" to confirm:
             </label>
@@ -66,12 +66,12 @@ export default function DeleteAccount({ userId }: DeleteAccountProps) {
           </div>
 
           {error && (
-            <div className="mb-4 p-4 bg-red-100 border border-red-300 rounded-lg">
+            <div className="mb-4 p-4 bg-red-100 border border-red-300 rounded-lg animate-on-load fade-left duration-fast">
               <p className="text-red-900">{error}</p>
             </div>
           )}
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 animate-on-load fade-up duration-very-slow">
             <button
               onClick={handleDelete}
               disabled={loading || confirmationText !== 'DELETE'}
@@ -93,7 +93,7 @@ export default function DeleteAccount({ userId }: DeleteAccountProps) {
         </div>
       )}
 
-      <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg animate-on-load zoom-out duration-slow">
         <p className="text-sm text-yellow-800">
           <strong>Warning:</strong> Deleting your account will anonymize all your personal data.
           This action is irreversible and you will not be able to recover your account.

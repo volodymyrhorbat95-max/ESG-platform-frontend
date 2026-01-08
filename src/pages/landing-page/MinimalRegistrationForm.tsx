@@ -46,15 +46,15 @@ export default function MinimalRegistrationForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Info Banner */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 animate-on-load fade-down duration-normal">
-        <p className="text-sm text-green-800 animate-on-load fade-right duration-fast">
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4 animate-on-load fade-down duration-fast">
+        <p className="text-sm text-green-800">
           <strong>Quick Registration:</strong> Just provide your email to receive your environmental impact certificate.
         </p>
       </div>
 
       {/* Email Input */}
-      <div className="animate-on-load fade-up duration-fast">
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-right duration-very-fast">
+      <div className="animate-on-load fade-right duration-normal">
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
           Email Address *
         </label>
         <input
@@ -63,14 +63,14 @@ export default function MinimalRegistrationForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your.email@example.com"
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent animate-on-load zoom-in duration-normal ${
+          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
             error ? 'border-red-500' : 'border-gray-300'
           }`}
           disabled={loading}
           required
         />
         {error && (
-          <p className="text-sm text-red-600 mt-2 animate-on-load fade-left duration-very-fast">
+          <p className="text-sm text-red-600 mt-2 animate-on-load fade-left duration-fast">
             {error}
           </p>
         )}
@@ -80,7 +80,7 @@ export default function MinimalRegistrationForm({
       <button
         type="submit"
         disabled={loading || !email.trim()}
-        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none animate-on-load zoom-in duration-slow"
+        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none animate-on-load zoom-in duration-light-slow"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -94,8 +94,8 @@ export default function MinimalRegistrationForm({
       </button>
 
       {/* Privacy Note */}
-      <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg animate-on-load fade-up duration-light-slow">
-        <p className="text-xs text-gray-600 animate-on-load fade-left duration-normal">
+      <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg animate-on-load fade-up duration-slow">
+        <p className="text-xs text-gray-600">
           By submitting your email, you agree to our{' '}
           <button
             type="button"

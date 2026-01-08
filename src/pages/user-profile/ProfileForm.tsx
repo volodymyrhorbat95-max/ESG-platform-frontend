@@ -70,42 +70,42 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
+          <div className="animate-on-load fade-right duration-fast">
             <label className="block text-sm font-semibold text-gray-700 mb-1">First Name</label>
             <p className="text-gray-900">{user.firstName}</p>
           </div>
-          <div>
+          <div className="animate-on-load fade-left duration-fast">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Last Name</label>
             <p className="text-gray-900">{user.lastName}</p>
           </div>
-          <div>
+          <div className="animate-on-load zoom-in duration-normal">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
             <p className="text-gray-900">{user.email}</p>
             <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
           </div>
-          <div>
+          <div className="animate-on-load flip-up duration-light-slow">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Date of Birth</label>
             <p className="text-gray-900">{user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not provided'}</p>
             <p className="text-xs text-gray-500 mt-1">Date of birth cannot be changed</p>
           </div>
-          <div>
+          <div className="animate-on-load fade-up duration-slow">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Street</label>
             <p className="text-gray-900">{user.street}</p>
           </div>
-          <div>
+          <div className="animate-on-load fade-down duration-slow">
             <label className="block text-sm font-semibold text-gray-700 mb-1">City</label>
             <p className="text-gray-900">{user.city}</p>
           </div>
-          <div>
+          <div className="animate-on-load zoom-out duration-very-slow">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Postal Code</label>
             <p className="text-gray-900">{user.postalCode}</p>
           </div>
-          <div>
+          <div className="animate-on-load flip-down duration-very-slow">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Country</label>
             <p className="text-gray-900">{user.country}</p>
           </div>
         </div>
-        <div className="pt-4 border-t border-gray-200">
+        <div className="pt-4 border-t border-gray-200 animate-on-load fade-right duration-slow">
           <p className="text-sm text-gray-600">
             Account created: {new Date(user.createdAt).toLocaleDateString()}
           </p>
@@ -121,7 +121,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
+        <div className="animate-on-load fade-right duration-fast">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             First Name <span className="text-red-500">*</span>
           </label>
@@ -134,7 +134,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
-        <div>
+        <div className="animate-on-load fade-left duration-fast">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Last Name <span className="text-red-500">*</span>
           </label>
@@ -147,7 +147,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
-        <div>
+        <div className="animate-on-load zoom-in duration-normal">
           <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
           <input
             type="email"
@@ -157,7 +157,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
           />
           <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
         </div>
-        <div>
+        <div className="animate-on-load flip-up duration-light-slow">
           <label className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
           <input
             type="text"
@@ -167,7 +167,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
           />
           <p className="text-xs text-gray-500 mt-1">Date of birth cannot be changed</p>
         </div>
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 animate-on-load fade-up duration-slow">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Street <span className="text-red-500">*</span>
           </label>
@@ -180,7 +180,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
-        <div>
+        <div className="animate-on-load zoom-out duration-slow">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             City <span className="text-red-500">*</span>
           </label>
@@ -193,7 +193,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
-        <div>
+        <div className="animate-on-load flip-down duration-slow">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Postal Code <span className="text-red-500">*</span>
           </label>
@@ -206,7 +206,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 animate-on-load fade-down duration-very-slow">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Country <span className="text-red-500">*</span>
           </label>
@@ -222,12 +222,12 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg animate-on-load fade-left duration-fast">
           <p className="text-red-800">{error}</p>
         </div>
       )}
 
-      <div className="flex gap-4 pt-4">
+      <div className="flex gap-4 pt-4 animate-on-load fade-right duration-very-slow">
         <button
           type="submit"
           disabled={loading}
