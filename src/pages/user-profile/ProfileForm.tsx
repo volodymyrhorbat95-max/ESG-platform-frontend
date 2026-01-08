@@ -1,21 +1,7 @@
 // Profile Form Component
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { updateUser } from '../../store/userSlice';
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  dateOfBirth: string;
-  street: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { updateUser, type User } from '../../store/userSlice';
 
 interface ProfileFormProps {
   user: User;
@@ -29,12 +15,12 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
   const { loading, error } = useAppSelector((state) => state.users);
 
   const [formData, setFormData] = useState({
-    firstName: user.firstName,
-    lastName: user.lastName,
-    street: user.street,
-    city: user.city,
-    postalCode: user.postalCode,
-    country: user.country,
+    firstName: user.firstName || '',
+    lastName: user.lastName || '',
+    street: user.street || '',
+    city: user.city || '',
+    postalCode: user.postalCode || '',
+    country: user.country || '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,12 +55,12 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
   const handleCancel = () => {
     // Reset form to original values
     setFormData({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      street: user.street,
-      city: user.city,
-      postalCode: user.postalCode,
-      country: user.country,
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      street: user.street || '',
+      city: user.city || '',
+      postalCode: user.postalCode || '',
+      country: user.country || '',
     });
     onCancelEdit();
   };
@@ -99,7 +85,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Date of Birth</label>
-            <p className="text-gray-900">{new Date(user.dateOfBirth).toLocaleDateString()}</p>
+            <p className="text-gray-900">{user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not provided'}</p>
             <p className="text-xs text-gray-500 mt-1">Date of birth cannot be changed</p>
           </div>
           <div>
@@ -175,7 +161,7 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
           <label className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
           <input
             type="text"
-            value={new Date(user.dateOfBirth).toLocaleDateString()}
+            value={user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not provided'}
             disabled
             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
           />

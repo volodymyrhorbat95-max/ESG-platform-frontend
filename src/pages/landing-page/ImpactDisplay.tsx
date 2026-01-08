@@ -18,7 +18,7 @@ export default function ImpactDisplay({ impact }: ImpactDisplayProps) {
         <p className="text-sm text-gray-500 mt-2 animate-on-load fade-up duration-slow">({impact.toFixed(0)} grams)</p>
         <div className="mt-4 pt-4 border-t border-green-200 animate-on-load fade-right duration-very-slow">
           <p className="text-xs text-gray-600 animate-on-load zoom-out duration-light-slow">
-            This impact will be offset through our partnership with Amplivo
+            This impact will be offset through our partnership with Corsair Connect
           </p>
         </div>
       </div>

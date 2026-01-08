@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
-  exportAmplivoData,
+  exportCorsairConnectData,
   exportPartnerReport,
   exportStripeReconciliation,
   exportImpactReport,
@@ -17,7 +17,7 @@ export default function AdminExport() {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.export);
 
-  const [exportType, setExportType] = useState<ExportType>('amplivo');
+  const [exportType, setExportType] = useState<ExportType>('corsairConnect');
   const [format, setFormat] = useState<'xlsx' | 'csv'>('xlsx');
   const [filters, setFilters] = useState({
     startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
@@ -25,12 +25,12 @@ export default function AdminExport() {
     merchantId: '',
     partnerId: '',
     userId: '',
-    amplivoOnly: false,
+    corsairConnectOnly: false,
   });
 
   const handleExport = async () => {
-    if (exportType === 'amplivo') {
-      await dispatch(exportAmplivoData({ filters, format }));
+    if (exportType === 'corsairConnect') {
+      await dispatch(exportCorsairConnectData({ filters, format }));
     } else if (exportType === 'partner') {
       if (!filters.partnerId) {
         alert('Please enter a Partner ID');
@@ -50,7 +50,7 @@ export default function AdminExport() {
 
   const getExportButtonLabel = () => {
     const labels: Record<ExportType, string> = {
-      amplivo: 'Amplivo Export',
+      corsairConnect: 'Corsair Connect Export',
       partner: 'Partner Report',
       reconciliation: 'Stripe Reconciliation',
       impact: 'Impact Report',
@@ -66,7 +66,7 @@ export default function AdminExport() {
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
           <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">Data Export</h1>
-          <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Generate Excel/CSV reports for Amplivo submission and partner invoicing</p>
+          <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Generate Excel/CSV reports for Corsair Connect submission and partner invoicing</p>
         </div>
 
         <div className="animate-on-load zoom-in duration-light-slow">
@@ -99,7 +99,7 @@ export default function AdminExport() {
           <div className="mt-4 p-4 bg-blue-50 rounded-lg animate-on-load flip-up duration-light-slow">
             <p className="text-sm text-gray-700 animate-on-load fade-right duration-normal">
               <strong className="animate-on-load zoom-out duration-fast">Note:</strong> The file will download automatically when you click the button.
-              {exportType === 'amplivo' && ' Amplivo exports include all transaction details, user information, and impact calculations.'}
+              {exportType === 'corsairConnect' && ' Corsair Connect exports include all transaction details, user information, and impact calculations.'}
               {exportType === 'partner' && ' Partner reports include transaction summaries and totals for invoicing.'}
               {exportType === 'reconciliation' && ' Stripe reconciliation reports show payment details with platform fees for financial reconciliation.'}
               {exportType === 'impact' && ' Impact reports aggregate environmental metrics across all merchants and partners.'}

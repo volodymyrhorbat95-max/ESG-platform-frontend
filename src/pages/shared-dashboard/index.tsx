@@ -1,11 +1,12 @@
 // Shared Dashboard - Public view of user impact dashboard
 import { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchSharedDashboard } from '../../store/shareableLinkSlice';
 
 export default function SharedDashboard() {
   const { token } = useParams<{ token: string }>();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const { sharedDashboard: sharedData, loading, error } = useAppSelector((state) => state.shareableLinks);
@@ -39,12 +40,12 @@ export default function SharedDashboard() {
             <p className="text-gray-600 mb-6">
               {error || 'This shared dashboard link is invalid or has expired.'}
             </p>
-            <Link
-              to="/"
+            <button
+              onClick={() => navigate('/')}
               className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-green-600 transition-colors"
             >
               Go to Homepage
-            </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -143,12 +144,12 @@ export default function SharedDashboard() {
           <p className="mb-4 opacity-90">
             Join thousands of people making a real difference for our planet.
           </p>
-          <a
-            href="/"
+          <button
+            onClick={() => navigate('/')}
             className="inline-block px-8 py-3 bg-white text-green-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
           >
             Get Started Today
-          </a>
+          </button>
         </div>
 
         {/* Footer */}

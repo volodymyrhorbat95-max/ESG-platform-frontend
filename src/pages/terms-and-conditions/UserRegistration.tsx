@@ -9,7 +9,7 @@ export default function UserRegistration() {
       <ul className="list-disc pl-6 mt-2 space-y-1">
         <li>Creating your environmental impact wallet</li>
         <li>Processing transactions and maintaining audit trails</li>
-        <li>Registering qualifying transactions with Amplivo/Corsair Connect for certified asset creation</li>
+        <li>Registering qualifying transactions with Corsair Connect for certified asset creation</li>
         <li>Compliance with applicable regulations</li>
       </ul>
     </section>

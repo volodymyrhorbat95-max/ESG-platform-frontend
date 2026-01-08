@@ -4,7 +4,7 @@ export default function ImpactCertification() {
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-3">5. Environmental Impact Certification</h2>
       <p>
         Transactions meeting or exceeding the €10 threshold qualify for registration with
-        Amplivo/Corsair Connect as Certified Environmental Assets. These assets are:
+        Corsair Connect as Certified Environmental Assets. These assets are:
       </p>
       <ul className="list-disc pl-6 mt-2 space-y-1">
         <li>Verified under the CPRS protocol by Control Union</li>

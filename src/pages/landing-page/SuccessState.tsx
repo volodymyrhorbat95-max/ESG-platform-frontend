@@ -1,6 +1,9 @@
 // Success State Component - Shown after transaction completed
-import { useEffect } from 'react';
+// CRITICAL: NO direct API calls, NO <a>/<Link> tags - use Redux + useNavigate only
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../store/hooks';
+import { downloadCertificate } from '../../store/certificateSlice';
 import type { CaseType } from './types';
 import { CORSAIR_THRESHOLD } from './types';
 import HeaderSection from './HeaderSection';
@@ -30,7 +33,8 @@ export default function SuccessState({
   transactionId,
 }: SuccessStateProps) {
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  const dispatch = useAppDispatch();
+  const [downloading, setDownloading] = useState(false);
 
   // Auto-redirect to dashboard after 3 seconds
   useEffect(() => {
@@ -76,16 +80,27 @@ export default function SuccessState({
               {/* Certificate Download - Show for CLAIM type */}
               {transactionId && caseType === 'A' && (
                 <div className="mb-4">
-                  <a
-                    href={`${API_URL}/certificates/${transactionId}`}
-                    download
-                    className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md hover:shadow-lg"
+                  <button
+                    onClick={() => {
+                      setDownloading(true);
+                      dispatch(downloadCertificate(transactionId))
+                        .finally(() => setDownloading(false));
+                    }}
+                    disabled={downloading}
+                    className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Download Your Certificate
-                  </a>
+                    {downloading ? (
+                      <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    )}
+                    {downloading ? 'Downloading...' : 'Download Your Certificate'}
+                  </button>
                   <p className="text-xs text-gray-500 mt-2">
                     Your environmental impact certificate is ready to download
                   </p>

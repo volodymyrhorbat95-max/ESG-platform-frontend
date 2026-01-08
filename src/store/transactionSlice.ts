@@ -1,128 +1,239 @@
 // Transaction Slice - Redux state management for Transactions
-import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+// CRITICAL: Types must match backend/database schema
+// Flow: Component → dispatch → thunk → API → backend → database → response → store → UI
 
-// Type definitions (matching backend/database schema)
-// CRITICAL: amplivoFlag renamed to corsairConnectFlag
-interface Transaction {
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import type { RegistrationInput } from './userSlice';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Payment status enum matching backend
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'n/a';
+
+// Payment mode enum matching backend
+export type PaymentMode = 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION';
+
+// SKU type (minimal, from transaction includes)
+export interface SKU {
+  id: string;
+  code: string;
+  name: string;
+  price: number;
+  paymentMode: PaymentMode;
+  corsairThreshold: number;
+  impactMultiplier: number;
+}
+
+// Transaction type matching backend model
+export interface Transaction {
   id: string;
   userId: string;
   skuId: string;
+  masterId: string; // Marcello's Master ID - for overall network tracking
   merchantId?: string;
   partnerId?: string;
   orderId?: string;
   amount: number;
-  calculatedImpact: number; // in grams, calculated dynamically
-  paymentStatus: 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED' | 'NA';
-  corsairConnectFlag: boolean; // true if amount >= corsairThreshold (€10)
+  calculatedImpact: number; // in grams
+  paymentStatus: PaymentStatus;
+  corsairConnectFlag: boolean;
   giftCardCodeId?: string;
   stripePaymentIntentId?: string;
   createdAt: string;
   updatedAt: string;
+  // Joined data from API
+  sku?: SKU;
 }
 
-interface CreateTransactionData {
+// Input for creating a transaction
+export interface CreateTransactionInput {
   skuCode: string;
   userId?: string;
   merchantId?: string;
   partnerId?: string;
   orderId?: string;
-  amount?: number; // For ALLOCATION type
-  giftCardCode?: string; // For GIFT_CARD type
-  registrationData?: {
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    dateOfBirth?: string;
-    street?: string;
-    city?: string;
-    postalCode?: string;
-    country?: string;
-    state?: string;
-    termsAccepted?: boolean;
-  };
+  amount?: number; // Required for ALLOCATION type
+  giftCardCode?: string; // Required for GIFT_CARD type
+  registrationData?: RegistrationInput;
 }
 
 interface TransactionState {
-  items: Transaction[];
+  transactions: Transaction[];
   currentTransaction: Transaction | null;
+  userTotalImpact: number; // total grams for current user
   loading: boolean;
   error: string | null;
 }
 
 const initialState: TransactionState = {
-  items: [],
+  transactions: [],
   currentTransaction: null,
+  userTotalImpact: 0,
   loading: false,
   error: null,
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('csr26_admin_token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` }),
-  };
-};
-
-// Async thunks
+// Create transaction
 export const createTransaction = createAsyncThunk(
   'transactions/create',
-  async (transactionData: CreateTransactionData) => {
-    const response = await fetch(`${API_URL}/transactions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(transactionData),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create transaction');
+  async (input: CreateTransactionInput, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to create transaction');
+      }
+      const result = await response.json();
+      return result.data as Transaction;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
     }
-    const data = await response.json();
-    return data.data;
   }
 );
 
-export const fetchTransactions = createAsyncThunk(
-  'transactions/fetchAll',
-  async (filters?: { userId?: string; merchantId?: string; partnerId?: string }) => {
-    const params = new URLSearchParams();
-    if (filters?.userId) params.append('userId', filters.userId);
-    if (filters?.merchantId) params.append('merchantId', filters.merchantId);
-    if (filters?.partnerId) params.append('partnerId', filters.partnerId);
-
-    const response = await fetch(`${API_URL}/transactions?${params.toString()}`, {
-      headers: getAuthHeaders(),
-    });
-    if (!response.ok) throw new Error('Failed to fetch transactions');
-    const data = await response.json();
-    return data.data;
-  }
-);
-
+// Fetch transaction by ID
 export const fetchTransactionById = createAsyncThunk(
   'transactions/fetchById',
-  async (id: string) => {
-    const response = await fetch(`${API_URL}/transactions/${id}`);
-    if (!response.ok) throw new Error('Failed to fetch transaction');
-    const data = await response.json();
-    return data.data;
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/transactions/${id}`);
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch transaction');
+      }
+      const result = await response.json();
+      return result.data as Transaction;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
-export const updateTransactionPaymentStatus = createAsyncThunk(
+// Fetch transactions for a user (user dashboard)
+export const fetchUserTransactions = createAsyncThunk(
+  'transactions/fetchByUser',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/transactions/user/${userId}`);
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch user transactions');
+      }
+      const result = await response.json();
+      return result.data as Transaction[];
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Fetch transactions for a merchant (merchant dashboard)
+export const fetchMerchantTransactions = createAsyncThunk(
+  'transactions/fetchByMerchant',
+  async (merchantId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/transactions/merchant/${merchantId}`);
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch merchant transactions');
+      }
+      const result = await response.json();
+      return result.data as Transaction[];
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Fetch all transactions (admin)
+// Supports filtering by all 3 attribution IDs: masterId, merchantId, partnerId
+export const fetchAllTransactions = createAsyncThunk(
+  'transactions/fetchAll',
+  async (filters: {
+    userId?: string;
+    masterId?: string;
+    merchantId?: string;
+    partnerId?: string;
+    corsairConnectFlag?: boolean;
+    paymentStatus?: PaymentStatus;
+    startDate?: string;
+    endDate?: string;
+  } = {}, { rejectWithValue }) => {
+    try {
+      const params = new URLSearchParams();
+      if (filters.userId) params.append('userId', filters.userId);
+      if (filters.masterId) params.append('masterId', filters.masterId);
+      if (filters.merchantId) params.append('merchantId', filters.merchantId);
+      if (filters.partnerId) params.append('partnerId', filters.partnerId);
+      if (filters.corsairConnectFlag !== undefined) params.append('corsairConnectFlag', String(filters.corsairConnectFlag));
+      if (filters.paymentStatus) params.append('paymentStatus', filters.paymentStatus);
+      if (filters.startDate) params.append('startDate', filters.startDate);
+      if (filters.endDate) params.append('endDate', filters.endDate);
+
+      const token = localStorage.getItem('csr26_admin_token');
+      const response = await fetch(`${API_URL}/transactions?${params.toString()}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+        },
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch transactions');
+      }
+      const result = await response.json();
+      return result.data as Transaction[];
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Update payment status (after Stripe webhook or manual update)
+export const updatePaymentStatus = createAsyncThunk(
   'transactions/updatePaymentStatus',
-  async ({ id, status }: { id: string; status: string }) => {
-    const response = await fetch(`${API_URL}/transactions/${id}/payment-status`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paymentStatus: status }),
-    });
-    if (!response.ok) throw new Error('Failed to update payment status');
-    const data = await response.json();
-    return data.data;
+  async ({ id, paymentStatus, stripePaymentIntentId }: {
+    id: string;
+    paymentStatus: PaymentStatus;
+    stripePaymentIntentId?: string;
+  }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/transactions/${id}/payment-status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentStatus, stripePaymentIntentId }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to update payment status');
+      }
+      const result = await response.json();
+      return result.data as Transaction;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Get user's total impact
+export const fetchUserTotalImpact = createAsyncThunk(
+  'transactions/fetchUserTotalImpact',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/transactions/user/${userId}/total-impact`);
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch total impact');
+      }
+      const result = await response.json();
+      return result.data.totalImpact as number;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
@@ -131,10 +242,16 @@ const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {
+    setCurrentTransaction: (state, action: PayloadAction<Transaction>) => {
+      state.currentTransaction = action.payload;
+    },
     clearCurrentTransaction: (state) => {
       state.currentTransaction = null;
     },
-    clearError: (state) => {
+    clearTransactions: (state) => {
+      state.transactions = [];
+    },
+    clearTransactionError: (state) => {
       state.error = null;
     },
   },
@@ -145,29 +262,18 @@ const transactionSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(createTransaction.fulfilled, (state, action: PayloadAction<Transaction>) => {
+      .addCase(createTransaction.fulfilled, (state, action) => {
         state.loading = false;
         state.currentTransaction = action.payload;
-        state.items.unshift(action.payload);
+        state.transactions.unshift(action.payload);
+        // Update total impact if transaction is completed
+        if (action.payload.paymentStatus === 'completed' || action.payload.paymentStatus === 'n/a') {
+          state.userTotalImpact += action.payload.calculatedImpact;
+        }
       })
       .addCase(createTransaction.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to create transaction';
-      });
-
-    // Fetch transactions
-    builder
-      .addCase(fetchTransactions.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchTransactions.fulfilled, (state, action: PayloadAction<Transaction[]>) => {
-        state.loading = false;
-        state.items = action.payload;
-      })
-      .addCase(fetchTransactions.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch transactions';
+        state.error = action.payload as string;
       });
 
     // Fetch transaction by ID
@@ -176,43 +282,103 @@ const transactionSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTransactionById.fulfilled, (state, action: PayloadAction<Transaction>) => {
+      .addCase(fetchTransactionById.fulfilled, (state, action) => {
         state.loading = false;
         state.currentTransaction = action.payload;
       })
       .addCase(fetchTransactionById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch transaction';
+        state.error = action.payload as string;
+      });
+
+    // Fetch user transactions
+    builder
+      .addCase(fetchUserTransactions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserTransactions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(fetchUserTransactions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch merchant transactions
+    builder
+      .addCase(fetchMerchantTransactions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMerchantTransactions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(fetchMerchantTransactions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch all transactions
+    builder
+      .addCase(fetchAllTransactions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllTransactions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(fetchAllTransactions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
 
     // Update payment status
     builder
-      .addCase(updateTransactionPaymentStatus.pending, (state) => {
+      .addCase(updatePaymentStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        updateTransactionPaymentStatus.fulfilled,
-        (state, action: PayloadAction<Transaction>) => {
-          state.loading = false;
-          const index = state.items.findIndex((t) => t.id === action.payload.id);
-          if (index !== -1) {
-            state.items[index] = action.payload;
-          }
-          if (state.currentTransaction?.id === action.payload.id) {
-            state.currentTransaction = action.payload;
-          }
-        }
-      )
-      .addCase(updateTransactionPaymentStatus.rejected, (state, action) => {
+      .addCase(updatePaymentStatus.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to update payment status';
+        const index = state.transactions.findIndex((t) => t.id === action.payload.id);
+        if (index !== -1) {
+          state.transactions[index] = action.payload;
+        }
+        if (state.currentTransaction?.id === action.payload.id) {
+          state.currentTransaction = action.payload;
+        }
+      })
+      .addCase(updatePaymentStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch user total impact
+    builder
+      .addCase(fetchUserTotalImpact.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserTotalImpact.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userTotalImpact = action.payload;
+      })
+      .addCase(fetchUserTotalImpact.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { clearCurrentTransaction, clearError } = transactionSlice.actions;
-export default transactionSlice.reducer;
+export const {
+  setCurrentTransaction,
+  clearCurrentTransaction,
+  clearTransactions,
+  clearTransactionError,
+} = transactionSlice.actions;
 
-// Export types for use in components
-export type { Transaction, CreateTransactionData };
+export default transactionSlice.reducer;

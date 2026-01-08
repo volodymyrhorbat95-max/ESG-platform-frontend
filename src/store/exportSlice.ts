@@ -7,7 +7,7 @@ interface ExportFilters {
   merchantId?: string;
   partnerId?: string;
   userId?: string;
-  amplivoOnly?: boolean;
+  corsairConnectOnly?: boolean;
 }
 
 interface ExportState {
@@ -33,8 +33,8 @@ const getAuthHeaders = () => {
 };
 
 // Async thunks
-export const exportAmplivoData = createAsyncThunk(
-  'export/amplivo',
+export const exportCorsairConnectData = createAsyncThunk(
+  'export/corsairConnect',
   async ({ filters, format }: { filters: ExportFilters; format: 'xlsx' | 'csv' }) => {
     const params = new URLSearchParams();
     if (filters.startDate) params.append('startDate', filters.startDate);
@@ -42,7 +42,7 @@ export const exportAmplivoData = createAsyncThunk(
     if (filters.merchantId) params.append('merchantId', filters.merchantId);
     if (filters.partnerId) params.append('partnerId', filters.partnerId);
     if (filters.userId) params.append('userId', filters.userId);
-    if (filters.amplivoOnly) params.append('amplivoOnly', 'true');
+    if (filters.corsairConnectOnly) params.append('corsairConnectOnly', 'true');
     params.append('format', format);
 
     const url = `${API_URL}/admin/export?${params.toString()}`;
@@ -56,7 +56,7 @@ export const exportAmplivoData = createAsyncThunk(
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = `amplivo_export_${new Date().toISOString().split('T')[0]}.${format}`;
+    link.download = `corsair_connect_export_${new Date().toISOString().split('T')[0]}.${format}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -222,18 +222,18 @@ const exportSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Amplivo Export
-      .addCase(exportAmplivoData.pending, (state) => {
+      // Corsair Connect Export
+      .addCase(exportCorsairConnectData.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(exportAmplivoData.fulfilled, (state, action) => {
+      .addCase(exportCorsairConnectData.fulfilled, (state, action) => {
         state.loading = false;
         state.lastExportUrl = action.payload;
       })
-      .addCase(exportAmplivoData.rejected, (state, action) => {
+      .addCase(exportCorsairConnectData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to export Amplivo data';
+        state.error = action.error.message || 'Failed to export Corsair Connect data';
       })
       // Partner Report
       .addCase(exportPartnerReport.pending, (state) => {

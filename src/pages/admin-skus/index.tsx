@@ -20,7 +20,7 @@ export default function AdminSKUs() {
     price: 0,
     paymentMode: 'CLAIM' as 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION',
     requiresValidation: false,
-    amplivoThreshold: 10,
+    corsairThreshold: 10,
     impactMultiplier: 1.6,
   });
 
@@ -51,7 +51,7 @@ export default function AdminSKUs() {
       price: sku.price,
       paymentMode: sku.paymentMode,
       requiresValidation: sku.requiresValidation,
-      amplivoThreshold: sku.amplivoThreshold,
+      corsairThreshold: sku.corsairThreshold,
       impactMultiplier: sku.impactMultiplier,
     });
     setShowForm(true);
@@ -75,7 +75,7 @@ export default function AdminSKUs() {
       price: 0,
       paymentMode: 'CLAIM',
       requiresValidation: false,
-      amplivoThreshold: 10,
+      corsairThreshold: 10,
       impactMultiplier: 1.6,
     });
     setEditingSKU(null);

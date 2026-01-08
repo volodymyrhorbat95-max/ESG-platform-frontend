@@ -4,9 +4,23 @@ import { useState } from 'react';
 interface RegistrationFormProps {
   onSubmit: (userData: any) => void;
   loading: boolean;
+  amount?: number;
+  threshold?: number;
 }
 
-export default function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
+export default function RegistrationForm({
+  onSubmit,
+  loading,
+  amount = 0,
+  threshold = 10
+}: RegistrationFormProps) {
+  // Determine button text based on €10 threshold
+  // Full registration form is used for >= €10 or GIFT_CARD, so typically shows "Activate Account"
+  const isAboveThreshold = amount >= threshold;
+  const buttonText = isAboveThreshold
+    ? 'Activate Account'
+    : 'Start Building Your Portfolio';
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -47,7 +61,7 @@ export default function RegistrationForm({ onSubmit, loading }: RegistrationForm
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.postalCode.trim()) newErrors.postalCode = 'Postal code is required';
     if (!formData.country.trim()) newErrors.country = 'Country is required';
-    if (!formData.state.trim()) newErrors.state = 'State/Province is required';
+    // State/Province is OPTIONAL per requirements section 1.5
     if (!formData.termsAccepted) newErrors.termsAccepted = 'You must accept the terms and conditions';
 
     setErrors(newErrors);
@@ -187,10 +201,10 @@ export default function RegistrationForm({ onSubmit, loading }: RegistrationForm
           {errors.city && <p className="text-red-500 text-xs mt-1 animate-on-load zoom-in duration-very-fast">{errors.city}</p>}
         </div>
 
-        {/* State/Province */}
+        {/* State/Province - Optional */}
         <div className="animate-on-load zoom-out duration-normal">
           <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-left duration-very-fast">
-            State/Province *
+            State/Province
           </label>
           <input
             type="text"
@@ -289,23 +303,21 @@ export default function RegistrationForm({ onSubmit, loading }: RegistrationForm
         />
         <label htmlFor="termsAccepted" className="text-sm text-gray-700 leading-relaxed animate-on-load fade-right duration-normal">
           I accept the{' '}
-          <a
-            href="/terms-and-conditions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-emerald-600 hover:text-emerald-700 underline font-medium"
+          <button
+            type="button"
+            onClick={() => window.open('/terms-and-conditions', '_blank')}
+            className="text-emerald-600 hover:text-emerald-700 underline font-medium bg-transparent border-none p-0 cursor-pointer"
           >
             Terms of Service
-          </a>{' '}
+          </button>{' '}
           and confirm that I have read the{' '}
-          <a
-            href="/privacy-policy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-emerald-600 hover:text-emerald-700 underline font-medium"
+          <button
+            type="button"
+            onClick={() => window.open('/privacy-policy', '_blank')}
+            className="text-emerald-600 hover:text-emerald-700 underline font-medium bg-transparent border-none p-0 cursor-pointer"
           >
             Privacy Policy
-          </a>
+          </button>
           . *
         </label>
       </div>
@@ -327,7 +339,7 @@ export default function RegistrationForm({ onSubmit, loading }: RegistrationForm
             </svg>
             Processing...
           </span>
-        ) : 'Submit'}
+        ) : buttonText}
       </button>
     </form>
   );

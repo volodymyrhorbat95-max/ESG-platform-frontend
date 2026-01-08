@@ -1,7 +1,7 @@
 // Config Slice - Redux state management for global configuration
 // CRITICAL: All data through Redux - NO direct API calls from components
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

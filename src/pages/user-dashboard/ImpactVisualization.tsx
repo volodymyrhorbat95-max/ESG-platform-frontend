@@ -1,5 +1,9 @@
 // Impact Visualization Component - Shows environmental equivalents
 // CRITICAL: Uses calculatedImpact from wallet (in grams)
+// Formulas from requirements.md:
+// - Plastic bottles: totalGrams / 25
+// - Trees: totalGrams / 21000
+// - Ocean cleanup: totalGrams / 500
 
 interface ImpactVisualizationProps {
   totalAccumulatedKg: string;
@@ -10,11 +14,10 @@ export default function ImpactVisualization({
   totalAccumulatedKg,
   totalAccumulated,
 }: ImpactVisualizationProps) {
-  // Calculate equivalents
-  const kg = totalAccumulated / 1000;
-  const bottles = Math.floor(totalAccumulated / 25); // 25g per bottle
-  const trees = (kg / 21).toFixed(2); // 21kg per tree
-  const oceanCleanup = (kg / 0.5).toFixed(1); // 500g per ocean cleanup unit
+  // Calculate equivalents using formulas from requirements.md
+  const bottles = Math.floor(totalAccumulated / 25); // totalGrams / 25
+  const trees = (totalAccumulated / 21000).toFixed(2); // totalGrams / 21000
+  const oceanCleanup = (totalAccumulated / 500).toFixed(1); // totalGrams / 500
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mt-6 animate-on-load fade-up duration-slow">
@@ -22,15 +25,17 @@ export default function ImpactVisualization({
         Your Environmental Impact
       </h3>
 
-      {/* Main Impact */}
+      {/* Main Impact - Shows both kg and grams */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-8 rounded-lg text-center mb-6 animate-on-load zoom-in duration-light-slow">
         <p className="text-gray-700 mb-2 animate-on-load fade-down duration-fast">
           Total Plastic Waste Removed
         </p>
-        <p className="text-5xl font-bold text-green-600 mb-2 animate-on-load flip-up duration-normal">
-          {totalAccumulatedKg}
+        <p className="text-5xl font-bold text-green-600 mb-1 animate-on-load flip-up duration-normal">
+          {totalAccumulatedKg} kg
         </p>
-        <p className="text-xl text-gray-700">kilograms</p>
+        <p className="text-lg text-gray-600 animate-on-load fade-up duration-light-slow">
+          ({totalAccumulated.toLocaleString()} grams)
+        </p>
       </div>
 
       {/* Equivalents Grid */}

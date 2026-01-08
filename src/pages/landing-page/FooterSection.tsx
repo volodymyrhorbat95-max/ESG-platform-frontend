@@ -69,7 +69,7 @@ export default function FooterSection() {
 
       {/* Data Processing Notice */}
       <p className="text-xs text-gray-500 text-center mt-4 max-w-2xl mx-auto animate-on-load fade-up duration-very-slow">
-        By using this service, your data will be processed for the purpose of activating a Corsair Connect/Amplivo account.
+        By using this service, your data will be processed for the purpose of activating a Corsair Connect account.
         Please review our Privacy Policy for details on data processing and your rights.
       </p>
 

@@ -1,5 +1,5 @@
 // Export Type Selector Component
-type ExportType = 'amplivo' | 'partner' | 'reconciliation' | 'impact' | 'trends' | 'skuPerformance';
+type ExportType = 'corsairConnect' | 'partner' | 'reconciliation' | 'impact' | 'trends' | 'skuPerformance';
 
 interface ExportTypeSelectorProps {
   exportType: ExportType;
@@ -12,14 +12,14 @@ export default function ExportTypeSelector({ exportType, onTypeChange }: ExportT
       <h2 className="text-xl font-bold text-gray-800 mb-4">Export Type</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <button
-          onClick={() => onTypeChange('amplivo')}
+          onClick={() => onTypeChange('corsairConnect')}
           className={`py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
-            exportType === 'amplivo'
+            exportType === 'corsairConnect'
               ? 'bg-primary text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
-          Amplivo Export
+          Corsair Connect Export
         </button>
         <button
           onClick={() => onTypeChange('partner')}

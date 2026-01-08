@@ -9,7 +9,7 @@ interface ExportFiltersProps {
     merchantId: string;
     partnerId: string;
     userId: string;
-    amplivoOnly: boolean;
+    corsairConnectOnly: boolean;
   };
   onFiltersChange: (filters: any) => void;
 }
@@ -44,7 +44,7 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
           </div>
         </div>
 
-        {exportType === 'amplivo' && (
+        {exportType === 'corsairConnect' && (
           <>
             <div className="animate-on-load fade-up duration-normal">
               <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-left duration-very-fast">
@@ -85,13 +85,13 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
             <div className="flex items-center animate-on-load fade-up duration-very-slow">
               <input
                 type="checkbox"
-                id="amplivoOnly"
-                checked={filters.amplivoOnly}
-                onChange={(e) => onFiltersChange({ ...filters, amplivoOnly: e.target.checked })}
+                id="corsairConnectOnly"
+                checked={filters.corsairConnectOnly}
+                onChange={(e) => onFiltersChange({ ...filters, corsairConnectOnly: e.target.checked })}
                 className="mr-2 animate-on-load zoom-in duration-fast"
               />
-              <label htmlFor="amplivoOnly" className="text-sm text-gray-700 animate-on-load fade-left duration-normal">
-                Only include transactions flagged for Amplivo
+              <label htmlFor="corsairConnectOnly" className="text-sm text-gray-700 animate-on-load fade-left duration-normal">
+                Only include transactions flagged for Corsair Connect
               </label>
             </div>
           </>

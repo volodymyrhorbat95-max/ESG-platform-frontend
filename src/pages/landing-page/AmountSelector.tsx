@@ -4,10 +4,16 @@ import { CORSAIR_THRESHOLD } from './types';
 
 interface AmountSelectorProps {
   impactMultiplier: number;
+  currentCSRPrice: number;
   onSubmit: (amount: number) => void;
 }
 
-export default function AmountSelector({ impactMultiplier, onSubmit }: AmountSelectorProps) {
+// Calculate impact in grams: (amount / CURRENT_CSR_PRICE) * impactMultiplier * 1000
+const calculateImpactGrams = (amount: number, csrPrice: number, multiplier: number): number => {
+  return Math.round((amount / csrPrice) * multiplier * 1000);
+};
+
+export default function AmountSelector({ impactMultiplier, currentCSRPrice, onSubmit }: AmountSelectorProps) {
   const [amountInput, setAmountInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -20,13 +26,16 @@ export default function AmountSelector({ impactMultiplier, onSubmit }: AmountSel
 
   const presetAmounts = [1, 5, 10, 25];
 
+  // Calculate impact per euro for display
+  const impactPerEuro = calculateImpactGrams(1, currentCSRPrice, impactMultiplier);
+
   return (
     <div>
       <h3 className="text-xl font-bold text-gray-800 mb-4">
         Choose Your Environmental Allocation
       </h3>
       <p className="text-gray-600 mb-4">
-        Select your contribution amount. Every €1 generates {impactMultiplier}g of certified plastic removal.
+        Select your contribution amount. Every €1 generates {impactPerEuro}g of certified plastic removal.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -69,7 +78,7 @@ export default function AmountSelector({ impactMultiplier, onSubmit }: AmountSel
         {amountInput && parseFloat(amountInput) >= 1 && (
           <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
             <p className="text-emerald-800 font-medium text-lg">
-              Your impact: {(parseFloat(amountInput) * impactMultiplier).toFixed(0)}g of plastic removed
+              Your impact: {calculateImpactGrams(parseFloat(amountInput), currentCSRPrice, impactMultiplier)}g of plastic removed
             </p>
             {parseFloat(amountInput) >= CORSAIR_THRESHOLD ? (
               <p className="text-emerald-600 text-sm mt-1">

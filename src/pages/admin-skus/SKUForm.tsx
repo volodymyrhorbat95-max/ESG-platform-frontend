@@ -7,7 +7,7 @@ interface SKUFormProps {
     price: number;
     paymentMode: 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION';
     requiresValidation: boolean;
-    amplivoThreshold: number;
+    corsairThreshold: number;
     impactMultiplier: number;
   };
   editingSKU: any | null;
@@ -109,14 +109,14 @@ export default function SKUForm({
 
           <div className="animate-on-load zoom-out duration-light-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-fast">
-              Amplivo Threshold (EUR)
+              Corsair Connect Threshold (EUR)
             </label>
             <input
               type="number"
               step="0.01"
-              value={formData.amplivoThreshold}
+              value={formData.corsairThreshold}
               onChange={(e) =>
-                onFormDataChange({ ...formData, amplivoThreshold: parseFloat(e.target.value) })
+                onFormDataChange({ ...formData, corsairThreshold: parseFloat(e.target.value) })
               }
               className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load fade-left duration-normal"
             />

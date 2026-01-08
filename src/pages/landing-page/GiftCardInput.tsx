@@ -2,18 +2,17 @@
 import { useState } from 'react';
 
 interface GiftCardInputProps {
-  onValidate: (code: string, userId: string) => void;
+  onValidate: (code: string) => void;
   loading: boolean;
 }
 
 export default function GiftCardInput({ onValidate, loading }: GiftCardInputProps) {
   const [code, setCode] = useState('');
-  const [tempUserId] = useState(() => `temp_${Date.now()}`); // Temporary user ID for validation
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.trim()) {
-      onValidate(code.trim(), tempUserId);
+      onValidate(code.trim());
     }
   };
 

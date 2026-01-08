@@ -1,37 +1,76 @@
 // User Slice - Redux state management for Users
+// Supports 3 registration levels: minimal (email only), standard (email+name), full (all fields)
+// CRITICAL: Types must match backend/database schema
+
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 
-// Type definitions (matching backend/database schema)
-interface User {
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Registration level type
+export type RegistrationLevel = 'minimal' | 'standard' | 'full';
+
+// User type matching backend model
+export interface User {
   id: string;
-  firstName: string;
-  lastName: string;
   email: string;
-  dateOfBirth: string;
-  street: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  termsAcceptedAt: string;
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string;
+  street?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  state?: string;
+  registrationLevel: RegistrationLevel;
+  corsairConnectFlag: boolean;
+  termsAcceptedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-interface RegisterUserData {
+// Input types for different registration levels
+export interface MinimalRegistrationInput {
+  email: string;
+}
+
+export interface StandardRegistrationInput {
+  email: string;
   firstName: string;
   lastName: string;
+  termsAccepted: boolean;
+}
+
+export interface FullRegistrationInput {
   email: string;
+  firstName: string;
+  lastName: string;
   dateOfBirth: string;
   street: string;
   city: string;
   postalCode: string;
   country: string;
+  state?: string;
   termsAccepted: boolean;
 }
 
-interface UpdateUserData {
+// Generic registration input (used by transaction creation)
+export interface RegistrationInput {
+  email: string;
   firstName?: string;
   lastName?: string;
+  dateOfBirth?: string;
+  street?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  state?: string;
+  termsAccepted: boolean;
+}
+
+interface UpdateUserInput {
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string;
   street?: string;
   city?: string;
   postalCode?: string;
@@ -53,117 +92,305 @@ const initialState: UserState = {
   error: null,
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
 // Async thunks
+
+// Register minimal user (email only) - for CLAIM type
+export const registerMinimalUser = createAsyncThunk(
+  'users/registerMinimal',
+  async (data: MinimalRegistrationInput, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/register/minimal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to register user');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Register standard user (email + name) - for small transactions under threshold
+export const registerStandardUser = createAsyncThunk(
+  'users/registerStandard',
+  async (data: StandardRegistrationInput, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/register/standard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to register user');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Register full user (all fields) - for 10+ euro transactions
+export const registerFullUser = createAsyncThunk(
+  'users/registerFull',
+  async (data: FullRegistrationInput, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/register/full`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to register user');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Generic register user (auto-determines level based on data provided)
 export const registerUser = createAsyncThunk(
   'users/register',
-  async (userData: RegisterUserData) => {
-    const response = await fetch(`${API_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to register user');
+  async (data: RegistrationInput, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to register user');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
     }
-    const data = await response.json();
-    return data.data;
   }
 );
 
-export const fetchUserById = createAsyncThunk('users/fetchById', async (id: string) => {
-  const response = await fetch(`${API_URL}/users/${id}`);
-  if (!response.ok) throw new Error('Failed to fetch user');
-  const data = await response.json();
-  return data.data;
-});
+// Fetch user by ID
+export const fetchUserById = createAsyncThunk(
+  'users/fetchById',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${id}`);
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch user');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
-export const fetchAllUsers = createAsyncThunk('users/fetchAll', async () => {
-  const response = await fetch(`${API_URL}/users`);
-  if (!response.ok) throw new Error('Failed to fetch users');
-  const data = await response.json();
-  return data.data;
-});
+// Helper function to get auth headers for admin routes
+const getAdminAuthHeaders = () => {
+  const token = localStorage.getItem('csr26_admin_token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+};
 
+// Fetch user by email (admin only - requires auth)
+export const fetchUserByEmail = createAsyncThunk(
+  'users/fetchByEmail',
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/email/${encodeURIComponent(email)}`, {
+        headers: getAdminAuthHeaders(),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'User not found');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Fetch all users (admin only - requires auth)
+export const fetchAllUsers = createAsyncThunk(
+  'users/fetchAll',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users`, {
+        headers: getAdminAuthHeaders(),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch users');
+      }
+      const result = await response.json();
+      return result.data as User[];
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Update user profile (admin only)
 export const updateUser = createAsyncThunk(
   'users/update',
-  async ({ id, updates }: { id: string; updates: UpdateUserData }) => {
-    const response = await fetch(`${API_URL}/users/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to update user');
+  async ({ id, updates }: { id: string; updates: UpdateUserInput }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${id}`, {
+        method: 'PUT',
+        headers: getAdminAuthHeaders(),
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to update user');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
     }
-    const data = await response.json();
-    return data.data;
   }
 );
 
-export const deleteUser = createAsyncThunk('users/delete', async (id: string) => {
-  const response = await fetch(`${API_URL}/users/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to delete user');
+// Delete user (soft delete - admin only)
+export const deleteUser = createAsyncThunk(
+  'users/delete',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${id}`, {
+        method: 'DELETE',
+        headers: getAdminAuthHeaders(),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to delete user');
+      }
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
-  return id;
-});
+);
 
-export const exportUserData = createAsyncThunk('users/export', async (id: string) => {
-  const response = await fetch(`${API_URL}/users/${id}/export`);
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to export user data');
+// Export user data (GDPR)
+export const exportUserData = createAsyncThunk(
+  'users/export',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${id}/export`);
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to export user data');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `user_data_${id}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      return { success: true };
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
-
-  // Get the JSON blob
-  const blob = await response.blob();
-
-  // Create download link
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `user_data_${id}.json`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  window.URL.revokeObjectURL(url);
-
-  return { success: true };
-});
+);
 
 // Slice
 const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
+    setCurrentUser: (state, action: PayloadAction<User>) => {
+      state.currentUser = action.payload;
+    },
     clearCurrentUser: (state) => {
       state.currentUser = null;
     },
-    clearError: (state) => {
+    clearUserError: (state) => {
       state.error = null;
     },
   },
   extraReducers: (builder) => {
-    // Register user
+    // Register minimal user
+    builder
+      .addCase(registerMinimalUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerMinimalUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(registerMinimalUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Register standard user
+    builder
+      .addCase(registerStandardUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerStandardUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(registerStandardUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Register full user
+    builder
+      .addCase(registerFullUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerFullUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(registerFullUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Register user (generic)
     builder
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to register user';
+        state.error = action.payload as string;
       });
 
     // Fetch user by ID
@@ -172,13 +399,28 @@ const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUserById.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(fetchUserById.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
       })
       .addCase(fetchUserById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch user';
+        state.error = action.payload as string;
+      });
+
+    // Fetch user by email
+    builder
+      .addCase(fetchUserByEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserByEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(fetchUserByEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
 
     // Fetch all users
@@ -187,13 +429,13 @@ const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAllUsers.fulfilled, (state, action: PayloadAction<User[]>) => {
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
       })
       .addCase(fetchAllUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch users';
+        state.error = action.payload as string;
       });
 
     // Update user
@@ -202,13 +444,13 @@ const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateUser.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to update user';
+        state.error = action.payload as string;
       });
 
     // Delete user
@@ -223,7 +465,7 @@ const userSlice = createSlice({
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to delete user';
+        state.error = action.payload as string;
       });
 
     // Export user data
@@ -237,10 +479,10 @@ const userSlice = createSlice({
       })
       .addCase(exportUserData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to export user data';
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { clearCurrentUser, clearError } = userSlice.actions;
+export const { setCurrentUser, clearCurrentUser, clearUserError } = userSlice.actions;
 export default userSlice.reducer;

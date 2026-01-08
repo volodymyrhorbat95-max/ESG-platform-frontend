@@ -10,13 +10,15 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
 interface StripePaymentProps {
   amount: number;
   userId: string;
+  skuId: string;
   transactionId: string;
   merchantId?: string;
+  partnerId?: string;
   merchantStripeAccountId?: string;
   onSuccess: (paymentIntentId: string) => void;
 }
 
-function PaymentForm({ amount, transactionId, merchantId, merchantStripeAccountId, onSuccess }: StripePaymentProps) {
+function PaymentForm({ amount, userId, skuId, transactionId, merchantId, partnerId, merchantStripeAccountId, onSuccess }: StripePaymentProps) {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useAppDispatch();
@@ -40,10 +42,13 @@ function PaymentForm({ amount, transactionId, merchantId, merchantStripeAccountI
       createPaymentIntent({
         amount,
         transactionId,
+        userId,
+        skuId,
+        partnerId,
         merchantStripeAccountId,
       })
     );
-  }, [amount, transactionId, merchantId, merchantStripeAccountId, dispatch]);
+  }, [amount, transactionId, userId, skuId, partnerId, merchantId, merchantStripeAccountId, dispatch]);
 
   // Update error from Redux state
   useEffect(() => {

@@ -6,7 +6,7 @@ export default function ServiceDescription() {
       <ul className="list-disc pl-6 mt-2 space-y-1">
         <li>Environmental impact tracking and accumulation through a personal wallet</li>
         <li>Processing of plastic neutrality transactions across multiple business models</li>
-        <li>Integration with certified environmental programs (Amplivo/Corsair Connect)</li>
+        <li>Integration with certified environmental programs (Corsair Connect)</li>
         <li>Generation of auditable, bankable environmental assets valid for ESG Rating improvement</li>
         <li>Compliance with EU directives on sustainability reporting (CSRD - Legislative Decree 125/2024)</li>
       </ul>

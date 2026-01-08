@@ -14,10 +14,12 @@ import AdminTransactions from './pages/admin-transactions';
 import AdminExport from './pages/admin-export';
 import AdminPartners from './pages/admin-partners';
 import AdminMerchants from './pages/admin-merchants';
-import AdminConfig from './pages/admin-config'; // NEW: Admin config management
+import AdminConfig from './pages/admin-config';
+import AdminUsers from './pages/admin-users';
 import TermsAndConditions from './pages/terms-and-conditions';
 import PrivacyPolicy from './pages/privacy-policy';
 import SharedDashboard from './pages/shared-dashboard';
+import VerifyCertificate from './pages/verify-certificate';
 
 function App() {
   return (
@@ -36,10 +38,12 @@ function App() {
           <Route path="/admin/merchants" element={<ProtectedRoute><AdminMerchants /></ProtectedRoute>} />
           <Route path="/admin/transactions" element={<ProtectedRoute><AdminTransactions /></ProtectedRoute>} />
           <Route path="/admin/export" element={<ProtectedRoute><AdminExport /></ProtectedRoute>} />
-          <Route path="/admin/config" element={<ProtectedRoute><AdminConfig /></ProtectedRoute>} /> {/* NEW: Config management */}
+          <Route path="/admin/config" element={<ProtectedRoute><AdminConfig /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/share/:token" element={<SharedDashboard />} />
+          <Route path="/verify/:transactionId" element={<VerifyCertificate />} />
         </Routes>
       </Layout>
     </BrowserRouter>

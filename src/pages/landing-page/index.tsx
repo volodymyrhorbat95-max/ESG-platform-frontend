@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchSKUByCode } from '../../store/skuSlice';
-import { registerUser } from '../../store/userSlice';
+import { registerUser, registerMinimalUser, registerStandardUser } from '../../store/userSlice';
 import { createTransaction } from '../../store/transactionSlice';
 import { validateGiftCard } from '../../store/giftCardSlice';
 import { loginAdmin } from '../../store/authSlice';
@@ -30,6 +30,7 @@ import DynamicMessage from './DynamicMessage';
 import TechnicalBlock from './TechnicalBlock';
 import FooterSection from './FooterSection';
 import RegistrationForm from './RegistrationForm';
+import StandardRegistrationForm from './StandardRegistrationForm';
 import MinimalRegistrationForm from './MinimalRegistrationForm';
 import GiftCardInput from './GiftCardInput';
 import AdminLogin from './AdminLogin';
@@ -99,25 +100,25 @@ export default function LandingPage() {
     let impact = 0;
     let amount = 0;
 
+    // Impact formula: (amount / CURRENT_CSR_PRICE) * impactMultiplier * 1000
+    const multiplier = currentSKU.impactMultiplier || 1;
+
     switch (currentSKU.paymentMode) {
       case 'CLAIM':
         amount = Number(currentSKU.price) || 0;
-        // Dynamic calculation: kg = amount / CURRENT_CSR_PRICE, then convert to grams
-        impact = Math.round((amount / currentCSRPrice) * 1000);
+        impact = Math.round((amount / currentCSRPrice) * multiplier * 1000);
         setStep('registration');
         break;
 
       case 'PAY':
         amount = Number(currentSKU.price) || 0;
-        // Dynamic calculation: kg = amount / CURRENT_CSR_PRICE, then convert to grams
-        impact = Math.round((amount / currentCSRPrice) * 1000);
+        impact = Math.round((amount / currentCSRPrice) * multiplier * 1000);
         setStep('registration');
         break;
 
       case 'GIFT_CARD':
         amount = Number(currentSKU.price) || 0;
-        // Dynamic calculation: kg = amount / CURRENT_CSR_PRICE, then convert to grams
-        impact = Math.round((amount / currentCSRPrice) * 1000);
+        impact = Math.round((amount / currentCSRPrice) * multiplier * 1000);
         if (giftCardValidated || validatedCode) {
           setStep('registration');
         } else {
@@ -128,8 +129,11 @@ export default function LandingPage() {
       case 'ALLOCATION':
         if (urlAmount) {
           amount = parseFloat(urlAmount);
-          // For ALLOCATION: kg = amount * impactMultiplier, then convert to grams
-          impact = Math.round(amount * (currentSKU.impactMultiplier || 1) * 1000);
+          // ALLOCATION uses SPECIAL formula: amount × impactMultiplier × 1000
+          // This does NOT use CURRENT_CSR_PRICE!
+          // Example: €5 × 1.6 × 1000 = 8,000 grams (8 kg)
+          // Example: €15 × 1.6 × 1000 = 24,000 grams (24 kg)
+          impact = Math.round(amount * multiplier * 1000);
           setStep('registration');
         } else {
           setStep('amount-input');
@@ -138,7 +142,7 @@ export default function LandingPage() {
 
       default:
         amount = Number(currentSKU.price) || 0;
-        impact = Math.round((amount / currentCSRPrice) * 1000);
+        impact = Math.round((amount / currentCSRPrice) * multiplier * 1000);
         setStep('registration');
     }
 
@@ -148,7 +152,8 @@ export default function LandingPage() {
       currentSKU.paymentMode,
       merchantId,
       partnerId,
-      currentSKU.paymentMode === 'GIFT_CARD'
+      currentSKU.paymentMode === 'GIFT_CARD',
+      amount
     ));
   }, [currentSKU, currentCSRPrice, urlAmount, merchantId, partnerId, giftCardValidated, validatedCode]);
 
@@ -167,9 +172,10 @@ export default function LandingPage() {
     }
   };
 
-  const handleGiftCardValidate = async (code: string, tempUserId: string) => {
+  const handleGiftCardValidate = async (code: string) => {
     try {
-      await dispatch(validateGiftCard({ code, userId: tempUserId })).unwrap();
+      // Validate the code (but don't redeem yet - redemption happens during transaction creation)
+      await dispatch(validateGiftCard({ code })).unwrap();
       setGiftCardValidated(true);
       setStep('registration');
     } catch (error) {
@@ -192,17 +198,7 @@ export default function LandingPage() {
   const handleMinimalRegister = async (email: string) => {
     try {
       // Use minimal user registration for CLAIM type (email only)
-      const user = await dispatch(registerUser({
-        firstName: 'Guest',
-        lastName: 'User',
-        email: email,
-        dateOfBirth: '1900-01-01',
-        street: 'N/A',
-        city: 'N/A',
-        postalCode: '00000',
-        country: 'N/A',
-        termsAccepted: true,
-      })).unwrap();
+      const user = await dispatch(registerMinimalUser({ email })).unwrap();
 
       if (currentSKU && currentSKU.paymentMode === 'CLAIM') {
         await handleCreateTransaction(user.id);
@@ -212,6 +208,41 @@ export default function LandingPage() {
     }
   };
 
+  // Standard registration handler for PAY/ALLOCATION under €10 threshold
+  const handleStandardRegister = async (userData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    termsAccepted: boolean;
+  }) => {
+    try {
+      const user = await dispatch(registerStandardUser(userData)).unwrap();
+
+      if (currentSKU) {
+        if (currentSKU.paymentMode === 'ALLOCATION') {
+          await handleCreateTransaction(user.id);
+        } else if (currentSKU.paymentMode === 'PAY') {
+          // Create PENDING transaction FIRST for PAY mode
+          const transaction = await dispatch(createTransaction({
+            userId: user.id,
+            skuCode: currentSKU.code,
+            amount: finalAmount,
+            partnerId: partnerId || undefined,
+            merchantId: merchantId || undefined,
+            orderId: orderId || undefined,
+          })).unwrap();
+
+          // Store transaction ID for payment step
+          setPendingTransactionId(transaction.id);
+          setStep('payment');
+        }
+      }
+    } catch (error) {
+      console.error('Standard registration failed:', error);
+    }
+  };
+
+  // Full registration handler for transactions >= €10 threshold or GIFT_CARD
   const handleRegister = async (userData: any) => {
     try {
       const user = await dispatch(registerUser(userData)).unwrap();
@@ -340,9 +371,10 @@ export default function LandingPage() {
             finalAmount={finalAmount}
           />
 
-          {step === 'amount-input' && (
+          {step === 'amount-input' && currentCSRPrice && (
             <AmountSelector
               impactMultiplier={currentSKU.impactMultiplier || 1}
+              currentCSRPrice={currentCSRPrice}
               onSubmit={handleAmountSubmit}
             />
           )}
@@ -372,29 +404,56 @@ export default function LandingPage() {
                 {caseType === 'E' && 'Build Your Environmental Portfolio'}
               </h3>
 
-              {/* Conditional Form Rendering - Minimal for CLAIM, Complete for others */}
+              {/* Conditional Form Rendering based on payment mode and amount threshold:
+                  - CLAIM: Minimal form (email only)
+                  - PAY/ALLOCATION under €10: Standard form (email + name)
+                  - PAY/ALLOCATION >= €10 or GIFT_CARD: Full form (all fields)
+              */}
               {currentSKU?.paymentMode === 'CLAIM' ? (
                 <MinimalRegistrationForm
                   onSubmit={handleMinimalRegister}
                   loading={transactionLoading}
+                  amount={finalAmount}
+                  threshold={CORSAIR_THRESHOLD}
                 />
-              ) : (
+              ) : currentSKU?.paymentMode === 'GIFT_CARD' ? (
+                // GIFT_CARD always requires full registration
                 <RegistrationForm
                   onSubmit={handleRegister}
                   loading={transactionLoading}
+                  amount={finalAmount}
+                  threshold={CORSAIR_THRESHOLD}
+                />
+              ) : finalAmount >= CORSAIR_THRESHOLD ? (
+                // PAY/ALLOCATION >= €10 threshold requires full registration
+                <RegistrationForm
+                  onSubmit={handleRegister}
+                  loading={transactionLoading}
+                  amount={finalAmount}
+                  threshold={CORSAIR_THRESHOLD}
+                />
+              ) : (
+                // PAY/ALLOCATION under €10 uses standard registration (email + name)
+                <StandardRegistrationForm
+                  onSubmit={handleStandardRegister}
+                  loading={transactionLoading}
+                  amount={finalAmount}
+                  threshold={CORSAIR_THRESHOLD}
                 />
               )}
             </div>
           )}
 
-          {step === 'payment' && currentUser && pendingTransactionId && (
+          {step === 'payment' && currentUser && pendingTransactionId && currentSKU && (
             <div>
               <h3 className="text-xl font-bold text-gray-800 mb-4">Complete Payment</h3>
               <StripePayment
                 amount={finalAmount}
                 userId={currentUser.id}
+                skuId={currentSKU.id}
                 transactionId={pendingTransactionId}
                 merchantId={merchantId || undefined}
+                partnerId={partnerId || undefined}
                 merchantStripeAccountId={currentMerchant?.stripeAccountId || undefined}
                 onSuccess={handlePaymentSuccess}
               />

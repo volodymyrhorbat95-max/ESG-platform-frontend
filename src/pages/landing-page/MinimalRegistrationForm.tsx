@@ -4,11 +4,24 @@ import { useState } from 'react';
 interface MinimalRegistrationFormProps {
   onSubmit: (email: string) => void;
   loading: boolean;
+  amount?: number;
+  threshold?: number;
 }
 
-export default function MinimalRegistrationForm({ onSubmit, loading }: MinimalRegistrationFormProps) {
+export default function MinimalRegistrationForm({
+  onSubmit,
+  loading,
+  amount = 0,
+  threshold = 10
+}: MinimalRegistrationFormProps) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+
+  // Determine button text based on €10 threshold
+  const isAboveThreshold = amount >= threshold;
+  const buttonText = isAboveThreshold
+    ? 'Activate Account'
+    : 'Start Building Your Portfolio';
 
   const validate = () => {
     if (!email.trim()) {
@@ -77,7 +90,7 @@ export default function MinimalRegistrationForm({ onSubmit, loading }: MinimalRe
             </svg>
             Processing...
           </span>
-        ) : 'Get My Certificate'}
+        ) : buttonText}
       </button>
 
       {/* Privacy Note */}

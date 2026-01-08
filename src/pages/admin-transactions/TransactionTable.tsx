@@ -45,7 +45,7 @@ export default function TransactionTable({ transactions, loading }: TransactionT
               Status
             </th>
             <th className="text-center py-3 px-2 text-xs font-semibold text-gray-700 animate-on-load zoom-out duration-fast">
-              Amplivo
+              Corsair
             </th>
           </tr>
         </thead>
@@ -88,7 +88,7 @@ export default function TransactionTable({ transactions, loading }: TransactionT
                 </span>
               </td>
               <td className="py-3 px-2 text-center animate-on-load fade-up duration-slow">
-                {transaction.amplivoFlag ? (
+                {transaction.corsairConnectFlag ? (
                   <span className="text-green-600 font-bold text-lg animate-on-load zoom-in duration-fast">✓</span>
                 ) : (
                   <span className="text-gray-300 animate-on-load fade-right duration-normal">-</span>

@@ -9,6 +9,9 @@ interface PaymentIntent {
 interface CreatePaymentIntentData {
   amount: number;
   transactionId: string;
+  userId: string;
+  skuId: string;
+  partnerId?: string;
   merchantStripeAccountId?: string;
 }
 

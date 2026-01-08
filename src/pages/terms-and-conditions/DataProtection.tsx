@@ -4,7 +4,7 @@ export default function DataProtection() {
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-3">9. Data Protection</h2>
       <p>
         Personal data is processed in accordance with GDPR and Italian data protection
-        laws. Data may be shared with Amplivo/Corsair Connect for environmental asset
+        laws. Data may be shared with Corsair Connect for environmental asset
         registration and with payment processors for transaction completion. See our
         Privacy Policy for complete details.
       </p>
