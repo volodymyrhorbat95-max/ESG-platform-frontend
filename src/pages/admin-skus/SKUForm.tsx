@@ -1,9 +1,9 @@
 // SKU Form Component
+// Note: gramsWeight REMOVED - impact is calculated dynamically (price / CURRENT_CSR_PRICE)
 interface SKUFormProps {
   formData: {
     code: string;
     name: string;
-    gramsWeight: number;
     price: number;
     paymentMode: 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION';
     requiresValidation: boolean;
@@ -77,21 +77,6 @@ export default function SKUForm({
             </select>
           </div>
 
-          <div className="animate-on-load fade-down duration-normal">
-            <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-left duration-fast">
-              Grams Weight *
-            </label>
-            <input
-              type="number"
-              value={formData.gramsWeight}
-              onChange={(e) =>
-                onFormDataChange({ ...formData, gramsWeight: parseFloat(e.target.value) })
-              }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load flip-down duration-light-slow"
-              required
-            />
-          </div>
-
           <div className="animate-on-load zoom-in duration-light-slow">
             <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-up duration-fast">
               Price (EUR)
@@ -99,9 +84,9 @@ export default function SKUForm({
             <input
               type="number"
               step="0.01"
-              value={formData.price}
+              value={formData.price || 0}
               onChange={(e) =>
-                onFormDataChange({ ...formData, price: parseFloat(e.target.value) })
+                onFormDataChange({ ...formData, price: parseFloat(e.target.value) || 0 })
               }
               className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load fade-right duration-normal"
             />
@@ -114,9 +99,9 @@ export default function SKUForm({
             <input
               type="number"
               step="0.01"
-              value={formData.corsairThreshold}
+              value={formData.corsairThreshold || 0}
               onChange={(e) =>
-                onFormDataChange({ ...formData, corsairThreshold: parseFloat(e.target.value) })
+                onFormDataChange({ ...formData, corsairThreshold: parseFloat(e.target.value) || 0 })
               }
               className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load fade-left duration-normal"
             />
@@ -129,9 +114,9 @@ export default function SKUForm({
             <input
               type="number"
               step="0.1"
-              value={formData.impactMultiplier}
+              value={formData.impactMultiplier || 0}
               onChange={(e) =>
-                onFormDataChange({ ...formData, impactMultiplier: parseFloat(e.target.value) })
+                onFormDataChange({ ...formData, impactMultiplier: parseFloat(e.target.value) || 0 })
               }
               className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load zoom-in duration-normal"
             />

@@ -249,6 +249,30 @@ export const fetchAllUsers = createAsyncThunk(
   }
 );
 
+// Update user profile (user self-update - no auth required)
+export const updateUserSelf = createAsyncThunk(
+  'users/updateSelf',
+  async ({ id, updates }: { id: string; updates: UpdateUserInput }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${id}/self`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to update user');
+      }
+      const result = await response.json();
+      return result.data as User;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // Update user profile (admin only)
 export const updateUser = createAsyncThunk(
   'users/update',
@@ -438,7 +462,22 @@ const userSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Update user
+    // Update user self
+    builder
+      .addCase(updateUserSelf.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserSelf.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(updateUserSelf.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Update user (admin)
     builder
       .addCase(updateUser.pending, (state) => {
         state.loading = true;

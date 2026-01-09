@@ -1,7 +1,7 @@
 // Profile Form Component
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { updateUser, type User } from '../../store/userSlice';
+import { updateUserSelf, type User } from '../../store/userSlice';
 
 interface ProfileFormProps {
   user: User;
@@ -46,8 +46,8 @@ export default function ProfileForm({ user, isEditing, onCancelEdit, onSaveSucce
       return;
     }
 
-    const result = await dispatch(updateUser({ id: user.id, updates }));
-    if (updateUser.fulfilled.match(result)) {
+    const result = await dispatch(updateUserSelf({ id: user.id, updates }));
+    if (updateUserSelf.fulfilled.match(result)) {
       onSaveSuccess();
     }
   };

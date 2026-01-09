@@ -16,7 +16,6 @@ export default function AdminSKUs() {
   const [formData, setFormData] = useState({
     code: '',
     name: '',
-    gramsWeight: 0,
     price: 0,
     paymentMode: 'CLAIM' as 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION',
     requiresValidation: false,
@@ -47,7 +46,6 @@ export default function AdminSKUs() {
     setFormData({
       code: sku.code,
       name: sku.name,
-      gramsWeight: sku.gramsWeight,
       price: sku.price,
       paymentMode: sku.paymentMode,
       requiresValidation: sku.requiresValidation,
@@ -71,7 +69,6 @@ export default function AdminSKUs() {
     setFormData({
       code: '',
       name: '',
-      gramsWeight: 0,
       price: 0,
       paymentMode: 'CLAIM',
       requiresValidation: false,
