@@ -1,17 +1,15 @@
 // Merchant QR Code Generator Page
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { generateQRCode, generateBulkQRCodes, clearQRCodes } from '../../store/qrcodeSlice';
 import { fetchSKUs } from '../../store/skuSlice';
 import QRCodeDisplay from './QRCodeDisplay';
 import SKUSelector from './SKUSelector';
-import { FiHome, FiPieChart, FiGrid } from 'react-icons/fi';
 
 export default function MerchantQRGenerator() {
   const { merchantId } = useParams<{ merchantId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useAppDispatch();
 
   const { generatedQRCodes, loading, error } = useAppSelector((state) => state.qrcode);
@@ -49,46 +47,8 @@ export default function MerchantQRGenerator() {
 
   const activeSKUs = skus.filter(sku => sku.isActive);
 
-  // Secondary navigation items for merchant pages
-  const navItems = [
-    { path: '/', label: 'Home', icon: FiHome },
-    { path: `/merchant/${merchantId}`, label: 'Dashboard', icon: FiPieChart },
-    { path: `/merchant/${merchantId}/qr-generator`, label: 'QR Generator', icon: FiGrid },
-  ];
-
   return (
-    <div className="">
-      {/* Secondary Navigation */}
-      <div className="bg-white border-b border-gray-200 shadow-sm animate-on-load fade-down duration-fast">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-between h-12">
-            <span className="text-sm font-medium text-gray-600 animate-on-load fade-right duration-normal">QR Code Generator</span>
-            <nav className="flex items-center gap-1">
-              {navItems.map((item, index) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                const durations = ['duration-fast', 'duration-normal', 'duration-light-slow'];
-                return (
-                  <button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer animate-on-load zoom-in ${durations[index]} ${
-                      isActive
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-up duration-normal">
@@ -182,11 +142,10 @@ export default function MerchantQRGenerator() {
             <h3 className="font-semibold text-blue-800 mb-3">How to Use QR Codes</h3>
             <ul className="text-sm text-gray-700 space-y-2">
               <li>• Print and display QR codes at point-of-sale</li>
-              <li>• Customers scan with their phone camera</li>
-              <li>• They're redirected to checkout with pre-filled merchant and SKU</li>
-              <li>• Transaction is automatically linked to your merchant wallet</li>
-            </ul>
-          </div>
+            <li>• Customers scan with their phone camera</li>
+            <li>• They're redirected to checkout with pre-filled merchant and SKU</li>
+            <li>• Transaction is automatically linked to your merchant wallet</li>
+          </ul>
         </div>
       </div>
     </div>

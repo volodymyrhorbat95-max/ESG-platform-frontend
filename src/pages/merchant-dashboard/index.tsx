@@ -1,6 +1,6 @@
 // Merchant Dashboard - Corporate wallet and ESG tracking
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchMerchantWallet } from '../../store/walletSlice';
 import OverallStats from './OverallStats';
@@ -8,12 +8,10 @@ import DateRangeFilter from './DateRangeFilter';
 import TransactionHistory from './TransactionHistory';
 import ESGReport from './ESGReport';
 import ESGExportButton from './ESGExportButton';
-import { FiHome, FiPieChart, FiGrid } from 'react-icons/fi';
 
 export default function MerchantDashboard() {
   const { merchantId } = useParams<{ merchantId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useAppDispatch();
 
   const { merchantWallet, loading } = useAppSelector((state) => state.wallets);
@@ -69,45 +67,8 @@ export default function MerchantDashboard() {
     0
   );
 
-  // Secondary navigation items for merchant pages
-  const navItems = [
-    { path: '/', label: 'Home', icon: FiHome },
-    { path: `/merchant/${merchantId}`, label: 'Dashboard', icon: FiPieChart },
-    { path: `/merchant/${merchantId}/qr-generator`, label: 'QR Generator', icon: FiGrid },
-  ];
-
   return (
-    <div className="">
-      {/* Secondary Navigation */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-between h-12">
-            <span className="text-sm font-medium text-gray-600">Merchant Dashboard</span>
-            <nav className="flex items-center gap-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                return (
-                  <button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      <div className="py-8 px-4">
+    <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
@@ -158,13 +119,12 @@ export default function MerchantDashboard() {
             </div>
           </div>
 
-          <div className="animate-on-load flip-up duration-very-slow">
-            <ESGReport
-              totalAccumulatedKg={totalAccumulatedKg}
-              totalAccumulated={Number(wallet.totalAccumulated)}
-              transactionCount={transactions.length}
-            />
-          </div>
+        <div className="animate-on-load flip-up duration-very-slow">
+          <ESGReport
+            totalAccumulatedKg={totalAccumulatedKg}
+            totalAccumulated={Number(wallet.totalAccumulated)}
+            transactionCount={transactions.length}
+          />
         </div>
       </div>
     </div>

@@ -9,7 +9,6 @@ import WalletSummary from './WalletSummary';
 import TransactionHistory from './TransactionHistory';
 import ImpactVisualization from './ImpactVisualization';
 import SocialShare from './SocialShare';
-import { FiHome, FiUser, FiPieChart } from 'react-icons/fi';
 
 export default function UserDashboard() {
   const { userId } = useParams<{ userId: string }>();
@@ -52,46 +51,8 @@ export default function UserDashboard() {
   const balanceKg = (Number(wallet.currentBalance) / 1000).toFixed(3);
   const totalAccumulatedKg = (Number(wallet.totalAccumulated) / 1000).toFixed(3);
 
-  // Secondary navigation items for user pages
-  const navItems = [
-    { path: '/', label: 'Home', icon: FiHome },
-    { path: `/dashboard/${userId}`, label: 'Dashboard', icon: FiPieChart },
-    { path: `/profile/${userId}`, label: 'Profile', icon: FiUser },
-  ];
-
   return (
-    <div className="">
-      {/* Secondary Navigation */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-between h-12">
-            <span className="text-sm font-medium text-gray-600">User Dashboard</span>
-            <nav className="flex items-center gap-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path ||
-                  (item.path.includes('/dashboard/') && location.pathname.includes('/dashboard/'));
-                return (
-                  <button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
-                      isActive && !item.path.includes('/profile/')
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      <div className="py-8 px-4">
+    <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
@@ -136,17 +97,16 @@ export default function UserDashboard() {
           />
         </div>
 
-          {/* Social Sharing */}
-          {userId && (
-            <div className="animate-on-load fade-up duration-very-slow">
-              <SocialShare
-                userId={userId}
-                totalImpactKg={totalAccumulatedKg}
-                plasticBottles={Math.floor(Number(wallet.totalAccumulated) / 25)}
-              />
-            </div>
-          )}
-        </div>
+        {/* Social Sharing */}
+        {userId && (
+          <div className="animate-on-load fade-up duration-very-slow">
+            <SocialShare
+              userId={userId}
+              totalImpactKg={totalAccumulatedKg}
+              plasticBottles={Math.floor(Number(wallet.totalAccumulated) / 25)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
