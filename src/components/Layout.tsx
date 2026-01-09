@@ -251,8 +251,8 @@ export default function Layout({ children }: LayoutProps) {
                 </>
               )}
 
-              {/* Login button - shown when user is NOT authenticated */}
-              {!userId && !isPublicPage && (
+              {/* Login button - shown when NEITHER admin NOR user is authenticated */}
+              {!userId && !isAuthenticated && !isPublicPage && (
                 <button
                   onClick={() => setLoginModalOpen(true)}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer bg-white/20 text-white hover:bg-white/30 shadow-md"
