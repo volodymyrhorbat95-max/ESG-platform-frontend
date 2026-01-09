@@ -100,7 +100,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 flex flex-col">
       {/* Navigation Header */}
-      <header className="bg-emerald-600/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="bg-emerald-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             {/* Logo */}

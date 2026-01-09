@@ -18,36 +18,36 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-up duration-normal">
       <h2 className="text-xl font-bold text-gray-800 mb-4 animate-on-load fade-right duration-fast">Filters</h2>
-      <div className="space-y-4 animate-on-load zoom-in duration-light-slow">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-on-load fade-down duration-normal">
-          <div className="animate-on-load fade-left duration-fast">
-            <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="animate-on-load fade-left duration-very-fast">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Start Date *
             </label>
             <input
               type="date"
               value={filters.startDate}
               onChange={(e) => onFiltersChange({ ...filters, startDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load zoom-in duration-normal"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
             />
           </div>
           <div className="animate-on-load fade-right duration-fast">
-            <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               End Date *
             </label>
             <input
               type="date"
               value={filters.endDate}
               onChange={(e) => onFiltersChange({ ...filters, endDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load flip-up duration-light-slow"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
             />
           </div>
         </div>
 
         {exportType === 'corsairConnect' && (
           <>
-            <div className="animate-on-load fade-up duration-normal">
-              <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-left duration-very-fast">
+            <div className="animate-on-load zoom-in duration-normal">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Merchant ID (optional)
               </label>
               <input
@@ -55,11 +55,11 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
                 value={filters.merchantId}
                 onChange={(e) => onFiltersChange({ ...filters, merchantId: e.target.value })}
                 placeholder="Filter by merchant ID"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load zoom-out duration-normal"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
             </div>
-            <div className="animate-on-load fade-down duration-light-slow">
-              <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-right duration-very-fast">
+            <div className="animate-on-load fade-up duration-light-slow">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Partner ID (optional)
               </label>
               <input
@@ -67,11 +67,11 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
                 value={filters.partnerId}
                 onChange={(e) => onFiltersChange({ ...filters, partnerId: e.target.value })}
                 placeholder="Filter by partner ID"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load fade-left duration-normal"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
             </div>
-            <div className="animate-on-load fade-right duration-slow">
-              <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load zoom-in duration-very-fast">
+            <div className="animate-on-load fade-down duration-slow">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 User ID (optional)
               </label>
               <input
@@ -79,18 +79,18 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
                 value={filters.userId}
                 onChange={(e) => onFiltersChange({ ...filters, userId: e.target.value })}
                 placeholder="Filter by user ID"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load flip-down duration-light-slow"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
             </div>
-            <div className="flex items-center animate-on-load fade-up duration-very-slow">
+            <div className="flex items-center animate-on-load flip-up duration-very-slow">
               <input
                 type="checkbox"
                 id="corsairConnectOnly"
                 checked={filters.corsairConnectOnly}
                 onChange={(e) => onFiltersChange({ ...filters, corsairConnectOnly: e.target.checked })}
-                className="mr-2 animate-on-load zoom-in duration-fast"
+                className="mr-2"
               />
-              <label htmlFor="corsairConnectOnly" className="text-sm text-gray-700 animate-on-load fade-left duration-normal">
+              <label htmlFor="corsairConnectOnly" className="text-sm text-gray-700">
                 Only include transactions flagged for Corsair Connect
               </label>
             </div>
@@ -98,8 +98,8 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
         )}
 
         {exportType === 'partner' && (
-          <div className="animate-on-load fade-up duration-normal">
-            <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+          <div className="animate-on-load zoom-in duration-normal">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Partner ID *
             </label>
             <input
@@ -107,7 +107,7 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
               value={filters.partnerId}
               onChange={(e) => onFiltersChange({ ...filters, partnerId: e.target.value })}
               placeholder="Enter partner ID"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load zoom-in duration-light-slow"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               required
             />
           </div>
@@ -115,62 +115,62 @@ export default function ExportFilters({ exportType, filters, onFiltersChange }: 
 
         {exportType === 'reconciliation' && (
           <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
-            <h4 className="font-semibold text-purple-800 mb-2">Stripe Reconciliation Report</h4>
-            <p className="text-sm text-gray-700">
+            <h4 className="font-semibold text-purple-800 mb-2 animate-on-load fade-down duration-fast">Stripe Reconciliation Report</h4>
+            <p className="text-sm text-gray-700 animate-on-load fade-right duration-normal">
               This report shows all Stripe payments within the selected date range, including:
             </p>
             <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
-              <li>Transaction details and Stripe Payment Intent IDs</li>
-              <li>Gross transaction amounts</li>
-              <li>Platform fees (10% of transaction)</li>
-              <li>Net merchant payouts</li>
-              <li>Summary totals for the period</li>
+              <li className="animate-on-load fade-left duration-very-fast">Transaction details and Stripe Payment Intent IDs</li>
+              <li className="animate-on-load zoom-in duration-fast">Gross transaction amounts</li>
+              <li className="animate-on-load fade-up duration-normal">Platform fees (10% of transaction)</li>
+              <li className="animate-on-load flip-up duration-light-slow">Net merchant payouts</li>
+              <li className="animate-on-load fade-down duration-slow">Summary totals for the period</li>
             </ul>
           </div>
         )}
 
         {exportType === 'impact' && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
-            <h4 className="font-semibold text-emerald-800 mb-2">Aggregate Impact Report</h4>
-            <p className="text-sm text-gray-700">
+            <h4 className="font-semibold text-emerald-800 mb-2 animate-on-load fade-down duration-fast">Aggregate Impact Report</h4>
+            <p className="text-sm text-gray-700 animate-on-load fade-left duration-normal">
               This report aggregates impact data across all merchants and partners, including:
             </p>
             <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
-              <li>Overall summary (total transactions, revenue, trees planted, plastic removed)</li>
-              <li>Breakdown by merchant</li>
-              <li>Breakdown by partner</li>
-              <li>Breakdown by SKU type (e.g., tree_planting, plastic_removal)</li>
+              <li className="animate-on-load fade-right duration-very-fast">Overall summary (total transactions, revenue, trees planted, plastic removed)</li>
+              <li className="animate-on-load zoom-in duration-fast">Breakdown by merchant</li>
+              <li className="animate-on-load fade-up duration-normal">Breakdown by partner</li>
+              <li className="animate-on-load flip-down duration-light-slow">Breakdown by SKU type (e.g., tree_planting, plastic_removal)</li>
             </ul>
           </div>
         )}
 
         {exportType === 'trends' && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
-            <h4 className="font-semibold text-blue-800 mb-2">Trend Analysis Report</h4>
-            <p className="text-sm text-gray-700">
+            <h4 className="font-semibold text-blue-800 mb-2 animate-on-load fade-down duration-fast">Trend Analysis Report</h4>
+            <p className="text-sm text-gray-700 animate-on-load zoom-in duration-normal">
               This report provides monthly trend analysis for strategic planning:
             </p>
             <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
-              <li>Monthly transaction volume and revenue</li>
-              <li>Month-over-month growth percentages</li>
-              <li>Impact trends over time</li>
-              <li>SKU type breakdown per month</li>
+              <li className="animate-on-load fade-left duration-very-fast">Monthly transaction volume and revenue</li>
+              <li className="animate-on-load fade-right duration-fast">Month-over-month growth percentages</li>
+              <li className="animate-on-load zoom-out duration-normal">Impact trends over time</li>
+              <li className="animate-on-load flip-up duration-light-slow">SKU type breakdown per month</li>
             </ul>
           </div>
         )}
 
         {exportType === 'skuPerformance' && (
           <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 animate-on-load fade-up duration-normal">
-            <h4 className="font-semibold text-orange-800 mb-2">SKU Performance Report</h4>
-            <p className="text-sm text-gray-700">
+            <h4 className="font-semibold text-orange-800 mb-2 animate-on-load fade-down duration-fast">SKU Performance Report</h4>
+            <p className="text-sm text-gray-700 animate-on-load fade-up duration-normal">
               This report analyzes individual SKU performance for product development:
             </p>
             <ul className="text-sm text-gray-600 mt-2 list-disc list-inside space-y-1">
-              <li>Per-SKU transaction volume and revenue</li>
-              <li>Unique user counts per SKU</li>
-              <li>Average transaction value</li>
-              <li>Revenue share percentages</li>
-              <li>Merchant breakdown for top SKUs</li>
+              <li className="animate-on-load zoom-in duration-very-fast">Per-SKU transaction volume and revenue</li>
+              <li className="animate-on-load fade-left duration-fast">Unique user counts per SKU</li>
+              <li className="animate-on-load fade-right duration-normal">Average transaction value</li>
+              <li className="animate-on-load flip-down duration-light-slow">Revenue share percentages</li>
+              <li className="animate-on-load fade-down duration-slow">Merchant breakdown for top SKUs</li>
             </ul>
           </div>
         )}

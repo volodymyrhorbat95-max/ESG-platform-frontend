@@ -39,8 +39,8 @@ export default function SKUSelector({
               className="w-5 h-5 text-primary"
             />
             <div className="flex-1">
-              <p className="font-semibold text-gray-800">{sku.name}</p>
-              <p className="text-sm text-gray-600">SKU: {sku.code} • {sku.paymentMode}</p>
+              <p className="font-semibold text-gray-800 animate-on-load fade-right duration-very-fast">{sku.name}</p>
+              <p className="text-sm text-gray-600 animate-on-load fade-left duration-fast">SKU: {sku.code} • {sku.paymentMode}</p>
             </div>
           </label>
         ))}

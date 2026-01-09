@@ -36,23 +36,23 @@ export default function ESGExportButton({ merchantId }: ESGExportButtonProps) {
     <div className="relative">
       <button
         onClick={() => setShowDatePicker(!showDatePicker)}
-        className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load zoom-in duration-normal"
         disabled={loading}
       >
         {loading ? 'Exporting...' : 'Download ESG Report'}
       </button>
 
       {showDatePicker && (
-        <div className="absolute top-full mt-2 right-0 bg-white border border-gray-200 rounded-lg shadow-xl p-6 z-10 min-w-[320px]">
+        <div className="absolute top-full mt-2 right-0 bg-white border border-gray-200 rounded-lg shadow-xl p-6 z-10 min-w-[320px] animate-on-load fade-down duration-fast">
           <div className="mb-4">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Select Report Period</h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <h3 className="text-lg font-bold text-gray-800 mb-2 animate-on-load fade-right duration-very-fast">Select Report Period</h3>
+            <p className="text-sm text-gray-600 mb-4 animate-on-load fade-left duration-fast">
               Choose the date range for your ESG impact report
             </p>
           </div>
 
           <div className="space-y-4">
-            <div>
+            <div className="animate-on-load fade-up duration-normal">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Start Date
               </label>
@@ -64,7 +64,7 @@ export default function ESGExportButton({ merchantId }: ESGExportButtonProps) {
               />
             </div>
 
-            <div>
+            <div className="animate-on-load fade-down duration-light-slow">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 End Date
               </label>
@@ -78,12 +78,12 @@ export default function ESGExportButton({ merchantId }: ESGExportButtonProps) {
           </div>
 
           {error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg animate-on-load flip-down duration-slow">
               <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
 
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-3 mt-6 animate-on-load zoom-out duration-very-slow">
             <button
               onClick={handleExport}
               disabled={loading || !startDate || !endDate}

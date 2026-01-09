@@ -80,7 +80,7 @@ export default function PlatformFeeSection({
       ) : (
         // Edit Mode
         <div className="space-y-6">
-          <div>
+          <div className="animate-on-load fade-down duration-fast">
             <label htmlFor="fee" className="block text-sm font-medium text-gray-700 mb-2">
               Platform Fee (%) *
             </label>
@@ -97,10 +97,10 @@ export default function PlatformFeeSection({
               }`}
               placeholder="10"
             />
-            {feeValidationError && <p className="text-red-500 text-sm mt-1">{feeValidationError}</p>}
+            {feeValidationError && <p className="text-red-500 text-sm mt-1 animate-on-load fade-up duration-very-fast">{feeValidationError}</p>}
           </div>
 
-          <div>
+          <div className="animate-on-load zoom-in duration-normal">
             <label htmlFor="feeDescription" className="block text-sm font-medium text-gray-700 mb-2">
               Description (Optional)
             </label>
@@ -115,17 +115,17 @@ export default function PlatformFeeSection({
           </div>
 
           {/* Warning */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="text-yellow-800 font-semibold mb-2">Split Payment Info</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 animate-on-load fade-up duration-light-slow">
+            <p className="text-yellow-800 font-semibold mb-2 animate-on-load fade-right duration-fast">Split Payment Info</p>
             <ul className="text-sm text-yellow-700 space-y-1 list-disc list-inside">
-              <li>This fee is applied to all PAY flow transactions via Stripe Connect</li>
-              <li>Example: 10% fee on €100 = €10 to CSR26, €90 to merchant</li>
-              <li>Changes affect all future transactions only</li>
+              <li className="animate-on-load fade-left duration-very-fast">This fee is applied to all PAY flow transactions via Stripe Connect</li>
+              <li className="animate-on-load zoom-in duration-fast">Example: 10% fee on €100 = €10 to CSR26, €90 to merchant</li>
+              <li className="animate-on-load fade-up duration-normal">Changes affect all future transactions only</li>
             </ul>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 animate-on-load zoom-out duration-very-slow">
             <button
               onClick={onUpdate}
               disabled={loading}

@@ -36,8 +36,8 @@ export default function SharedDashboard() {
             <svg className="w-16 h-16 text-red-400 mx-auto mb-4\" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Link Not Found</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 animate-on-load fade-down duration-fast">Link Not Found</h2>
+            <p className="text-gray-600 mb-6 animate-on-load fade-up duration-normal">
               {error || 'This shared dashboard link is invalid or has expired.'}
             </p>
             <button
@@ -84,15 +84,15 @@ export default function SharedDashboard() {
         {/* Impact Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white animate-on-load zoom-in duration-normal">
-            <h3 className="text-lg font-semibold mb-2 opacity-90">Total Plastic Removed</h3>
-            <p className="text-4xl font-bold mb-1">{totalAccumulatedKg} kg</p>
-            <p className="text-sm opacity-80">{Number(wallet.totalAccumulated).toLocaleString()} grams</p>
+            <h3 className="text-lg font-semibold mb-2 opacity-90 animate-on-load fade-down duration-very-fast">Total Plastic Removed</h3>
+            <p className="text-4xl font-bold mb-1 animate-on-load zoom-in duration-fast">{totalAccumulatedKg} kg</p>
+            <p className="text-sm opacity-80 animate-on-load fade-up duration-normal">{Number(wallet.totalAccumulated).toLocaleString()} grams</p>
           </div>
 
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white animate-on-load zoom-in duration-normal">
-            <h3 className="text-lg font-semibold mb-2 opacity-90">Current Balance</h3>
-            <p className="text-4xl font-bold mb-1">{balanceKg} kg</p>
-            <p className="text-sm opacity-80">{Number(wallet.currentBalance).toLocaleString()} grams</p>
+            <h3 className="text-lg font-semibold mb-2 opacity-90 animate-on-load fade-down duration-very-fast">Current Balance</h3>
+            <p className="text-4xl font-bold mb-1 animate-on-load flip-up duration-fast">{balanceKg} kg</p>
+            <p className="text-sm opacity-80 animate-on-load fade-up duration-normal">{Number(wallet.currentBalance).toLocaleString()} grams</p>
           </div>
         </div>
 
@@ -110,8 +110,8 @@ export default function SharedDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                 </svg>
               </div>
-              <p className="text-3xl font-bold text-blue-600 mb-1">{plasticBottles.toLocaleString()}</p>
-              <p className="text-sm text-gray-600">Plastic Bottles</p>
+              <p className="text-3xl font-bold text-blue-600 mb-1 animate-on-load zoom-in duration-fast">{plasticBottles.toLocaleString()}</p>
+              <p className="text-sm text-gray-600 animate-on-load fade-up duration-normal">Plastic Bottles</p>
             </div>
 
             {/* Trees */}
@@ -121,8 +121,8 @@ export default function SharedDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
               </div>
-              <p className="text-3xl font-bold text-green-600 mb-1">{treesEquivalent}</p>
-              <p className="text-sm text-gray-600">Trees Worth of Impact</p>
+              <p className="text-3xl font-bold text-green-600 mb-1 animate-on-load flip-up duration-fast">{treesEquivalent}</p>
+              <p className="text-sm text-gray-600 animate-on-load fade-down duration-normal">Trees Worth of Impact</p>
             </div>
 
             {/* Ocean Cleanup */}
@@ -132,21 +132,21 @@ export default function SharedDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-3xl font-bold text-teal-600 mb-1">{oceanCleanup}</p>
-              <p className="text-sm text-gray-600">Ocean Cleanup Contributions</p>
+              <p className="text-3xl font-bold text-teal-600 mb-1 animate-on-load zoom-out duration-fast">{oceanCleanup}</p>
+              <p className="text-sm text-gray-600 animate-on-load fade-up duration-normal">Ocean Cleanup Contributions</p>
             </div>
           </div>
         </div>
 
         {/* Call to Action */}
         <div className="bg-gradient-to-r from-primary to-green-600 rounded-xl shadow-lg p-6 text-white text-center animate-on-load fade-up duration-very-slow">
-          <h3 className="text-2xl font-bold mb-3">Want to make your own impact?</h3>
-          <p className="mb-4 opacity-90">
+          <h3 className="text-2xl font-bold mb-3 animate-on-load fade-down duration-fast">Want to make your own impact?</h3>
+          <p className="mb-4 opacity-90 animate-on-load zoom-in duration-normal">
             Join thousands of people making a real difference for our planet.
           </p>
           <button
             onClick={() => navigate('/')}
-            className="inline-block px-8 py-3 bg-white text-green-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            className="inline-block px-8 py-3 bg-white text-green-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors animate-on-load flip-up duration-light-slow"
           >
             Get Started Today
           </button>
@@ -154,9 +154,9 @@ export default function SharedDashboard() {
 
         {/* Footer */}
         <div className="text-center mt-6 text-sm text-gray-500 animate-on-load fade-up duration-very-slow">
-          <p>Shared via CSR26 Impact Processor</p>
+          <p className="animate-on-load fade-down duration-fast">Shared via CSR26 Impact Processor</p>
           {linkStats.viewCount > 1 && (
-            <p className="mt-1">This impact page has been viewed {linkStats.viewCount} times</p>
+            <p className="mt-1 animate-on-load zoom-in duration-normal">This impact page has been viewed {linkStats.viewCount} times</p>
           )}
         </div>
       </div>

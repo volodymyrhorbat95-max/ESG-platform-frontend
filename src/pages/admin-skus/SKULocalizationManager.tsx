@@ -134,19 +134,19 @@ export default function SKULocalizationManager({
   const availableLocales = LOCALE_OPTIONS.filter((l) => !existingLocales.includes(l.code) || l.code === formData.locale);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-on-load fade-up duration-normal">
+      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-on-load zoom-in duration-fast">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center">
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center animate-on-load fade-down duration-very-fast">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Market Localizations</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-gray-800 animate-on-load fade-right duration-fast">Market Localizations</h2>
+            <p className="text-gray-600 animate-on-load fade-left duration-normal">
               SKU: {skuCode} - {skuName}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl font-bold cursor-pointer"
+            className="text-gray-500 hover:text-gray-700 text-2xl font-bold cursor-pointer animate-on-load zoom-out duration-light-slow"
           >
             &times;
           </button>
@@ -154,7 +154,7 @@ export default function SKULocalizationManager({
 
         <div className="p-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 animate-on-load flip-down duration-slow">
               {error}
             </div>
           )}
@@ -163,7 +163,7 @@ export default function SKULocalizationManager({
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="mb-6 bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors cursor-pointer"
+              className="mb-6 bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors cursor-pointer animate-on-load fade-up duration-normal"
             >
               + Add Market Localization
             </button>
@@ -171,14 +171,14 @@ export default function SKULocalizationManager({
 
           {/* Form */}
           {showForm && (
-            <form onSubmit={handleSubmit} className="bg-gray-50 rounded-xl p-6 mb-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
+            <form onSubmit={handleSubmit} className="bg-gray-50 rounded-xl p-6 mb-6 animate-on-load zoom-in duration-light-slow">
+              <h3 className="text-lg font-bold text-gray-800 mb-4 animate-on-load fade-down duration-fast">
                 {editingId ? 'Edit Localization' : 'New Market Localization'}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Locale Select */}
-                <div>
+                <div className="animate-on-load fade-right duration-very-fast">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Market / Locale *
                   </label>
@@ -199,7 +199,7 @@ export default function SKULocalizationManager({
                 </div>
 
                 {/* Currency */}
-                <div>
+                <div className="animate-on-load fade-left duration-fast">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Currency *</label>
                   <select
                     value={formData.currency}
@@ -219,7 +219,7 @@ export default function SKULocalizationManager({
                 </div>
 
                 {/* Localized Name */}
-                <div>
+                <div className="animate-on-load zoom-in duration-normal">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Localized Product Name *
                   </label>
@@ -234,7 +234,7 @@ export default function SKULocalizationManager({
                 </div>
 
                 {/* Localized Price */}
-                <div>
+                <div className="animate-on-load fade-up duration-light-slow">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Local Price ({formData.currency}) *
                   </label>
@@ -252,7 +252,7 @@ export default function SKULocalizationManager({
                 </div>
 
                 {/* Localized Description */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 animate-on-load flip-up duration-slow">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Localized Description
                   </label>
@@ -268,7 +268,7 @@ export default function SKULocalizationManager({
                 </div>
 
                 {/* Localized Terminology */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 animate-on-load fade-down duration-very-slow">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Local Terminology / Marketing Copy
                   </label>
@@ -285,7 +285,7 @@ export default function SKULocalizationManager({
               </div>
 
               {/* Form Actions */}
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-3 mt-6 animate-on-load zoom-out duration-very-slow">
                 <button
                   type="submit"
                   disabled={loading}
@@ -305,10 +305,10 @@ export default function SKULocalizationManager({
           )}
 
           {/* Localizations Table */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-on-load fade-up duration-slow">
             <table className="w-full">
               <thead className="bg-gray-50">
-                <tr>
+                <tr className="animate-on-load fade-down duration-fast">
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Market</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
                     Localized Name
@@ -323,13 +323,13 @@ export default function SKULocalizationManager({
               </thead>
               <tbody>
                 {loading && localizations.length === 0 ? (
-                  <tr>
+                  <tr className="animate-on-load zoom-in duration-normal">
                     <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
                       Loading localizations...
                     </td>
                   </tr>
                 ) : localizations.length === 0 ? (
-                  <tr>
+                  <tr className="animate-on-load fade-up duration-light-slow">
                     <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
                       No localizations configured yet. Add one to expand to new markets.
                     </td>
@@ -338,7 +338,7 @@ export default function SKULocalizationManager({
                   localizations.map((loc) => {
                     const localeInfo = LOCALE_OPTIONS.find((l) => l.code === loc.locale);
                     return (
-                      <tr key={loc.id} className="border-t border-gray-100 hover:bg-gray-50">
+                      <tr key={loc.id} className="border-t border-gray-100 hover:bg-gray-50 animate-on-load fade-right duration-normal">
                         <td className="px-4 py-3">
                           <div className="font-medium text-gray-800">
                             {localeInfo?.name || loc.locale}
@@ -393,13 +393,13 @@ export default function SKULocalizationManager({
           </div>
 
           {/* Integration Info */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h4 className="font-semibold text-blue-800 mb-2">Integration Usage</h4>
-            <p className="text-sm text-gray-700">
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg animate-on-load flip-up duration-very-slow">
+            <h4 className="font-semibold text-blue-800 mb-2 animate-on-load fade-down duration-fast">Integration Usage</h4>
+            <p className="text-sm text-gray-700 animate-on-load fade-left duration-normal">
               Use localized SKU data by adding the <code className="bg-blue-100 px-1 rounded">locale</code>{' '}
               parameter to your landing page URL:
             </p>
-            <code className="block mt-2 p-2 bg-white rounded text-sm text-gray-800 border border-blue-200">
+            <code className="block mt-2 p-2 bg-white rounded text-sm text-gray-800 border border-blue-200 animate-on-load zoom-in duration-light-slow">
               ?sku={skuCode}&locale=it-IT
             </code>
           </div>

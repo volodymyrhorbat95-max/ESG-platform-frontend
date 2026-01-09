@@ -19,14 +19,14 @@ export default function QRCodeDisplay({ qrCodes, onDownload }: QRCodeDisplayProp
           />
           {qrCode.sku && (
             <div className="mb-3">
-              <p className="font-semibold text-gray-800">{qrCode.sku.name}</p>
-              <p className="text-sm text-gray-600">SKU: {qrCode.sku.code}</p>
+              <p className="font-semibold text-gray-800 animate-on-load fade-up duration-very-fast">{qrCode.sku.name}</p>
+              <p className="text-sm text-gray-600 animate-on-load fade-down duration-fast">SKU: {qrCode.sku.code}</p>
             </div>
           )}
-          <p className="text-xs text-gray-500 mb-3 break-all">{qrCode.targetUrl}</p>
+          <p className="text-xs text-gray-500 mb-3 break-all animate-on-load zoom-in duration-normal">{qrCode.targetUrl}</p>
           <button
             onClick={() => onDownload(qrCode)}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors animate-on-load flip-up duration-light-slow"
           >
             Download PNG
           </button>
