@@ -33,10 +33,35 @@ export default function Layout({ children }: LayoutProps) {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { currentUser } = useAppSelector((state) => state.users);
+  const { currentSKU } = useAppSelector((state) => state.skus);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const [merchantMenuOpen, setMerchantMenuOpen] = useState(false);
   const adminDropdownRef = useRef<HTMLDivElement>(null);
   const merchantDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Load user from localStorage on mount if not already loaded
+  useEffect(() => {
+    console.log('🔍 Layout useEffect - Checking for user:', {
+      currentUser: currentUser?.id,
+      hasCurrentUser: !!currentUser
+    });
+
+    if (!currentUser) {
+      const storedUserId = localStorage.getItem('csr26_current_user_id');
+      console.log('📖 Loaded userId from localStorage:', storedUserId);
+
+      if (storedUserId) {
+        console.log('🚀 Fetching user data for ID:', storedUserId);
+        import('../store/userSlice').then(({ fetchUserById }) => {
+          dispatch(fetchUserById(storedUserId));
+        });
+      } else {
+        console.log('⚠️ No userId found in localStorage');
+      }
+    } else {
+      console.log('✅ User already loaded:', currentUser.id);
+    }
+  }, [currentUser, dispatch]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -54,8 +79,20 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   // Handle admin logout
-  const handleLogout = () => {
+  const handleAdminLogout = () => {
     dispatch(logout());
+    navigate('/');
+  };
+
+  // Handle user logout
+  const handleUserLogout = () => {
+    // Clear userId from localStorage
+    localStorage.removeItem('csr26_current_user_id');
+    // Clear currentUser from Redux
+    import('../store/userSlice').then(({ clearCurrentUser }) => {
+      dispatch(clearCurrentUser());
+    });
+    // Navigate to home
     navigate('/');
   };
 
@@ -66,7 +103,20 @@ export default function Layout({ children }: LayoutProps) {
 
   // Extract IDs from URL if on merchant/user pages
   const merchantId = isMerchantPage ? location.pathname.split('/')[2] : null;
-  const userId = isUserPage ? location.pathname.split('/')[2] : currentUser?.id;
+  // Show Dashboard/Profile tabs when user has registered (currentUser exists)
+  // This allows registered users to access their dashboard at any time, not just on SKU pages
+  const userId = currentUser?.id
+    ? currentUser.id
+    : (isUserPage ? location.pathname.split('/')[2] : null);
+
+  console.log('🎯 Layout State:', {
+    currentUserId: currentUser?.id,
+    currentSKU: currentSKU?.code,
+    computedUserId: userId,
+    willShowTabs: !!userId,
+    pathname: location.pathname
+  });
+
 
   // Admin menu items
   const adminItems = [
@@ -201,6 +251,14 @@ export default function Layout({ children }: LayoutProps) {
                     <FiSettings className="w-4 h-4" />
                     <span className="hidden sm:inline">Profile</span>
                   </button>
+                  <button
+                    onClick={handleUserLogout}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-emerald-100 hover:bg-red-500/20 hover:text-white cursor-pointer"
+                    title="Logout"
+                  >
+                    <FiLogOut className="w-4 h-4" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </button>
                 </>
               )}
 
@@ -273,7 +331,7 @@ export default function Layout({ children }: LayoutProps) {
               {/* Admin Logout - shown when admin is authenticated */}
               {isAuthenticated && (
                 <button
-                  onClick={handleLogout}
+                  onClick={handleAdminLogout}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 text-emerald-100 hover:bg-red-500/20 hover:text-white cursor-pointer"
                   title="Logout"
                 >

@@ -196,14 +196,17 @@ export default function LandingPage() {
 
   const handleMinimalRegister = async (email: string) => {
     try {
+      console.log('🚀 Starting minimal registration with email:', email);
       // Use minimal user registration for CLAIM type (email only)
       const user = await dispatch(registerMinimalUser({ email })).unwrap();
+      console.log('✅ Minimal registration SUCCESS, user:', user);
+      console.log('✅ User ID:', user.id);
 
       if (currentSKU && currentSKU.paymentMode === 'CLAIM') {
         await handleCreateTransaction(user.id);
       }
     } catch (error) {
-      console.error('Minimal registration failed:', error);
+      console.error('❌ Minimal registration failed:', error);
     }
   };
 
@@ -336,6 +339,18 @@ export default function LandingPage() {
       />
     );
   }
+
+  // Debug logging
+  console.log('🎯 Landing Page State:', {
+    step,
+    skuCode,
+    paymentMode: currentSKU?.paymentMode,
+    finalAmount,
+    calculatedImpact,
+    currentUserId: currentUser?.id,
+    hasCurrentUser: !!currentUser,
+    currentSKUCode: currentSKU?.code
+  });
 
   // Main Landing Page
   return (

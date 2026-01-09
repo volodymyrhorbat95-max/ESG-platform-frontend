@@ -85,6 +85,38 @@ interface UserState {
   error: string | null;
 }
 
+// LocalStorage helpers for persisting user session
+const STORAGE_KEY = 'csr26_current_user_id';
+
+const saveUserIdToStorage = (userId: string) => {
+  try {
+    console.log('💾 Saving userId to localStorage:', userId);
+    localStorage.setItem(STORAGE_KEY, userId);
+    console.log('✅ Saved to localStorage successfully');
+  } catch (error) {
+    console.error('❌ Failed to save userId to localStorage:', error);
+  }
+};
+
+const getUserIdFromStorage = (): string | null => {
+  try {
+    const userId = localStorage.getItem(STORAGE_KEY);
+    console.log('📖 Loading userId from localStorage:', userId);
+    return userId;
+  } catch (error) {
+    console.error('❌ Failed to load userId from localStorage:', error);
+    return null;
+  }
+};
+
+const clearUserIdFromStorage = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.error('Failed to clear userId from localStorage:', error);
+  }
+};
+
 const initialState: UserState = {
   currentUser: null,
   users: [],
@@ -364,8 +396,10 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(registerMinimalUser.fulfilled, (state, action) => {
+        console.log('✅ registerMinimalUser.fulfilled - Setting currentUser:', action.payload);
         state.loading = false;
         state.currentUser = action.payload;
+        saveUserIdToStorage(action.payload.id);
       })
       .addCase(registerMinimalUser.rejected, (state, action) => {
         state.loading = false;
@@ -379,8 +413,10 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(registerStandardUser.fulfilled, (state, action) => {
+        console.log('✅ registerStandardUser.fulfilled - Setting currentUser:', action.payload);
         state.loading = false;
         state.currentUser = action.payload;
+        saveUserIdToStorage(action.payload.id);
       })
       .addCase(registerStandardUser.rejected, (state, action) => {
         state.loading = false;
@@ -396,6 +432,7 @@ const userSlice = createSlice({
       .addCase(registerFullUser.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
+        saveUserIdToStorage(action.payload.id);
       })
       .addCase(registerFullUser.rejected, (state, action) => {
         state.loading = false;
@@ -411,6 +448,7 @@ const userSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
+        saveUserIdToStorage(action.payload.id);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -424,6 +462,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
+        console.log('✅ fetchUserById.fulfilled - Setting currentUser:', action.payload);
         state.loading = false;
         state.currentUser = action.payload;
       })
@@ -522,6 +561,11 @@ const userSlice = createSlice({
       });
   },
 });
+
+// Export helper function for logout
+export const logoutUser = () => {
+  clearUserIdFromStorage();
+};
 
 export const { setCurrentUser, clearCurrentUser, clearUserError } = userSlice.actions;
 export default userSlice.reducer;
