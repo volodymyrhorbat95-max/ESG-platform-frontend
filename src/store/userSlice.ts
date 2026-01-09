@@ -98,17 +98,6 @@ const saveUserIdToStorage = (userId: string) => {
   }
 };
 
-const getUserIdFromStorage = (): string | null => {
-  try {
-    const userId = localStorage.getItem(STORAGE_KEY);
-    console.log('📖 Loading userId from localStorage:', userId);
-    return userId;
-  } catch (error) {
-    console.error('❌ Failed to load userId from localStorage:', error);
-    return null;
-  }
-};
-
 const clearUserIdFromStorage = () => {
   try {
     localStorage.removeItem(STORAGE_KEY);
