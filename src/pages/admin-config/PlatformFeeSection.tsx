@@ -1,5 +1,5 @@
 // Platform Fee Configuration Section
-import React from 'react';
+
 
 interface PlatformFeeSectionProps {
   platformFee: number | null;

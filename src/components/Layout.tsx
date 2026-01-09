@@ -1,4 +1,5 @@
 // Layout Component with Navigation Header
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { logout } from '../store/authSlice';
@@ -14,7 +15,9 @@ import {
   FiFileText,
   FiUsers,
   FiShoppingBag,
-  FiSettings
+  FiSettings,
+  FiChevronDown,
+  FiGrid
 } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
 
@@ -28,6 +31,20 @@ export default function Layout({ children }: LayoutProps) {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { currentUser } = useAppSelector((state) => state.users);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setAdminMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Handle admin logout
   const handleLogout = () => {
@@ -35,24 +52,25 @@ export default function Layout({ children }: LayoutProps) {
     navigate('/');
   };
 
-  // Navigation items - conditionally show admin items
-  const navItems = [
-    { path: '/', label: 'Home', icon: FiHome, adminOnly: false },
-    ...(isAuthenticated ? [
-      { path: '/admin/skus', label: 'SKUs', icon: FiPackage, adminOnly: true },
-      { path: '/admin/gift-cards', label: 'Gift Cards', icon: FiGift, adminOnly: true },
-      { path: '/admin/partners', label: 'Partners', icon: FiUsers, adminOnly: true },
-      { path: '/admin/merchants', label: 'Merchants', icon: FiShoppingBag, adminOnly: true },
-      { path: '/admin/transactions', label: 'Transactions', icon: FiCreditCard, adminOnly: true },
-      { path: '/admin/users', label: 'Users', icon: FiUser, adminOnly: true },
-      { path: '/admin/export', label: 'Export', icon: FiDownload, adminOnly: true },
-      { path: '/admin/config', label: 'Config', icon: FiSettings, adminOnly: true },
-    ] : []),
+  // Admin menu items
+  const adminItems = [
+    { path: '/admin/skus', label: 'SKUs', icon: FiPackage },
+    { path: '/admin/gift-cards', label: 'Gift Cards', icon: FiGift },
+    { path: '/admin/partners', label: 'Partners', icon: FiUsers },
+    { path: '/admin/merchants', label: 'Merchants', icon: FiShoppingBag },
+    { path: '/admin/transactions', label: 'Transactions', icon: FiCreditCard },
+    { path: '/admin/users', label: 'Users', icon: FiUser },
+    { path: '/admin/export', label: 'Export', icon: FiDownload },
+    { path: '/admin/config', label: 'Config', icon: FiSettings },
   ];
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/' || location.search.includes('sku=');
     return location.pathname.startsWith(path);
+  };
+
+  const isAdminActive = () => {
+    return location.pathname.startsWith('/admin');
   };
 
   return (
@@ -77,23 +95,62 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* Navigation */}
             <nav className="flex items-center gap-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
+              {/* Home Button */}
+              <button
+                onClick={() => navigate('/')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                  isActive('/')
+                    ? 'bg-white/20 text-white shadow-md'
+                    : 'text-emerald-100 hover:bg-white/15 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
+                }`}
+              >
+                <FiHome className="w-4 h-4" />
+                <span className="hidden sm:inline">Home</span>
+              </button>
+
+              {/* Admin Dropdown - shown when admin is authenticated */}
+              {isAuthenticated && (
+                <div className="relative" ref={dropdownRef}>
                   <button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
+                    onClick={() => setAdminMenuOpen(!adminMenuOpen)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
-                      isActive(item.path)
+                      isAdminActive()
                         ? 'bg-white/20 text-white shadow-md'
-                        : 'text-emerald-100 hover:bg-white/15 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
+                        : 'text-emerald-100 hover:bg-white/15 hover:text-white'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{item.label}</span>
+                    <FiGrid className="w-4 h-4" />
+                    <span className="hidden sm:inline">Admin</span>
+                    <FiChevronDown className={`w-4 h-4 transition-transform ${adminMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
-                );
-              })}
+
+                  {/* Dropdown Menu */}
+                  {adminMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
+                      {adminItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <button
+                            key={item.path}
+                            onClick={() => {
+                              navigate(item.path);
+                              setAdminMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors cursor-pointer ${
+                              isActive(item.path)
+                                ? 'bg-emerald-50 text-emerald-700 font-medium'
+                                : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* My Dashboard - shown when user has registered in current session */}
               {currentUser?.id && (

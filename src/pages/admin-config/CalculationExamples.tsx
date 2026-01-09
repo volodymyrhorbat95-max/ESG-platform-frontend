@@ -1,5 +1,5 @@
 // Calculation Examples Section
-import React from 'react';
+
 
 interface CalculationExamplesProps {
   currentCSRPrice: number;

@@ -1,5 +1,5 @@
 // CSR Price Configuration Section
-import React from 'react';
+
 
 interface CSRPriceSectionProps {
   currentCSRPrice: number | null;

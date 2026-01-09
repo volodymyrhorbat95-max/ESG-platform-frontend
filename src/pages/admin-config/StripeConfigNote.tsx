@@ -1,5 +1,5 @@
 // Stripe Configuration Note Section
-import React from 'react';
+
 
 export default function StripeConfigNote() {
   return (
