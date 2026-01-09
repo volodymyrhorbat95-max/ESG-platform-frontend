@@ -99,12 +99,11 @@ export default function SKUForm({
             <input
               type="number"
               step="0.01"
-              value={formData.corsairThreshold || 0}
-              onChange={(e) =>
-                onFormDataChange({ ...formData, corsairThreshold: parseFloat(e.target.value) || 0 })
-              }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load fade-left duration-normal"
+              value={formData.corsairThreshold || 10}
+              disabled
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed animate-on-load fade-left duration-normal"
             />
+            <p className="text-xs text-gray-500 mt-1">Global threshold - currently fixed at €10.00</p>
           </div>
 
           <div className="animate-on-load flip-up duration-slow">
