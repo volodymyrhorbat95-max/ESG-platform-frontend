@@ -198,13 +198,15 @@ export default function LandingPage() {
     try {
       console.log('🚀 Starting minimal registration with email:', email);
       // Use minimal user registration for CLAIM type (email only)
-      const user = await dispatch(registerMinimalUser({ email })).unwrap();
-      console.log('✅ Minimal registration SUCCESS, user:', user);
+      const result = await dispatch(registerMinimalUser({ email })).unwrap();
+      console.log('✅ Minimal registration SUCCESS, result:', result);
+      const { user, sessionToken } = result;
       console.log('✅ User ID:', user.id);
+      console.log('✅ Session Token received:', sessionToken ? 'YES' : 'NO');
 
-      // Set user as authenticated in userAuth slice
+      // Set user as authenticated in userAuth slice (with sessionToken)
       const { setAuthenticatedUser } = await import('../../store/userAuthSlice');
-      dispatch(setAuthenticatedUser(user));
+      dispatch(setAuthenticatedUser({ user, sessionToken }));
 
       if (currentSKU && currentSKU.paymentMode === 'CLAIM') {
         await handleCreateTransaction(user.id);
@@ -222,11 +224,12 @@ export default function LandingPage() {
     termsAccepted: boolean;
   }) => {
     try {
-      const user = await dispatch(registerStandardUser(userData)).unwrap();
+      const result = await dispatch(registerStandardUser(userData)).unwrap();
+      const { user, sessionToken } = result;
 
-      // Set user as authenticated in userAuth slice
+      // Set user as authenticated in userAuth slice (with sessionToken)
       const { setAuthenticatedUser } = await import('../../store/userAuthSlice');
-      dispatch(setAuthenticatedUser(user));
+      dispatch(setAuthenticatedUser({ user, sessionToken }));
 
       if (currentSKU) {
         if (currentSKU.paymentMode === 'ALLOCATION') {
@@ -255,19 +258,19 @@ export default function LandingPage() {
   // Full registration handler for transactions >= €10 threshold or GIFT_CARD
   const handleRegister = async (userData: any) => {
     try {
-      const user = await dispatch(registerUser(userData)).unwrap();
-
-      // Set user as authenticated in userAuth slice
+      const result = await dispatch(registerUser(userData)).unwrap();
+      // registerUser returns just user, not { user, sessionToken }
+      // Need to get token from localStorage
       const { setAuthenticatedUser } = await import('../../store/userAuthSlice');
-      dispatch(setAuthenticatedUser(user));
+      dispatch(setAuthenticatedUser({ user: result, sessionToken: localStorage.getItem('csr26_session_token') || undefined }));
 
       if (currentSKU) {
         if (currentSKU.paymentMode === 'ALLOCATION') {
-          await handleCreateTransaction(user.id);
+          await handleCreateTransaction(result.id);
         } else if (currentSKU.paymentMode === 'PAY') {
           // Create PENDING transaction FIRST for PAY mode
           const transaction = await dispatch(createTransaction({
-            userId: user.id,
+            userId: result.id,
             skuCode: currentSKU.code,
             amount: finalAmount,
             partnerId: partnerId || undefined,
@@ -279,7 +282,7 @@ export default function LandingPage() {
           setPendingTransactionId(transaction.id);
           setStep('payment');
         } else if (currentSKU.paymentMode === 'GIFT_CARD') {
-          await handleCreateTransaction(user.id, validatedCode?.code);
+          await handleCreateTransaction(result.id, validatedCode?.code);
         }
       }
     } catch (error) {

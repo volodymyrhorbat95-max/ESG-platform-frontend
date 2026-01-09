@@ -200,10 +200,24 @@ const userAuthSlice = createSlice({
   initialState,
   reducers: {
     // Set current user (used when registering)
-    setAuthenticatedUser: (state, action: PayloadAction<User>) => {
-      console.log('✅ setAuthenticatedUser - User set:', action.payload);
-      state.currentUser = action.payload;
+    setAuthenticatedUser: (state, action: PayloadAction<{ user: User; sessionToken?: string }>) => {
+      console.log('✅ setAuthenticatedUser - User set:', action.payload.user);
+      state.currentUser = action.payload.user;
       state.isAuthenticated = true;
+
+      // If sessionToken is provided, save it
+      if (action.payload.sessionToken) {
+        console.log('💾 setAuthenticatedUser - Saving session token to state');
+        state.sessionToken = action.payload.sessionToken;
+        saveSessionToken(action.payload.sessionToken);
+      } else {
+        // If no sessionToken provided, try to get it from localStorage
+        const existingToken = getSessionToken();
+        if (existingToken) {
+          console.log('💾 setAuthenticatedUser - Using existing token from localStorage');
+          state.sessionToken = existingToken;
+        }
+      }
     },
     // Clear magic link sent flag
     clearMagicLinkSent: (state) => {
