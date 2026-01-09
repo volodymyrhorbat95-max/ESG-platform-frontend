@@ -355,7 +355,7 @@ export default function SKULocalizationManager({
                         </td>
                         <td className="px-4 py-3 text-gray-700">{loc.currency}</td>
                         <td className="px-4 py-3 font-medium text-gray-800">
-                          {loc.localizedPrice.toFixed(2)}
+                          {Number(loc.localizedPrice).toFixed(2)}
                         </td>
                         <td className="px-4 py-3">
                           <span

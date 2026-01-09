@@ -17,7 +17,7 @@ export default function SkuInputForm({ onSubmit }: SkuInputFormProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full animate-on-load fade-up duration-normal">
         <div className="text-center mb-6">
           <div className="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4 animate-on-load zoom-in duration-fast">
