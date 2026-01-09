@@ -202,6 +202,10 @@ export default function LandingPage() {
       console.log('✅ Minimal registration SUCCESS, user:', user);
       console.log('✅ User ID:', user.id);
 
+      // Set user as authenticated in userAuth slice
+      const { setAuthenticatedUser } = await import('../../store/userAuthSlice');
+      dispatch(setAuthenticatedUser(user));
+
       if (currentSKU && currentSKU.paymentMode === 'CLAIM') {
         await handleCreateTransaction(user.id);
       }
@@ -219,6 +223,10 @@ export default function LandingPage() {
   }) => {
     try {
       const user = await dispatch(registerStandardUser(userData)).unwrap();
+
+      // Set user as authenticated in userAuth slice
+      const { setAuthenticatedUser } = await import('../../store/userAuthSlice');
+      dispatch(setAuthenticatedUser(user));
 
       if (currentSKU) {
         if (currentSKU.paymentMode === 'ALLOCATION') {
@@ -248,6 +256,10 @@ export default function LandingPage() {
   const handleRegister = async (userData: any) => {
     try {
       const user = await dispatch(registerUser(userData)).unwrap();
+
+      // Set user as authenticated in userAuth slice
+      const { setAuthenticatedUser } = await import('../../store/userAuthSlice');
+      dispatch(setAuthenticatedUser(user));
 
       if (currentSKU) {
         if (currentSKU.paymentMode === 'ALLOCATION') {

@@ -20,6 +20,7 @@ import TermsAndConditions from './pages/terms-and-conditions';
 import PrivacyPolicy from './pages/privacy-policy';
 import SharedDashboard from './pages/shared-dashboard';
 import VerifyCertificate from './pages/verify-certificate';
+import AuthVerify from './pages/auth-verify';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/auth/verify" element={<AuthVerify />} />
           <Route path="/dashboard/:userId" element={<UserDashboard />} />
           <Route path="/profile/:userId" element={<UserProfile />} />
           <Route path="/merchant/:merchantId" element={<MerchantDashboard />} />

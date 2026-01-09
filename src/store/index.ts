@@ -1,6 +1,7 @@
 // Redux Store Configuration
 import { configureStore, type Middleware } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
+import userAuthReducer from './userAuthSlice';
 import skuReducer from './skuSlice';
 import userReducer from './userSlice';
 import transactionReducer from './transactionSlice';
@@ -32,6 +33,7 @@ const errorLoggingMiddleware: Middleware = () => (next) => (action: any) => {
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    userAuth: userAuthReducer,
     skus: skuReducer,
     users: userReducer,
     transactions: transactionReducer,

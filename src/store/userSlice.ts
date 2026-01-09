@@ -141,7 +141,8 @@ export const registerMinimalUser = createAsyncThunk(
         return rejectWithValue(error.error || 'Failed to register user');
       }
       const result = await response.json();
-      return result.data as User;
+      // Backend now returns { user, sessionToken }
+      return result.data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -163,7 +164,8 @@ export const registerStandardUser = createAsyncThunk(
         return rejectWithValue(error.error || 'Failed to register user');
       }
       const result = await response.json();
-      return result.data as User;
+      // Backend now returns { user, sessionToken }
+      return result.data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -185,7 +187,8 @@ export const registerFullUser = createAsyncThunk(
         return rejectWithValue(error.error || 'Failed to register user');
       }
       const result = await response.json();
-      return result.data as User;
+      // Backend now returns { user, sessionToken }
+      return result.data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -207,7 +210,8 @@ export const registerUser = createAsyncThunk(
         return rejectWithValue(error.error || 'Failed to register user');
       }
       const result = await response.json();
-      return result.data as User;
+      // Backend now returns { user, sessionToken }
+      return result.data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -396,10 +400,16 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(registerMinimalUser.fulfilled, (state, action) => {
-        console.log('✅ registerMinimalUser.fulfilled - Setting currentUser:', action.payload);
+        const { user, sessionToken } = action.payload;
+        console.log('✅ registerMinimalUser.fulfilled - Setting currentUser:', user);
+        console.log('💾 Session token received, saving to localStorage');
         state.loading = false;
-        state.currentUser = action.payload;
-        saveUserIdToStorage(action.payload.id);
+        state.currentUser = user;
+        saveUserIdToStorage(user.id);
+        // Save session token to localStorage (handled by userAuthSlice)
+        if (sessionToken) {
+          localStorage.setItem('csr26_session_token', sessionToken);
+        }
       })
       .addCase(registerMinimalUser.rejected, (state, action) => {
         state.loading = false;
@@ -413,10 +423,16 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(registerStandardUser.fulfilled, (state, action) => {
-        console.log('✅ registerStandardUser.fulfilled - Setting currentUser:', action.payload);
+        const { user, sessionToken } = action.payload;
+        console.log('✅ registerStandardUser.fulfilled - Setting currentUser:', user);
+        console.log('💾 Session token received, saving to localStorage');
         state.loading = false;
-        state.currentUser = action.payload;
-        saveUserIdToStorage(action.payload.id);
+        state.currentUser = user;
+        saveUserIdToStorage(user.id);
+        // Save session token to localStorage
+        if (sessionToken) {
+          localStorage.setItem('csr26_session_token', sessionToken);
+        }
       })
       .addCase(registerStandardUser.rejected, (state, action) => {
         state.loading = false;
@@ -430,9 +446,16 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(registerFullUser.fulfilled, (state, action) => {
+        const { user, sessionToken } = action.payload;
+        console.log('✅ registerFullUser.fulfilled - Setting currentUser:', user);
+        console.log('💾 Session token received, saving to localStorage');
         state.loading = false;
-        state.currentUser = action.payload;
-        saveUserIdToStorage(action.payload.id);
+        state.currentUser = user;
+        saveUserIdToStorage(user.id);
+        // Save session token to localStorage
+        if (sessionToken) {
+          localStorage.setItem('csr26_session_token', sessionToken);
+        }
       })
       .addCase(registerFullUser.rejected, (state, action) => {
         state.loading = false;

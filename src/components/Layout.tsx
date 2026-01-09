@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { logout } from '../store/authSlice';
+import { logoutUser, verifySession } from '../store/userAuthSlice';
+import LoginModal from './LoginModal';
 import {
   FiHome,
   FiPackage,
@@ -19,7 +21,8 @@ import {
   FiChevronDown,
   FiGrid,
   FiShare2,
-  FiCheckCircle
+  FiCheckCircle,
+  FiLogIn
 } from 'react-icons/fi';
 import { FaLeaf, FaQrcode } from 'react-icons/fa';
 
@@ -32,36 +35,28 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { currentUser } = useAppSelector((state) => state.users);
+  const { isAuthenticated: isUserAuthenticated, currentUser: authUser } = useAppSelector((state) => state.userAuth);
   const { currentSKU } = useAppSelector((state) => state.skus);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const [merchantMenuOpen, setMerchantMenuOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const adminDropdownRef = useRef<HTMLDivElement>(null);
   const merchantDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load user from localStorage on mount if not already loaded
+  // Verify session on mount if not already authenticated
   useEffect(() => {
-    console.log('🔍 Layout useEffect - Checking for user:', {
-      currentUser: currentUser?.id,
-      hasCurrentUser: !!currentUser
+    console.log('🔍 Layout useEffect - Checking for user session:', {
+      isUserAuthenticated,
+      authUser: authUser?.id
     });
 
-    if (!currentUser) {
-      const storedUserId = localStorage.getItem('csr26_current_user_id');
-      console.log('📖 Loaded userId from localStorage:', storedUserId);
-
-      if (storedUserId) {
-        console.log('🚀 Fetching user data for ID:', storedUserId);
-        import('../store/userSlice').then(({ fetchUserById }) => {
-          dispatch(fetchUserById(storedUserId));
-        });
-      } else {
-        console.log('⚠️ No userId found in localStorage');
-      }
+    if (!isUserAuthenticated) {
+      console.log('🚀 Attempting to verify session from localStorage');
+      dispatch(verifySession());
     } else {
-      console.log('✅ User already loaded:', currentUser.id);
+      console.log('✅ User already authenticated:', authUser?.id);
     }
-  }, [currentUser, dispatch]);
+  }, [isUserAuthenticated, dispatch, authUser?.id]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -85,14 +80,8 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   // Handle user logout
-  const handleUserLogout = () => {
-    // Clear userId from localStorage
-    localStorage.removeItem('csr26_current_user_id');
-    // Clear currentUser from Redux
-    import('../store/userSlice').then(({ clearCurrentUser }) => {
-      dispatch(clearCurrentUser());
-    });
-    // Navigate to home
+  const handleUserLogout = async () => {
+    await dispatch(logoutUser());
     navigate('/');
   };
 
@@ -103,14 +92,14 @@ export default function Layout({ children }: LayoutProps) {
 
   // Extract IDs from URL if on merchant/user pages
   const merchantId = isMerchantPage ? location.pathname.split('/')[2] : null;
-  // Show Dashboard/Profile tabs when user has registered (currentUser exists)
-  // This allows registered users to access their dashboard at any time, not just on SKU pages
-  const userId = currentUser?.id
-    ? currentUser.id
+  // Show Dashboard/Profile tabs when user is authenticated
+  const userId = authUser?.id
+    ? authUser.id
     : (isUserPage ? location.pathname.split('/')[2] : null);
 
   console.log('🎯 Layout State:', {
-    currentUserId: currentUser?.id,
+    isUserAuthenticated,
+    authUserId: authUser?.id,
     currentSKU: currentSKU?.code,
     computedUserId: userId,
     willShowTabs: !!userId,
@@ -226,7 +215,7 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               )}
 
-              {/* User Dashboard & Profile - shown when user has registered */}
+              {/* User Dashboard & Profile - shown when user is authenticated */}
               {userId && (
                 <>
                   <button
@@ -260,6 +249,17 @@ export default function Layout({ children }: LayoutProps) {
                     <span className="hidden sm:inline">Logout</span>
                   </button>
                 </>
+              )}
+
+              {/* Login button - shown when user is NOT authenticated */}
+              {!userId && !isPublicPage && (
+                <button
+                  onClick={() => setLoginModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer bg-white/20 text-white hover:bg-white/30 shadow-md"
+                >
+                  <FiLogIn className="w-4 h-4" />
+                  <span>Login</span>
+                </button>
               )}
 
               {/* Public Pages - Verify Certificate */}
@@ -377,6 +377,9 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </div>
       </footer>
+
+      {/* Login Modal */}
+      <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
     </div>
   );
 }
