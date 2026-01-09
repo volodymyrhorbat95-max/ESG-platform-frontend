@@ -29,7 +29,7 @@ export default function UserDashboard() {
 
   if (userLoading || walletLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className=" flex items-center justify-center">
         <div className="text-center animate-on-load zoom-in duration-fast">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600 animate-on-load fade-up duration-normal">Loading your dashboard...</p>
@@ -40,7 +40,7 @@ export default function UserDashboard() {
 
   if (!currentUser || !userWallet) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className=" flex items-center justify-center">
         <div className="text-center animate-on-load fade-down duration-normal">
           <p className="text-red-600 animate-on-load zoom-out duration-fast">Failed to load dashboard data</p>
         </div>
@@ -60,7 +60,7 @@ export default function UserDashboard() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="">
       {/* Secondary Navigation */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-4">

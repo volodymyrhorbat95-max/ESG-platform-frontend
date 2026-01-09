@@ -54,7 +54,7 @@ export default function AdminUsers() {
   const minimalUsers = users.filter((u) => u.registrationLevel === 'minimal').length;
 
   return (
-    <div className="min-h-screen py-8 px-4 bg-gray-50">
+    <div className="py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">

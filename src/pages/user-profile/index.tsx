@@ -25,7 +25,7 @@ export default function UserProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className=" flex items-center justify-center">
         <div className="text-center animate-on-load zoom-in duration-normal">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600 animate-on-load fade-up duration-slow">Loading profile...</p>
@@ -36,7 +36,7 @@ export default function UserProfile() {
 
   if (error || !currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className=" flex items-center justify-center">
         <div className="text-center animate-on-load fade-down duration-normal">
           <p className="text-red-600 animate-on-load zoom-in duration-fast">{error || 'Failed to load user profile'}</p>
           <button
@@ -58,7 +58,7 @@ export default function UserProfile() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="">
       {/* Secondary Navigation */}
       <div className="bg-white border-b border-gray-200 shadow-sm animate-on-load fade-down duration-fast">
         <div className="max-w-4xl mx-auto px-4">

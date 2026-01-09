@@ -18,7 +18,7 @@ export default function TermsAndConditions() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className=" py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">Terms and Conditions of Service</h1>

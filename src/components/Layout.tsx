@@ -98,7 +98,7 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 flex flex-col">
       {/* Navigation Header */}
       <header className="bg-emerald-600/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
@@ -290,9 +290,9 @@ export default function Layout({ children }: LayoutProps) {
       <main className="flex-1">{children}</main>
 
       {/* Global Footer */}
-      <footer className="bg-white border-t border-gray-200 py-4">
+      <footer className="bg-black border-t border-gray-800 py-4">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 bg-emerald-600 rounded flex items-center justify-center text-white">
                 <FaLeaf className="w-3 h-3" />
@@ -302,15 +302,15 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/privacy-policy')}
-                className="flex items-center gap-1 hover:text-emerald-600 transition-colors cursor-pointer"
+                className="flex items-center gap-1 hover:text-emerald-400 transition-colors cursor-pointer"
               >
                 <FiShield className="w-4 h-4" />
                 Privacy Policy
               </button>
-              <span className="text-gray-300">|</span>
+              <span className="text-gray-600">|</span>
               <button
                 onClick={() => navigate('/terms-and-conditions')}
-                className="flex items-center gap-1 hover:text-emerald-600 transition-colors cursor-pointer"
+                className="flex items-center gap-1 hover:text-emerald-400 transition-colors cursor-pointer"
               >
                 <FiFileText className="w-4 h-4" />
                 Terms & Conditions

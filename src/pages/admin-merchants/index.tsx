@@ -81,7 +81,7 @@ export default function AdminMerchants() {
   const stripeConnected = merchants.filter((m) => m.stripeAccountId).length;
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className=" py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-down duration-normal">
