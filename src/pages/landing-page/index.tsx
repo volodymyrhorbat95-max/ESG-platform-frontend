@@ -151,11 +151,10 @@ export default function LandingPage() {
     setCaseType(determineCaseType(
       currentSKU.paymentMode,
       merchantId,
-      partnerId,
       currentSKU.paymentMode === 'GIFT_CARD',
       amount
     ));
-  }, [currentSKU, currentCSRPrice, urlAmount, merchantId, partnerId, giftCardValidated, validatedCode]);
+  }, [currentSKU, currentCSRPrice, urlAmount, merchantId, giftCardValidated, validatedCode]);
 
   // Handlers
   const handleSkuSubmit = (sku: string) => {

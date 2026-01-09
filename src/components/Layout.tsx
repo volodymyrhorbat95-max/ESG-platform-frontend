@@ -17,9 +17,11 @@ import {
   FiShoppingBag,
   FiSettings,
   FiChevronDown,
-  FiGrid
+  FiGrid,
+  FiShare2,
+  FiCheckCircle
 } from 'react-icons/fi';
-import { FaLeaf } from 'react-icons/fa';
+import { FaLeaf, FaQrcode } from 'react-icons/fa';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -32,13 +34,18 @@ export default function Layout({ children }: LayoutProps) {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { currentUser } = useAppSelector((state) => state.users);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [merchantMenuOpen, setMerchantMenuOpen] = useState(false);
+  const adminDropdownRef = useRef<HTMLDivElement>(null);
+  const merchantDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (adminDropdownRef.current && !adminDropdownRef.current.contains(event.target as Node)) {
         setAdminMenuOpen(false);
+      }
+      if (merchantDropdownRef.current && !merchantDropdownRef.current.contains(event.target as Node)) {
+        setMerchantMenuOpen(false);
       }
     };
 
@@ -52,6 +59,15 @@ export default function Layout({ children }: LayoutProps) {
     navigate('/');
   };
 
+  // Detect current page context
+  const isMerchantPage = location.pathname.startsWith('/merchant/');
+  const isUserPage = location.pathname.startsWith('/dashboard/') || location.pathname.startsWith('/profile/');
+  const isPublicPage = location.pathname.startsWith('/share/') || location.pathname.startsWith('/verify/');
+
+  // Extract IDs from URL if on merchant/user pages
+  const merchantId = isMerchantPage ? location.pathname.split('/')[2] : null;
+  const userId = isUserPage ? location.pathname.split('/')[2] : currentUser?.id;
+
   // Admin menu items
   const adminItems = [
     { path: '/admin/skus', label: 'SKUs', icon: FiPackage },
@@ -63,6 +79,14 @@ export default function Layout({ children }: LayoutProps) {
     { path: '/admin/export', label: 'Export', icon: FiDownload },
     { path: '/admin/config', label: 'Config', icon: FiSettings },
   ];
+
+  // Merchant menu items (shown when on merchant pages)
+  const merchantItems = merchantId
+    ? [
+        { path: `/merchant/${merchantId}`, label: 'Dashboard', icon: FiShoppingBag },
+        { path: `/merchant/${merchantId}/qr-generator`, label: 'QR Generator', icon: FaQrcode },
+      ]
+    : [];
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/' || location.search.includes('sku=');
@@ -108,9 +132,103 @@ export default function Layout({ children }: LayoutProps) {
                 <span className="hidden sm:inline">Home</span>
               </button>
 
+              {/* Merchant Menu - shown when on merchant pages */}
+              {merchantItems.length > 0 && (
+                <div className="relative" ref={merchantDropdownRef}>
+                  <button
+                    onClick={() => setMerchantMenuOpen(!merchantMenuOpen)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                      isMerchantPage
+                        ? 'bg-white/20 text-white shadow-md'
+                        : 'text-emerald-100 hover:bg-white/15 hover:text-white'
+                    }`}
+                  >
+                    <FiShoppingBag className="w-4 h-4" />
+                    <span className="hidden sm:inline">Merchant</span>
+                    <FiChevronDown className={`w-4 h-4 transition-transform ${merchantMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Merchant Dropdown */}
+                  {merchantMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
+                      {merchantItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <button
+                            key={item.path}
+                            onClick={() => {
+                              navigate(item.path);
+                              setMerchantMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors cursor-pointer ${
+                              isActive(item.path)
+                                ? 'bg-emerald-50 text-emerald-700 font-medium'
+                                : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* User Dashboard & Profile - shown when user has registered */}
+              {userId && (
+                <>
+                  <button
+                    onClick={() => navigate(`/dashboard/${userId}`)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                      location.pathname === `/dashboard/${userId}`
+                        ? 'bg-white/20 text-white shadow-md'
+                        : 'text-emerald-100 hover:bg-white/15 hover:text-white'
+                    }`}
+                  >
+                    <FiUser className="w-4 h-4" />
+                    <span className="hidden sm:inline">Dashboard</span>
+                  </button>
+                  <button
+                    onClick={() => navigate(`/profile/${userId}`)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                      location.pathname === `/profile/${userId}`
+                        ? 'bg-white/20 text-white shadow-md'
+                        : 'text-emerald-100 hover:bg-white/15 hover:text-white'
+                    }`}
+                  >
+                    <FiSettings className="w-4 h-4" />
+                    <span className="hidden sm:inline">Profile</span>
+                  </button>
+                </>
+              )}
+
+              {/* Public Pages - Verify Certificate */}
+              {isPublicPage && location.pathname.startsWith('/verify/') && (
+                <button
+                  onClick={() => navigate(`/verify/${location.pathname.split('/')[2]}`)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer bg-white/20 text-white shadow-md"
+                >
+                  <FiCheckCircle className="w-4 h-4" />
+                  <span className="hidden sm:inline">Verify Certificate</span>
+                </button>
+              )}
+
+              {/* Public Pages - Shared Dashboard */}
+              {isPublicPage && location.pathname.startsWith('/share/') && (
+                <button
+                  onClick={() => navigate(`/share/${location.pathname.split('/')[2]}`)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer bg-white/20 text-white shadow-md"
+                >
+                  <FiShare2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Shared Impact</span>
+                </button>
+              )}
+
               {/* Admin Dropdown - shown when admin is authenticated */}
               {isAuthenticated && (
-                <div className="relative" ref={dropdownRef}>
+                <div className="relative" ref={adminDropdownRef}>
                   <button
                     onClick={() => setAdminMenuOpen(!adminMenuOpen)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
@@ -124,7 +242,7 @@ export default function Layout({ children }: LayoutProps) {
                     <FiChevronDown className={`w-4 h-4 transition-transform ${adminMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
-                  {/* Dropdown Menu */}
+                  {/* Admin Dropdown Menu */}
                   {adminMenuOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
                       {adminItems.map((item) => {
@@ -150,21 +268,6 @@ export default function Layout({ children }: LayoutProps) {
                     </div>
                   )}
                 </div>
-              )}
-
-              {/* My Dashboard - shown when user has registered in current session */}
-              {currentUser?.id && (
-                <button
-                  onClick={() => navigate(`/dashboard/${currentUser.id}`)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2 cursor-pointer ${
-                    location.pathname.startsWith('/dashboard')
-                      ? 'bg-white/20 text-white'
-                      : 'text-emerald-100 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <FiUser className="w-4 h-4" />
-                  <span className="hidden sm:inline">My Dashboard</span>
-                </button>
               )}
 
               {/* Admin Logout - shown when admin is authenticated */}

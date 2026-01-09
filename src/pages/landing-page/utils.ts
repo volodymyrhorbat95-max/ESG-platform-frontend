@@ -11,7 +11,6 @@ import type { CaseType } from './types';
 export function determineCaseType(
   paymentMode: string,
   merchantId: string | null,
-  partnerId: string | null,
   hasGiftCard: boolean,
   amount: number = 0
 ): CaseType {
