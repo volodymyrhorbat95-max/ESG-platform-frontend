@@ -51,7 +51,7 @@ const getAuthHeaders = () => {
 // Async thunks
 export const fetchUserWallet = createAsyncThunk(
   'wallets/fetchUserWallet',
-  async (userId: string) => {
+  async (_userId: string) => {
     // JWT token in header provides authentication, userId still passed for dashboard routing
     const response = await fetch(`${API_URL}/user/wallet`, {
       headers: getAuthHeaders(),

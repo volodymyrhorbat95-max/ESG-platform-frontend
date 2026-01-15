@@ -1,5 +1,4 @@
 // SKU Info Card - Displays SKU information and impact
-import { CORSAIR_THRESHOLD } from './types';
 import ImpactDisplay from './ImpactDisplay';
 
 interface SkuInfoCardProps {
@@ -7,6 +6,7 @@ interface SkuInfoCardProps {
   skuCode: string;
   calculatedImpact: number;
   finalAmount: number;
+  corsairThreshold: number; // Dynamic threshold from backend config
 }
 
 export default function SkuInfoCard({
@@ -14,6 +14,7 @@ export default function SkuInfoCard({
   skuCode,
   calculatedImpact,
   finalAmount,
+  corsairThreshold,
 }: SkuInfoCardProps) {
   return (
     <div className="bg-gray-50 rounded-lg p-6 mb-6 animate-on-load fade-up duration-fast">
@@ -33,7 +34,7 @@ export default function SkuInfoCard({
           <p className="text-lg font-semibold text-gray-800">
             Amount: €{finalAmount.toFixed(2)}
           </p>
-          {finalAmount >= CORSAIR_THRESHOLD && (
+          {finalAmount >= corsairThreshold && (
             <p className="text-sm text-emerald-600 mt-1">
               ✓ Qualifies for Certified Environmental Asset
             </p>

@@ -6,7 +6,7 @@ import { env } from '../config/env';
 // CRITICAL: gramsWeight removed - impact calculated dynamically using CURRENT_CSR_PRICE
 // CRITICAL: amplivoThreshold renamed to corsairThreshold
 // Section 5.1: Added productWeight and description fields
-interface SKU {
+export interface SKU {
   id: string;
   code: string;
   name: string;
@@ -24,7 +24,7 @@ interface SKU {
   updatedAt: string;
 }
 
-interface SKUState {
+export interface SKUState {
   items: SKU[];
   currentSKU: SKU | null;
   loading: boolean;

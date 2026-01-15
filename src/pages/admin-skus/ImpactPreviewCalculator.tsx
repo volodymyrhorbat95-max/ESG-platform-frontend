@@ -2,7 +2,7 @@
 // Shows preview of impact calculations for a SKU based on different amounts
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchCSRPrice } from '../../store/configSlice';
+import { fetchCurrentCSRPrice } from '../../store/configSlice';
 
 interface ImpactPreviewCalculatorProps {
   isOpen: boolean;
@@ -18,13 +18,13 @@ interface ImpactPreviewCalculatorProps {
 
 export default function ImpactPreviewCalculator({ isOpen, onClose, sku }: ImpactPreviewCalculatorProps) {
   const dispatch = useAppDispatch();
-  const { csrPrice } = useAppSelector((state) => state.config);
+  const { currentCSRPrice } = useAppSelector((state) => state.config);
   const [customAmount, setCustomAmount] = useState('');
   const [previewAmounts, setPreviewAmounts] = useState<number[]>([]);
 
   useEffect(() => {
     if (isOpen) {
-      dispatch(fetchCSRPrice());
+      dispatch(fetchCurrentCSRPrice());
       // Set preview amounts based on SKU price
       const basePrice = Number(sku.price);
       if (basePrice > 0) {
@@ -49,11 +49,15 @@ export default function ImpactPreviewCalculator({ isOpen, onClose, sku }: Impact
       return amount * sku.impactMultiplier;
     } else {
       // Standard: amount ÷ CSR_PRICE × impactMultiplier
+      const csrPrice = currentCSRPrice ?? 0.11; // Default to 0.11 if not loaded
       return (amount / csrPrice) * sku.impactMultiplier;
     }
   };
 
   if (!isOpen) return null;
+
+  // Use default CSR price for display if not loaded
+  const displayCSRPrice = currentCSRPrice ?? 0.11;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-on-load fade-in duration-fast">
@@ -67,7 +71,7 @@ export default function ImpactPreviewCalculator({ isOpen, onClose, sku }: Impact
             </p>
             <p className="text-sm text-gray-600">
               Type: <span className="font-semibold">{sku.paymentMode}</span> |
-              Current CSR Price: <span className="font-semibold">€{csrPrice.toFixed(4)}/g</span>
+              Current CSR Price: <span className="font-semibold">€{displayCSRPrice.toFixed(4)}/g</span>
             </p>
           </div>
           <button

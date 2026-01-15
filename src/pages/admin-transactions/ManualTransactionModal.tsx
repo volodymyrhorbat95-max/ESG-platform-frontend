@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createManualTransaction } from '../../store/transactionSlice';
 import { fetchAllUsers } from '../../store/userSlice';
-import { fetchAllSKUs } from '../../store/skuSlice';
+import { fetchSKUs } from '../../store/skuSlice';
 
 interface ManualTransactionModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ export default function ManualTransactionModal({
 }: ManualTransactionModalProps) {
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state) => state.users);
-  const { skus } = useAppSelector((state) => state.skus);
+  const { items: skus } = useAppSelector((state) => state.skus);
   const { loading } = useAppSelector((state) => state.transactions);
 
   const [userId, setUserId] = useState('');
@@ -34,7 +34,7 @@ export default function ManualTransactionModal({
   useEffect(() => {
     if (isOpen) {
       dispatch(fetchAllUsers());
-      dispatch(fetchAllSKUs());
+      dispatch(fetchSKUs());
       // Reset form
       setUserId('');
       setSkuCode('');

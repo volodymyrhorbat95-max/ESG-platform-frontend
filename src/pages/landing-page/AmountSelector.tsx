@@ -1,10 +1,10 @@
 // Amount Selector - For ALLOCATION SKUs without amount in URL
 import { useState } from 'react';
-import { CORSAIR_THRESHOLD } from './types';
 
 interface AmountSelectorProps {
   impactMultiplier: number;
   currentCSRPrice: number;
+  corsairThreshold: number; // Dynamic threshold from backend config
   onSubmit: (amount: number) => void;
 }
 
@@ -13,7 +13,7 @@ const calculateImpactGrams = (amount: number, csrPrice: number, multiplier: numb
   return Math.round((amount / csrPrice) * multiplier * 1000);
 };
 
-export default function AmountSelector({ impactMultiplier, currentCSRPrice, onSubmit }: AmountSelectorProps) {
+export default function AmountSelector({ impactMultiplier, currentCSRPrice, corsairThreshold, onSubmit }: AmountSelectorProps) {
   const [amountInput, setAmountInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -83,13 +83,13 @@ export default function AmountSelector({ impactMultiplier, currentCSRPrice, onSu
             <p className="text-emerald-800 font-medium text-lg">
               Your impact: {calculateImpactGrams(parseFloat(amountInput), currentCSRPrice, impactMultiplier)}g of plastic removed
             </p>
-            {parseFloat(amountInput) >= CORSAIR_THRESHOLD ? (
+            {parseFloat(amountInput) >= corsairThreshold ? (
               <p className="text-emerald-600 text-sm mt-1">
                 ✓ Qualifies for Certified Environmental Asset
               </p>
             ) : (
               <p className="text-gray-500 text-sm mt-1">
-                Reach €{CORSAIR_THRESHOLD} to unlock certified asset status
+                Reach €{corsairThreshold} to unlock certified asset status
               </p>
             )}
           </div>

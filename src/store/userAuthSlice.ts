@@ -4,8 +4,9 @@
 
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import type { User } from './userSlice';
+import { env } from '../config/env';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = env.apiUrl;
 
 // Session token storage key
 const SESSION_TOKEN_KEY = 'csr26_session_token';

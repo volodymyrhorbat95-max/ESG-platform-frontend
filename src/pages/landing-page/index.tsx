@@ -15,7 +15,7 @@ import { fetchCurrentCSRPrice, fetchAllocationMultiplier, fetchCorsairThreshold 
 
 // Types and utils
 import type { CaseType, StepType } from './types';
-import { CORSAIR_THRESHOLD } from './types';
+import { DEFAULT_CORSAIR_THRESHOLD } from './types';
 import { determineCaseType } from './utils';
 
 // Components
@@ -54,7 +54,11 @@ export default function LandingPage() {
   const { loading: transactionLoading } = useAppSelector((state) => state.transactions);
   const { validatedCode, loading: giftCardLoading, error: giftCardError } = useAppSelector((state) => state.giftCards);
   const { currentMerchant } = useAppSelector((state) => state.merchants);
-  const { currentCSRPrice, allocationMultiplier, corsairThreshold } = useAppSelector((state) => state.config);
+  const { currentCSRPrice, allocationMultiplier, corsairThreshold: dynamicCorsairThreshold } = useAppSelector((state) => state.config);
+
+  // Use dynamic threshold from backend, fallback to default if not loaded yet
+  // Section 4.1: corsairThreshold is configurable via admin panel
+  const corsairThreshold = dynamicCorsairThreshold ?? DEFAULT_CORSAIR_THRESHOLD;
 
   // Local state
   const [step, setStep] = useState<StepType>('loading');
@@ -361,6 +365,7 @@ export default function LandingPage() {
         userId={currentUser?.id}
         skuCode={currentSKU.code}
         transactionId={completedTransactionId || undefined}
+        corsairThreshold={corsairThreshold}
       />
     );
   }
@@ -392,7 +397,7 @@ export default function LandingPage() {
             partnerName={partnerId || undefined}
             impactGrams={calculatedImpact}
             amount={finalAmount}
-            threshold={CORSAIR_THRESHOLD}
+            threshold={corsairThreshold}
             skuCode={currentSKU.code}
             skuName={currentSKU.name}
           />
@@ -408,12 +413,14 @@ export default function LandingPage() {
             skuCode={currentSKU.code}
             calculatedImpact={calculatedImpact}
             finalAmount={finalAmount}
+            corsairThreshold={corsairThreshold}
           />
 
           {step === 'amount-input' && currentCSRPrice && (
             <AmountSelector
               impactMultiplier={currentSKU.impactMultiplier || 1}
               currentCSRPrice={currentCSRPrice}
+              corsairThreshold={corsairThreshold}
               onSubmit={handleAmountSubmit}
             />
           )}
@@ -441,7 +448,7 @@ export default function LandingPage() {
                 {caseType === 'B' && 'Activate Your Environmental Credits'}
                 {caseType === 'C' && 'Complete Your Contribution'}
                 {caseType === 'D' && 'Complete Your Registration'}
-                {caseType === 'E' && 'Build Your Environmental Portfolio'}
+                {caseType === 'E' && 'Complete Your Environmental Allocation'}
               </h3>
 
               {/* Conditional Form Rendering based on payment mode and amount threshold:
@@ -454,7 +461,7 @@ export default function LandingPage() {
                   onSubmit={handleMinimalRegister}
                   loading={transactionLoading}
                   amount={finalAmount}
-                  threshold={CORSAIR_THRESHOLD}
+                  threshold={corsairThreshold}
                 />
               ) : currentSKU?.paymentMode === 'GIFT_CARD' ? (
                 // GIFT_CARD always requires full registration
@@ -462,15 +469,15 @@ export default function LandingPage() {
                   onSubmit={handleRegister}
                   loading={transactionLoading}
                   amount={finalAmount}
-                  threshold={CORSAIR_THRESHOLD}
+                  threshold={corsairThreshold}
                 />
-              ) : finalAmount >= CORSAIR_THRESHOLD ? (
+              ) : finalAmount >= corsairThreshold ? (
                 // PAY/ALLOCATION >= €10 threshold requires full registration
                 <RegistrationForm
                   onSubmit={handleRegister}
                   loading={transactionLoading}
                   amount={finalAmount}
-                  threshold={CORSAIR_THRESHOLD}
+                  threshold={corsairThreshold}
                 />
               ) : (
                 // PAY/ALLOCATION under €10 uses standard registration (email + name)
@@ -478,7 +485,7 @@ export default function LandingPage() {
                   onSubmit={handleStandardRegister}
                   loading={transactionLoading}
                   amount={finalAmount}
-                  threshold={CORSAIR_THRESHOLD}
+                  threshold={corsairThreshold}
                 />
               )}
             </div>

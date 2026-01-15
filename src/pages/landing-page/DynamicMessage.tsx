@@ -1,7 +1,10 @@
 // Dynamic Message Component - Handles all 5 cases (A-E)
-// Based on client's EXACT messaging requirements from REQUIREMENTS.md
-// Case A: Merchant Protagonist (CLAIM) | Case B: Merchant-Funded Accumulation (CLAIM with value)
-// Case C: Checkout Suggestion (PAY) | Case D: Gift Card Validated | Case E: General Landing
+// Based on client's EXACT messaging requirements from REQUIREMENTS.md Section 1.3
+// Case A: Merchant Prepaid (CLAIM) - "This product line follows a plastic certification path..."
+// Case B: Merchant Funded Accumulation (PAY with merchant payment) - merchant pays for customer
+// Case C: Customer Payment (PAY with customer payment) - customer pays via Stripe
+// Case D: Gift Card Validation (GIFT_CARD) - "Code Validated..."
+// Case E: Environmental Allocation (ALLOCATION) - "Environmental Allocation" or "Impact Recharge" terminology
 
 interface DynamicMessageProps {
   caseType: 'A' | 'B' | 'C' | 'D' | 'E';
@@ -88,12 +91,21 @@ export default function DynamicMessage({
         };
 
       case 'E':
-        // Case E - General Landing (no SKU or marketing):
-        // "Build your portfolio of environmental assets. Participate in certified plastic removal
-        // and transform your impact into a real, tracked, and guaranteed value."
+        // Case E - Environmental Allocation (ALLOCATION) per Section 1.3:
+        // Displays amount-based impact with "Environmental Allocation" or "Impact Recharge" terminology
+        // IMPORTANT: Never use "Donation" per requirements
+        if (isAboveThreshold) {
+          // If >= €10: Certified asset with "Environmental Allocation" terminology
+          return {
+            title: 'Environmental Allocation Confirmed',
+            message: `Your Environmental Allocation of €${amount.toFixed(2)} has secured the certified removal of ${formatImpact(impactGrams)} of plastic. Your environmental asset is now auditable and guaranteed by the CPRS protocol.`,
+            note: 'Your Corsair Connect account will be automatically activated.',
+          };
+        }
+        // If < €10: Accumulation phase with "Impact Recharge" terminology
         return {
-          title: 'Build Your Portfolio',
-          message: 'Build your portfolio of environmental assets. Participate in certified plastic removal and transform your impact into a real, tracked, and guaranteed value.',
+          title: 'Impact Recharge Activated',
+          message: `Your Impact Recharge of €${amount.toFixed(2)} has started your accrual path for the removal of ${formatImpact(impactGrams)} of plastic. Upon reaching the €10 threshold, your credits will become a certified environmental asset.`,
         };
 
       default:
@@ -120,8 +132,8 @@ export default function DynamicMessage({
         </p>
       )}
 
-      {/* Progress indicator for accumulation cases */}
-      {(caseType === 'B' || caseType === 'C') && !isAboveThreshold && (
+      {/* Progress indicator for accumulation cases (B, C, E when below threshold) */}
+      {(caseType === 'B' || caseType === 'C' || caseType === 'E') && !isAboveThreshold && (
         <div className="mt-4 animate-on-load zoom-in duration-slow">
           <div className="flex justify-between text-sm text-gray-600 mb-1">
             <span>Progress to certification</span>

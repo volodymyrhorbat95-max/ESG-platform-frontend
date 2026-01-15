@@ -1,14 +1,19 @@
 // User Dashboard - Display wallet balance and transaction history
+// CRITICAL: Uses dynamic CORSAIR_THRESHOLD from backend configSlice (Section 4.1)
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchUserWallet } from '../../store/walletSlice';
 import { fetchUserById } from '../../store/userSlice';
 import { fetchUserLinks } from '../../store/shareableLinkSlice';
+import { fetchCorsairThreshold } from '../../store/configSlice';
 import WalletSummary from './WalletSummary';
 import TransactionHistory from './TransactionHistory';
 import ImpactVisualization from './ImpactVisualization';
 import SocialShare from './SocialShare';
+
+// Default threshold fallback (Section 4.1: CORSAIR_THRESHOLD currently €10.00)
+const DEFAULT_CORSAIR_THRESHOLD = 10;
 
 export default function UserDashboard() {
   const { userId } = useParams<{ userId: string }>();
@@ -17,8 +22,16 @@ export default function UserDashboard() {
 
   const { currentUser, loading: userLoading } = useAppSelector((state) => state.users);
   const { userWallet, loading: walletLoading } = useAppSelector((state) => state.wallets);
+  // Section 4.1: Use dynamic threshold from backend config
+  const { corsairThreshold: dynamicCorsairThreshold } = useAppSelector((state) => state.config);
+
+  // Use dynamic threshold from backend, fallback to default if not loaded
+  const corsairThreshold = dynamicCorsairThreshold ?? DEFAULT_CORSAIR_THRESHOLD;
 
   useEffect(() => {
+    // Fetch global config for threshold
+    dispatch(fetchCorsairThreshold());
+
     if (userId) {
       dispatch(fetchUserById(userId));
       dispatch(fetchUserWallet(userId));
@@ -81,7 +94,7 @@ export default function UserDashboard() {
             transactionCount={transactions.length}
             totalAmountSpent={Number(wallet.totalAmountSpent)}
             certifiedAssetStatus={wallet.certifiedAssetStatus}
-            corsairThreshold={10}
+            corsairThreshold={corsairThreshold}
           />
         </div>
 

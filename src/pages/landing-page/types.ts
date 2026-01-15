@@ -36,5 +36,7 @@ export interface URLParams {
   orderId: string | null;
 }
 
-// Corsair threshold constant (€10)
-export const CORSAIR_THRESHOLD = 10;
+// Corsair threshold fallback value (€10) - used when backend value not loaded yet
+// IMPORTANT: The actual threshold should be fetched from backend via configSlice
+// This is just a fallback default, per Section 4.1: CORSAIR_THRESHOLD is configurable via admin panel
+export const DEFAULT_CORSAIR_THRESHOLD = 10;

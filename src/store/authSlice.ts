@@ -1,7 +1,8 @@
 // Auth Slice - Redux state management for Admin Authentication
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = env.apiUrl;
 
 // Type definitions
 interface AuthState {

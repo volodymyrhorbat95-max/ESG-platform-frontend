@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../store/hooks';
 import { downloadCertificate } from '../../store/certificateSlice';
 import type { CaseType } from './types';
-import { CORSAIR_THRESHOLD } from './types';
+import { DEFAULT_CORSAIR_THRESHOLD } from './types';
 import HeaderSection from './HeaderSection';
 import DynamicMessage from './DynamicMessage';
 import ImpactDisplay from './ImpactDisplay';
@@ -20,6 +20,7 @@ interface SuccessStateProps {
   userId?: string;
   skuCode?: string;
   transactionId?: string;
+  corsairThreshold?: number; // Dynamic threshold from backend config
 }
 
 export default function SuccessState({
@@ -31,6 +32,7 @@ export default function SuccessState({
   userId,
   skuCode,
   transactionId,
+  corsairThreshold = DEFAULT_CORSAIR_THRESHOLD,
 }: SuccessStateProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -66,7 +68,7 @@ export default function SuccessState({
             partnerName={partnerId}
             impactGrams={calculatedImpact}
             amount={finalAmount}
-            threshold={CORSAIR_THRESHOLD}
+            threshold={corsairThreshold}
             skuCode={skuCode}
             skuName={skuName}
           />
@@ -77,8 +79,8 @@ export default function SuccessState({
 
           {userId && (
             <div className="mt-8 space-y-4 animate-on-load fade-up duration-slow">
-              {/* Certificate Download - Show for CLAIM type */}
-              {transactionId && caseType === 'A' && (
+              {/* Certificate Download - Show for transactions >= threshold (certified assets) */}
+              {transactionId && finalAmount >= corsairThreshold && (
                 <div className="mb-4 animate-on-load zoom-in duration-normal">
                   <button
                     onClick={() => {

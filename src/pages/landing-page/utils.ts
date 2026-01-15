@@ -2,42 +2,49 @@
 import type { CaseType } from './types';
 
 // Determine which case (A-E) based on SKU and parameters
-// REQUIREMENTS FROM requirements.md:
-// Case A: Merchant Protagonist (CLAIM) - general certification path, no specific value
-// Case B: Merchant Funded Accumulation (CLAIM with value) - merchant funded with value displayed
-// Case C: Checkout Suggestion (PAY) - customer pays via Stripe, also ALLOCATION from partner checkout
-// Case D: Gift Card (GIFT_CARD after code validation)
-// Case E: General Landing (no SKU or marketing)
+// REQUIREMENTS FROM requirements.md Section 1.3:
+// Case A: Merchant Prepaid (CLAIM) - "This product line follows a plastic certification path..."
+// Case B: Merchant Funded Accumulation (PAY with merchant payment) - merchant pays for customer
+// Case C: Customer Payment (PAY with customer payment) - customer pays via Stripe
+// Case D: Gift Card Validation (GIFT_CARD) - "Code Validated..."
+// Case E: Environmental Allocation (ALLOCATION) - "Environmental Allocation" or "Impact Recharge" terminology
 export function determineCaseType(
   paymentMode: string,
   merchantId: string | null,
   hasGiftCard: boolean,
-  amount: number = 0
+  _amount: number = 0
 ): CaseType {
-  // Case D - Gift Card (On-shelf Gift Card) - after code validation
+  // Case D - Gift Card Validation (GIFT_CARD)
+  // "Code Validated. You have redeemed an industrial value..."
   if (paymentMode === 'GIFT_CARD' || hasGiftCard) {
     return 'D';
   }
 
-  // Case B - Merchant Funded Accumulation (CLAIM with value from merchant)
-  // This is when merchant has funded the user's credits with a specific value
-  if (paymentMode === 'CLAIM' && merchantId && amount > 0) {
+  // Case E - Environmental Allocation (ALLOCATION)
+  // Displays amount-based impact with "Environmental Allocation" or "Impact Recharge" terminology
+  // IMPORTANT: Never use "Donation" - per Section 1.3
+  if (paymentMode === 'ALLOCATION') {
+    return 'E';
+  }
+
+  // Case B - Merchant Funded Accumulation (PAY with merchant payment)
+  // When merchant is paying for the customer's environmental credits
+  if (paymentMode === 'PAY' && merchantId) {
     return 'B';
   }
 
-  // Case A - Merchant Protagonist (CLAIM without specific value)
-  // General certification path where merchant prepaid the lot
+  // Case C - Customer Payment (PAY with customer payment)
+  // Customer pays via Stripe for their own environmental credits
+  if (paymentMode === 'PAY') {
+    return 'C';
+  }
+
+  // Case A - Merchant Prepaid (CLAIM)
+  // "This product line follows a plastic certification path. The Merchant has already activated..."
   if (paymentMode === 'CLAIM') {
     return 'A';
   }
 
-  // Case C - Checkout Suggestion (PAY or ALLOCATION)
-  // PAY: Customer pays via Stripe
-  // ALLOCATION: Partner checkout with amount in URL
-  if (paymentMode === 'PAY' || paymentMode === 'ALLOCATION') {
-    return 'C';
-  }
-
-  // Case E - General Landing (no SKU or marketing)
-  return 'E';
+  // Default fallback - should not reach here with valid SKU
+  return 'A';
 }
