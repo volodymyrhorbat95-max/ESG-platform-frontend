@@ -11,7 +11,7 @@ import { createTransaction } from '../../store/transactionSlice';
 import { validateGiftCard } from '../../store/giftCardSlice';
 import { loginAdmin } from '../../store/authSlice';
 import { fetchMerchantById } from '../../store/merchantSlice';
-import { fetchCurrentCSRPrice } from '../../store/configSlice';
+import { fetchCurrentCSRPrice, fetchAllocationMultiplier, fetchCorsairThreshold } from '../../store/configSlice';
 
 // Types and utils
 import type { CaseType, StepType } from './types';
@@ -52,9 +52,9 @@ export default function LandingPage() {
   const { currentSKU, loading: skuLoading, error: skuError } = useAppSelector((state) => state.skus);
   const { currentUser } = useAppSelector((state) => state.users);
   const { loading: transactionLoading } = useAppSelector((state) => state.transactions);
-  const { validatedCode, loading: giftCardLoading } = useAppSelector((state) => state.giftCards);
+  const { validatedCode, loading: giftCardLoading, error: giftCardError } = useAppSelector((state) => state.giftCards);
   const { currentMerchant } = useAppSelector((state) => state.merchants);
-  const { currentCSRPrice } = useAppSelector((state) => state.config);
+  const { currentCSRPrice, allocationMultiplier, corsairThreshold } = useAppSelector((state) => state.config);
 
   // Local state
   const [step, setStep] = useState<StepType>('loading');
@@ -71,8 +71,10 @@ export default function LandingPage() {
 
   // Fetch SKU and config on mount when skuCode is present
   useEffect(() => {
-    // Always fetch current CSR price for dynamic impact calculation
+    // Always fetch global configuration for dynamic impact calculation
     dispatch(fetchCurrentCSRPrice());
+    dispatch(fetchAllocationMultiplier());
+    dispatch(fetchCorsairThreshold());
 
     if (skuCode) {
       // Check if this is admin SKU
@@ -129,11 +131,13 @@ export default function LandingPage() {
       case 'ALLOCATION':
         if (urlAmount) {
           amount = parseFloat(urlAmount);
-          // ALLOCATION uses SPECIAL formula: amount × impactMultiplier × 1000
+          // ALLOCATION uses SPECIAL formula: amount × ALLOCATION_MULTIPLIER × 1000
+          // CRITICAL: Uses global ALLOCATION_MULTIPLIER, NOT SKU's impactMultiplier
           // This does NOT use CURRENT_CSR_PRICE!
           // Example: €5 × 1.6 × 1000 = 8,000 grams (8 kg)
           // Example: €15 × 1.6 × 1000 = 24,000 grams (24 kg)
-          impact = Math.round(amount * multiplier * 1000);
+          const allocationMult = allocationMultiplier ?? 1.6; // Fallback to 1.6 if not loaded yet
+          impact = Math.round(amount * allocationMult * 1000);
           setStep('registration');
         } else {
           setStep('amount-input');
@@ -154,7 +158,7 @@ export default function LandingPage() {
       currentSKU.paymentMode === 'GIFT_CARD',
       amount
     ));
-  }, [currentSKU, currentCSRPrice, urlAmount, merchantId, giftCardValidated, validatedCode]);
+  }, [currentSKU, currentCSRPrice, allocationMultiplier, urlAmount, merchantId, giftCardValidated, validatedCode]);
 
   // Handlers
   const handleSkuSubmit = (sku: string) => {
@@ -173,8 +177,12 @@ export default function LandingPage() {
 
   const handleGiftCardValidate = async (code: string) => {
     try {
-      // Validate the code (but don't redeem yet - redemption happens during transaction creation)
-      await dispatch(validateGiftCard({ code })).unwrap();
+      // Section 8.2: Validate the code with SKU verification
+      // (but don't redeem yet - redemption happens during transaction creation)
+      await dispatch(validateGiftCard({
+        code,
+        skuId: currentSKU?.id // Pass SKU ID to verify code matches expected product
+      })).unwrap();
       setGiftCardValidated(true);
       setStep('registration');
     } catch (error) {
@@ -259,18 +267,20 @@ export default function LandingPage() {
   const handleRegister = async (userData: any) => {
     try {
       const result = await dispatch(registerUser(userData)).unwrap();
-      // registerUser returns just user, not { user, sessionToken }
-      // Need to get token from localStorage
+      // Backend returns { user, sessionToken }
+      const { user, sessionToken } = result;
+
+      // Set user as authenticated in userAuth slice (with sessionToken)
       const { setAuthenticatedUser } = await import('../../store/userAuthSlice');
-      dispatch(setAuthenticatedUser({ user: result, sessionToken: localStorage.getItem('csr26_session_token') || undefined }));
+      dispatch(setAuthenticatedUser({ user, sessionToken }));
 
       if (currentSKU) {
         if (currentSKU.paymentMode === 'ALLOCATION') {
-          await handleCreateTransaction(result.id);
+          await handleCreateTransaction(user.id);
         } else if (currentSKU.paymentMode === 'PAY') {
           // Create PENDING transaction FIRST for PAY mode
           const transaction = await dispatch(createTransaction({
-            userId: result.id,
+            userId: user.id,
             skuCode: currentSKU.code,
             amount: finalAmount,
             partnerId: partnerId || undefined,
@@ -282,7 +292,7 @@ export default function LandingPage() {
           setPendingTransactionId(transaction.id);
           setStep('payment');
         } else if (currentSKU.paymentMode === 'GIFT_CARD') {
-          await handleCreateTransaction(result.id, validatedCode?.code);
+          await handleCreateTransaction(user.id, validatedCode?.code);
         }
       }
     } catch (error) {
@@ -412,6 +422,7 @@ export default function LandingPage() {
             <GiftCardInput
               onValidate={handleGiftCardValidate}
               loading={giftCardLoading}
+              error={giftCardError}
             />
           )}
 

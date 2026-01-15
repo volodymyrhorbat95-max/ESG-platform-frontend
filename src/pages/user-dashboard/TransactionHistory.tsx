@@ -5,9 +5,10 @@
 import { useState } from 'react';
 import { useAppDispatch } from '../../store/hooks';
 import { downloadCertificate } from '../../store/certificateSlice';
+import type { Transaction, PaymentStatus } from '../../types/transaction';
 
 interface TransactionHistoryProps {
-  transactions: any[];
+  transactions: Transaction[];
 }
 
 export default function TransactionHistory({ transactions }: TransactionHistoryProps) {
@@ -24,8 +25,8 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
   };
 
   // Check if transaction is completed (eligible for certificate download)
-  const isCompleted = (paymentStatus: string) => {
-    return paymentStatus === 'completed' || paymentStatus === 'COMPLETED' || paymentStatus === 'n/a';
+  const isCompleted = (paymentStatus: PaymentStatus) => {
+    return paymentStatus === 'completed' || paymentStatus === 'n/a';
   };
 
   if (transactions.length === 0) {
@@ -50,7 +51,7 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
           </tr>
         </thead>
         <tbody>
-          {transactions.map((transaction: any) => (
+          {transactions.map((transaction) => (
             <tr key={transaction.id} className="border-b border-gray-100 hover:bg-gray-50 animate-on-load fade-up duration-normal">
               <td className="py-3 px-4 text-sm text-gray-600 animate-on-load fade-right duration-fast">
                 {new Date(transaction.createdAt).toLocaleDateString()}
@@ -71,9 +72,9 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
                   className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                     isCompleted(transaction.paymentStatus)
                       ? 'bg-green-100 text-green-800'
-                      : transaction.paymentStatus === 'PENDING' || transaction.paymentStatus === 'pending'
+                      : transaction.paymentStatus === 'pending'
                       ? 'bg-yellow-100 text-yellow-800'
-                      : transaction.paymentStatus === 'FAILED' || transaction.paymentStatus === 'failed'
+                      : transaction.paymentStatus === 'failed'
                       ? 'bg-red-100 text-red-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}

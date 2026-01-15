@@ -18,6 +18,8 @@ export default function MerchantQRGenerator() {
   const [selectedSKU, setSelectedSKU] = useState('');
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedSKUs, setSelectedSKUs] = useState<string[]>([]);
+  const [format, setFormat] = useState<'png' | 'svg' | 'pdf'>('png');
+  const [includeLogo, setIncludeLogo] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSKUs());
@@ -28,21 +30,35 @@ export default function MerchantQRGenerator() {
 
   const handleGenerateSingle = async () => {
     if (!merchantId || !selectedSKU) return;
-    await dispatch(generateQRCode({ merchantId, skuCode: selectedSKU }));
+    await dispatch(generateQRCode({ merchantId, skuCode: selectedSKU, format, includeLogo }));
   };
 
   const handleGenerateBulk = async () => {
     if (!merchantId || selectedSKUs.length === 0) return;
-    await dispatch(generateBulkQRCodes({ merchantId, skuCodes: selectedSKUs }));
+    await dispatch(generateBulkQRCodes({ merchantId, skuCodes: selectedSKUs, format, includeLogo }));
   };
 
   const handleDownloadQR = (qrCode: any) => {
     const link = document.createElement('a');
-    link.href = qrCode.qrCodeDataUrl;
+
+    if (qrCode.format === 'svg') {
+      // For SVG, create blob from string
+      const blob = new Blob([qrCode.qrCodeData], { type: qrCode.mimeType });
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+    } else {
+      // For PNG and PDF (already base64 data URLs)
+      link.href = qrCode.qrCodeData;
+    }
+
     link.download = qrCode.downloadFileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    if (qrCode.format === 'svg') {
+      URL.revokeObjectURL(link.href);
+    }
   };
 
   const activeSKUs = skus.filter(sku => sku.isActive);
@@ -92,6 +108,67 @@ export default function MerchantQRGenerator() {
             </div>
           </div>
 
+          {/* Format & Options Selection */}
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-left duration-normal">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 animate-on-load fade-down duration-fast">Export Format & Options</h2>
+
+            {/* Format Selection */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">File Format</label>
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  onClick={() => setFormat('png')}
+                  className={`py-3 px-4 rounded-lg font-semibold transition-colors animate-on-load zoom-in duration-very-fast ${
+                    format === 'png'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  PNG
+                </button>
+                <button
+                  onClick={() => setFormat('svg')}
+                  className={`py-3 px-4 rounded-lg font-semibold transition-colors animate-on-load zoom-in duration-fast ${
+                    format === 'svg'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  SVG
+                </button>
+                <button
+                  onClick={() => setFormat('pdf')}
+                  className={`py-3 px-4 rounded-lg font-semibold transition-colors animate-on-load zoom-in duration-normal ${
+                    format === 'pdf'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  PDF
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                {format === 'png' && '• Best for screen display and digital use (512x512px)'}
+                {format === 'svg' && '• Scalable vector format ideal for professional printing'}
+                {format === 'pdf' && '• Print-ready document with QR code and instructions'}
+              </p>
+            </div>
+
+            {/* Logo Option */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="includeLogo"
+                checked={includeLogo}
+                onChange={(e) => setIncludeLogo(e.target.checked)}
+                className="mr-2 w-4 h-4"
+              />
+              <label htmlFor="includeLogo" className="text-sm text-gray-700">
+                Include CSR26 logo (uses higher error correction)
+              </label>
+            </div>
+          </div>
+
           {/* Generator Form */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 animate-on-load fade-left duration-slow">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
@@ -116,7 +193,7 @@ export default function MerchantQRGenerator() {
               disabled={loading || (!bulkMode && !selectedSKU) || (bulkMode && selectedSKUs.length === 0)}
               className="mt-6 w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load zoom-in duration-very-slow"
             >
-              {loading ? 'Generating...' : `Generate QR Code${bulkMode ? 's' : ''}`}
+              {loading ? 'Generating...' : `Generate QR Code${bulkMode ? 's' : ''} (${format.toUpperCase()})`}
             </button>
 
             {error && (
@@ -142,12 +219,15 @@ export default function MerchantQRGenerator() {
             <h3 className="font-semibold text-blue-800 mb-3">How to Use QR Codes</h3>
             <ul className="text-sm text-gray-700 space-y-2">
               <li>• Print and display QR codes at point-of-sale</li>
-            <li>• Customers scan with their phone camera</li>
-            <li>• They're redirected to checkout with pre-filled merchant and SKU</li>
-            <li>• Transaction is automatically linked to your merchant wallet</li>
-          </ul>
+              <li>• Customers scan with their phone camera</li>
+              <li>• They're redirected to checkout with pre-filled merchant and SKU</li>
+              <li>• Transaction is automatically linked to your merchant wallet</li>
+              <li>• <strong>PNG:</strong> Digital use and screen display</li>
+              <li>• <strong>SVG:</strong> Professional printing (scalable to any size)</li>
+              <li>• <strong>PDF:</strong> Print-ready with specifications (recommended 3cm x 3cm minimum)</li>
+            </ul>
+          </div>
         </div>
-      </div>
     </div>
   );
 }

@@ -1,7 +1,10 @@
 // Wallet Slice - Redux state management for Wallets
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { env } from '../config/env';
+import type { Transaction } from '../types/transaction';
 
 // Type definitions (matching backend/database schema)
+// Section 6: Added totalAmountSpent and certifiedAssetStatus for threshold tracking
 interface Wallet {
   id: string;
   userId?: string;
@@ -9,13 +12,15 @@ interface Wallet {
   totalAccumulated: number;
   totalRedeemed: number;
   currentBalance: number;
+  totalAmountSpent: number; // Section 6.1: Total euros spent (for €10 threshold tracking)
+  certifiedAssetStatus: boolean; // Section 6.2: True if totalAmountSpent >= threshold
   createdAt: string;
   updatedAt: string;
 }
 
 interface WalletWithHistory {
   wallet: Wallet;
-  transactions: any[];
+  transactions: Transaction[]; // Now properly typed instead of any[]
 }
 
 interface WalletState {
@@ -32,13 +37,25 @@ const initialState: WalletState = {
   error: null,
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
+
+// Helper function to get auth headers with JWT token
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('csr26_session_token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+};
 
 // Async thunks
 export const fetchUserWallet = createAsyncThunk(
   'wallets/fetchUserWallet',
   async (userId: string) => {
-    const response = await fetch(`${API_URL}/user/wallet?userId=${userId}`);
+    // JWT token in header provides authentication, userId still passed for dashboard routing
+    const response = await fetch(`${API_URL}/user/wallet`, {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) throw new Error('Failed to fetch user wallet');
     const data = await response.json();
     return data.data;

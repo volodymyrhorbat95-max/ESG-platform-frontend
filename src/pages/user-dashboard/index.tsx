@@ -79,6 +79,9 @@ export default function UserDashboard() {
             totalAccumulatedKg={totalAccumulatedKg}
             totalAccumulated={Number(wallet.totalAccumulated)}
             transactionCount={transactions.length}
+            totalAmountSpent={Number(wallet.totalAmountSpent)}
+            certifiedAssetStatus={wallet.certifiedAssetStatus}
+            corsairThreshold={10}
           />
         </div>
 

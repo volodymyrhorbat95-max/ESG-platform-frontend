@@ -1,5 +1,6 @@
 // SKU Form Component
 // Note: gramsWeight REMOVED - impact is calculated dynamically (price / CURRENT_CSR_PRICE)
+// Section 5.1: Added productWeight and description fields
 interface SKUFormProps {
   formData: {
     code: string;
@@ -9,6 +10,8 @@ interface SKUFormProps {
     requiresValidation: boolean;
     corsairThreshold: number;
     impactMultiplier: number;
+    productWeight?: number;
+    description?: string;
   };
   editingSKU: any | null;
   loading: boolean;
@@ -132,6 +135,39 @@ export default function SKUForm({
             />
             <label className="text-sm text-gray-700 animate-on-load fade-left duration-normal">Requires Validation</label>
           </div>
+
+          <div className="animate-on-load fade-right duration-normal">
+            <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-down duration-very-fast">
+              Product Weight (grams)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.productWeight || ''}
+              onChange={(e) =>
+                onFormDataChange({ ...formData, productWeight: e.target.value ? parseFloat(e.target.value) : undefined })
+              }
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load zoom-in duration-normal"
+              placeholder="e.g., 17 for 17g pasta"
+            />
+            <p className="text-xs text-gray-500 mt-1">Section 5.1: Actual grams for physical products (CLAIM mode)</p>
+          </div>
+        </div>
+
+        <div className="animate-on-load fade-up duration-normal">
+          <label className="block text-sm font-medium text-gray-700 mb-1 animate-on-load fade-right duration-fast">
+            Description (Merchant-facing)
+          </label>
+          <textarea
+            value={formData.description || ''}
+            onChange={(e) =>
+              onFormDataChange({ ...formData, description: e.target.value })
+            }
+            rows={3}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg animate-on-load zoom-out duration-normal"
+            placeholder="Description for merchants..."
+          />
+          <p className="text-xs text-gray-500 mt-1">Section 5.1: Description of the SKU for merchant reference</p>
         </div>
 
         <div className="flex gap-4">

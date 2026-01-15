@@ -3,8 +3,9 @@
 // CRITICAL: All API calls through Redux, NO direct fetch in components
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Verification result interface
 interface CertificateVerification {

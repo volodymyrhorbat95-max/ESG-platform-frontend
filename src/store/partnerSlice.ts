@@ -1,5 +1,6 @@
 // Partner Slice - Redux state management for Partners
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 
 // Type definitions (matching backend/database schema)
 interface Partner {
@@ -29,7 +30,7 @@ const initialState: PartnerState = {
 };
 
 // Get API URL from environment
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {

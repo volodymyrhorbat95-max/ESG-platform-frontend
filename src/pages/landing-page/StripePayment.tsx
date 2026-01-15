@@ -96,6 +96,12 @@ function PaymentForm({ amount, userId, skuId, transactionId, merchantId, partner
     }
   };
 
+  // Section 7.4: Handle payment retry
+  const handleRetry = () => {
+    setError(null);
+    setProcessing(false);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-blue-50 p-4 rounded-lg animate-on-load fade-down duration-fast">
@@ -127,19 +133,41 @@ function PaymentForm({ amount, userId, skuId, transactionId, merchantId, partner
         </div>
       </div>
 
+      {/* Section 7.4: Failed payment error message with retry option */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg animate-on-load fade-left duration-fast">
-          {error}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 animate-on-load fade-left duration-fast">
+          <div className="flex items-start">
+            <svg className="w-5 h-5 text-red-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-red-800 mb-1">Payment Failed</p>
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          </div>
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={!stripe || processing || paymentLoading || !paymentIntent}
-        className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load flip-up duration-slow"
-      >
-        {processing || paymentLoading ? 'Processing...' : `Pay €${amount.toFixed(2)}`}
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          disabled={!stripe || processing || paymentLoading || !paymentIntent}
+          className="flex-1 bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load flip-up duration-slow"
+        >
+          {processing || paymentLoading ? 'Processing...' : error ? 'Retry Payment' : `Pay €${amount.toFixed(2)}`}
+        </button>
+
+        {/* Section 7.4: Clear error button when payment fails */}
+        {error && (
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-gray-400 hover:bg-gray-50 transition-colors animate-on-load fade-right duration-fast"
+          >
+            Clear
+          </button>
+        )}
+      </div>
 
       <div className="text-center animate-on-load fade-right duration-very-slow">
         <p className="text-xs text-gray-500">

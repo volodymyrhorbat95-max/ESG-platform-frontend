@@ -4,9 +4,10 @@ import { useState } from 'react';
 interface GiftCardInputProps {
   onValidate: (code: string) => void;
   loading: boolean;
+  error?: string | null;
 }
 
-export default function GiftCardInput({ onValidate, loading }: GiftCardInputProps) {
+export default function GiftCardInput({ onValidate, loading, error }: GiftCardInputProps) {
   const [code, setCode] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,6 +43,21 @@ export default function GiftCardInput({ onValidate, loading }: GiftCardInputProp
             The code is case-insensitive and can be found on your gift card
           </p>
         </div>
+
+        {/* Section 8.2: Display error message when validation fails */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 animate-on-load fade-left duration-fast">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-red-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-red-800 mb-1">Invalid Gift Card Code</p>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <button
           type="submit"

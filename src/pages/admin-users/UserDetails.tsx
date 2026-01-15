@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchUserById, updateUser } from '../../store/userSlice';
 import { fetchUserTransactions } from '../../store/transactionSlice';
+import { fetchUserWallet } from '../../store/walletSlice';
+import WalletAdjustmentModal from './WalletAdjustmentModal';
 
 interface UserDetailsProps {
   userId: string;
@@ -25,6 +27,7 @@ export default function UserDetails({ userId, onClose }: UserDetailsProps) {
   const dispatch = useAppDispatch();
   const { currentUser, loading: userLoading } = useAppSelector((state) => state.users);
   const { transactions, loading: txLoading } = useAppSelector((state) => state.transactions);
+  const { userWallet } = useAppSelector((state) => state.wallets);
   const [activeTab, setActiveTab] = useState<'info' | 'transactions' | 'edit'>('info');
   const [editForm, setEditForm] = useState<EditFormData>({
     firstName: '',
@@ -38,10 +41,12 @@ export default function UserDetails({ userId, onClose }: UserDetailsProps) {
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [walletAdjustmentModalOpen, setWalletAdjustmentModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchUserById(userId));
     dispatch(fetchUserTransactions(userId));
+    dispatch(fetchUserWallet(userId));
   }, [dispatch, userId]);
 
   // Populate edit form when user data loads
@@ -184,6 +189,30 @@ export default function UserDetails({ userId, onClose }: UserDetailsProps) {
                 <div className="bg-purple-50 rounded-lg p-4 border border-purple-200 animate-on-load fade-up duration-light-slow">
                   <p className="text-sm text-purple-600">Transactions</p>
                   <p className="text-2xl font-bold text-purple-800">{userTransactions.length}</p>
+                </div>
+              </div>
+
+              {/* Wallet Section - Section 9.4 */}
+              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200 animate-on-load fade-up duration-slow">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-2">Wallet Balance</h3>
+                    <p className="text-3xl font-bold text-purple-600">
+                      {userWallet?.wallet?.currentBalance ? Number(userWallet.wallet.currentBalance).toFixed(0) : '0'}g
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Current plastic impact balance
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setWalletAdjustmentModalOpen(true)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Adjust Wallet
+                  </button>
                 </div>
               </div>
 
@@ -494,6 +523,15 @@ export default function UserDetails({ userId, onClose }: UserDetailsProps) {
           )}
         </div>
       </div>
+
+      {/* Wallet Adjustment Modal - Section 9.4 */}
+      <WalletAdjustmentModal
+        userId={userId}
+        userName={user?.email || 'User'}
+        currentBalance={userWallet?.wallet?.currentBalance ? Number(userWallet.wallet.currentBalance) : 0}
+        isOpen={walletAdjustmentModalOpen}
+        onClose={() => setWalletAdjustmentModalOpen(false)}
+      />
     </div>
   );
 }

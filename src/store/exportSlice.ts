@@ -1,5 +1,6 @@
 // Export Slice - Redux state management for data export
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 
 interface ExportFilters {
   startDate: string;
@@ -22,7 +23,7 @@ const initialState: ExportState = {
   lastExportUrl: null,
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {

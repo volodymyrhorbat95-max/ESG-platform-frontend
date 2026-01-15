@@ -1,5 +1,6 @@
 // Payment Slice - Redux state management for Stripe payments
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 
 interface PaymentIntent {
   clientSecret: string;
@@ -27,7 +28,7 @@ const initialState: PaymentState = {
   error: null,
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Create payment intent
 export const createPaymentIntent = createAsyncThunk(
@@ -38,7 +39,11 @@ export const createPaymentIntent = createAsyncThunk(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error('Failed to create payment intent');
+    if (!response.ok) {
+      // Section 7.4: Parse backend error message for better user feedback
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to create payment intent');
+    }
     const result = await response.json();
     return result.data;
   }

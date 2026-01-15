@@ -136,6 +136,39 @@ export default function AdminGiftCards() {
     }
   };
 
+  // Section 8.3: Export unused codes for printing on physical cards
+  const handleExportUnused = () => {
+    const unusedCodes = codes.filter((c) => !c.isRedeemed);
+
+    if (unusedCodes.length === 0) {
+      alert('No unused codes to export');
+      return;
+    }
+
+    // Create CSV content
+    const csvHeaders = 'Code,SKU Code,SKU Name,Amount,Created Date\n';
+    const csvRows = unusedCodes.map((c) => {
+      const skuCode = c.sku?.code || '';
+      const skuName = c.sku?.name || '';
+      const amount = c.sku?.price || '';
+      const createdDate = new Date(c.createdAt).toLocaleDateString();
+      return `${c.code},${skuCode},"${skuName}",${amount},${createdDate}`;
+    }).join('\n');
+
+    const csvContent = csvHeaders + csvRows;
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `unused-gift-cards-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Filter gift cards
   const filteredCodes = codes.filter((code) => {
     if (filter === 'redeemed') return code.isRedeemed;
@@ -162,12 +195,21 @@ export default function AdminGiftCards() {
                 Bulk create codes and inventory tracking
               </p>
             </div>
-            <button
-              onClick={() => setShowBulkUpload(!showBulkUpload)}
-              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors animate-on-load zoom-in duration-normal"
-            >
-              {showBulkUpload ? 'Cancel' : '+ Create Codes'}
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleExportUnused}
+                className="px-6 py-3 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-green-50 transition-colors animate-on-load zoom-in duration-fast"
+                title="Section 8.3: Export unused codes for printing"
+              >
+                📥 Export Unused
+              </button>
+              <button
+                onClick={() => setShowBulkUpload(!showBulkUpload)}
+                className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors animate-on-load zoom-in duration-normal"
+              >
+                {showBulkUpload ? 'Cancel' : '+ Create Codes'}
+              </button>
+            </div>
           </div>
         </div>
 

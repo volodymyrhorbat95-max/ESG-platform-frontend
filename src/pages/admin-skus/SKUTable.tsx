@@ -6,9 +6,12 @@ interface SKUTableProps {
   onEdit: (sku: any) => void;
   onDelete: (id: string) => void;
   onManageLocalizations: (sku: any) => void;
+  onToggleActive: (id: string, isActive: boolean) => void;
+  onDuplicate: (sku: any) => void;
+  onPreviewImpact: (sku: any) => void;
 }
 
-export default function SKUTable({ skus, loading, error, onEdit, onDelete, onManageLocalizations }: SKUTableProps) {
+export default function SKUTable({ skus, loading, error, onEdit, onDelete, onManageLocalizations, onToggleActive, onDuplicate, onPreviewImpact }: SKUTableProps) {
   if (loading && !skus.length) {
     return (
       <div className="text-center py-12 animate-on-load fade-up duration-normal">
@@ -46,6 +49,9 @@ export default function SKUTable({ skus, loading, error, onEdit, onDelete, onMan
             <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-slow">
               Multiplier
             </th>
+            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-slow">
+              Status
+            </th>
             <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 animate-on-load fade-down duration-very-slow">
               Actions
             </th>
@@ -77,12 +83,39 @@ export default function SKUTable({ skus, loading, error, onEdit, onDelete, onMan
               <td className="py-3 px-4 text-sm text-gray-800 text-center animate-on-load flip-up duration-normal">
                 {sku.impactMultiplier ? `${Number(sku.impactMultiplier).toFixed(1)}x` : '1.0x'}
               </td>
+              <td className="py-3 px-4 text-center animate-on-load zoom-in duration-normal">
+                <button
+                  onClick={() => onToggleActive(sku.id, !sku.isActive)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                    sku.isActive
+                      ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  title={sku.isActive ? 'Click to deactivate' : 'Click to activate'}
+                >
+                  {sku.isActive ? 'Active' : 'Inactive'}
+                </button>
+              </td>
               <td className="py-3 px-4 text-center animate-on-load flip-down duration-light-slow">
                 <button
                   onClick={() => onEdit(sku)}
                   className="text-blue-600 hover:text-blue-800 mr-3 animate-on-load fade-right duration-fast cursor-pointer"
                 >
                   Edit
+                </button>
+                <button
+                  onClick={() => onDuplicate(sku)}
+                  className="text-green-600 hover:text-green-800 mr-3 animate-on-load zoom-in duration-fast cursor-pointer"
+                  title="Duplicate this SKU as template"
+                >
+                  Duplicate
+                </button>
+                <button
+                  onClick={() => onPreviewImpact(sku)}
+                  className="text-indigo-600 hover:text-indigo-800 mr-3 animate-on-load zoom-in duration-fast cursor-pointer"
+                  title="Preview impact calculations"
+                >
+                  Preview
                 </button>
                 <button
                   onClick={() => onManageLocalizations(sku)}

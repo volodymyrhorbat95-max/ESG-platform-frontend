@@ -219,6 +219,40 @@ export const updatePaymentStatus = createAsyncThunk(
   }
 );
 
+// Section 9.5: Create manual transaction (admin only)
+export const createManualTransaction = createAsyncThunk(
+  'transactions/createManual',
+  async (input: {
+    userId: string;
+    skuCode: string;
+    amount: number;
+    merchantId?: string;
+    partnerId?: string;
+    orderId?: string;
+    reason: string;
+  }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('csr26_admin_token');
+      const response = await fetch(`${API_URL}/transactions/manual`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+        },
+        body: JSON.stringify(input),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to create manual transaction');
+      }
+      const result = await response.json();
+      return result.data as Transaction;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // Get user's total impact
 export const fetchUserTotalImpact = createAsyncThunk(
   'transactions/fetchUserTotalImpact',
@@ -368,6 +402,25 @@ const transactionSlice = createSlice({
         state.userTotalImpact = action.payload;
       })
       .addCase(fetchUserTotalImpact.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Section 9.5: Create manual transaction
+    builder
+      .addCase(createManualTransaction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createManualTransaction.fulfilled, (state, action: PayloadAction<Transaction>) => {
+        state.loading = false;
+        state.currentTransaction = action.payload;
+        // Add to transactions list if it's loaded
+        if (state.transactions.length > 0) {
+          state.transactions.unshift(action.payload);
+        }
+      })
+      .addCase(createManualTransaction.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

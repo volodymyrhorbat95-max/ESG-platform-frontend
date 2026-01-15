@@ -78,10 +78,22 @@ interface UpdateUserInput {
   state?: string;
 }
 
+// Section 9.4: Wallet adjustment types
+export interface WalletAdjustment {
+  id: string;
+  userId: string;
+  amount: number;
+  reason: string;
+  adjustedBy: string;
+  adjustedAt: string;
+}
+
 interface UserState {
   currentUser: User | null;
   users: User[];
+  walletAdjustments: WalletAdjustment[]; // Section 9.4: Adjustment history for currently viewed user
   loading: boolean;
+  adjustmentLoading: boolean; // Section 9.4: Separate loading for adjustments
   error: string | null;
 }
 
@@ -109,7 +121,9 @@ const clearUserIdFromStorage = () => {
 const initialState: UserState = {
   currentUser: null,
   users: [],
+  walletAdjustments: [],
   loading: false,
+  adjustmentLoading: false,
   error: null,
 };
 
@@ -366,6 +380,48 @@ export const exportUserData = createAsyncThunk(
   }
 );
 
+// Section 9.4: Adjust user wallet (admin only)
+export const adjustUserWallet = createAsyncThunk(
+  'users/adjustWallet',
+  async ({ userId, amount, reason }: { userId: string; amount: number; reason: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${userId}/wallet/adjust`, {
+        method: 'POST',
+        headers: getAdminAuthHeaders(),
+        body: JSON.stringify({ amount, reason }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to adjust wallet');
+      }
+      const result = await response.json();
+      return result.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Section 9.4: Fetch wallet adjustment history (admin only)
+export const fetchWalletAdjustments = createAsyncThunk(
+  'users/fetchWalletAdjustments',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${userId}/wallet/adjustments`, {
+        headers: getAdminAuthHeaders(),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Failed to fetch wallet adjustments');
+      }
+      const result = await response.json();
+      return result.data as WalletAdjustment[];
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // Slice
 const userSlice = createSlice({
   name: 'users',
@@ -569,6 +625,35 @@ const userSlice = createSlice({
       })
       .addCase(exportUserData.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Section 9.4: Adjust user wallet
+    builder
+      .addCase(adjustUserWallet.pending, (state) => {
+        state.adjustmentLoading = true;
+        state.error = null;
+      })
+      .addCase(adjustUserWallet.fulfilled, (state) => {
+        state.adjustmentLoading = false;
+      })
+      .addCase(adjustUserWallet.rejected, (state, action) => {
+        state.adjustmentLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Section 9.4: Fetch wallet adjustments
+    builder
+      .addCase(fetchWalletAdjustments.pending, (state) => {
+        state.adjustmentLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchWalletAdjustments.fulfilled, (state, action: PayloadAction<WalletAdjustment[]>) => {
+        state.adjustmentLoading = false;
+        state.walletAdjustments = action.payload;
+      })
+      .addCase(fetchWalletAdjustments.rejected, (state, action) => {
+        state.adjustmentLoading = false;
         state.error = action.payload as string;
       });
   },

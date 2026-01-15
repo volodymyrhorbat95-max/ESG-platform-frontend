@@ -5,7 +5,11 @@ import ServiceDescription from './ServiceDescription';
 import UserRegistration from './UserRegistration';
 import TransactionTypes from './TransactionTypes';
 import ImpactCertification from './ImpactCertification';
+import PlasticRemovalTimeline from './PlasticRemovalTimeline';
+import CSRCreditsNature from './CSRCreditsNature';
 import PaymentProcessing from './PaymentProcessing';
+import PlatformFeesAndPricing from './PlatformFeesAndPricing';
+import RefundPolicy from './RefundPolicy';
 import GiftCardTerms from './GiftCardTerms';
 import UserWallet from './UserWallet';
 import DataProtection from './DataProtection';
@@ -29,7 +33,11 @@ export default function TermsAndConditions() {
             <UserRegistration />
             <TransactionTypes />
             <ImpactCertification />
+            <PlasticRemovalTimeline />
+            <CSRCreditsNature />
             <PaymentProcessing />
+            <PlatformFeesAndPricing />
+            <RefundPolicy />
             <GiftCardTerms />
             <UserWallet />
             <DataProtection />

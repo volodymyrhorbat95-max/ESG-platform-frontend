@@ -1,5 +1,6 @@
 // SKU Localization Slice - Redux state management for multi-market SKU support
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 // Type definitions (matching backend/database schema)
@@ -32,7 +33,7 @@ const initialState: SKULocalizationState = {
 };
 
 // Get API URL from environment
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {

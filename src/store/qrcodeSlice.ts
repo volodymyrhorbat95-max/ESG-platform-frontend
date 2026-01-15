@@ -1,11 +1,14 @@
 // QR Code Slice - Redux state for QR code generation
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 interface QRCodeData {
-  qrCodeDataUrl: string;
+  qrCodeData: string; // Base64 data URL for PNG, SVG string, or base64 for PDF
   targetUrl: string;
   downloadFileName: string;
+  format: 'png' | 'svg' | 'pdf';
+  mimeType: string;
   sku?: {
     code: string;
     name: string;
@@ -24,16 +27,26 @@ const initialState: QRCodeState = {
   error: null,
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Generate single QR code
 export const generateQRCode = createAsyncThunk(
   'qrcode/generate',
-  async ({ merchantId, skuCode }: { merchantId: string; skuCode: string }) => {
+  async ({
+    merchantId,
+    skuCode,
+    format = 'png',
+    includeLogo = false
+  }: {
+    merchantId: string;
+    skuCode: string;
+    format?: 'png' | 'svg' | 'pdf';
+    includeLogo?: boolean;
+  }) => {
     const response = await fetch(`${API_URL}/merchants/${merchantId}/qrcodes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ skuCode }),
+      body: JSON.stringify({ skuCode, format, includeLogo }),
     });
     if (!response.ok) throw new Error('Failed to generate QR code');
     const data = await response.json();
@@ -44,11 +57,21 @@ export const generateQRCode = createAsyncThunk(
 // Generate bulk QR codes
 export const generateBulkQRCodes = createAsyncThunk(
   'qrcode/generateBulk',
-  async ({ merchantId, skuCodes }: { merchantId: string; skuCodes: string[] }) => {
+  async ({
+    merchantId,
+    skuCodes,
+    format = 'png',
+    includeLogo = false
+  }: {
+    merchantId: string;
+    skuCodes: string[];
+    format?: 'png' | 'svg' | 'pdf';
+    includeLogo?: boolean;
+  }) => {
     const response = await fetch(`${API_URL}/merchants/${merchantId}/qrcodes/bulk`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ skuCodes }),
+      body: JSON.stringify({ skuCodes, format, includeLogo }),
     });
     if (!response.ok) throw new Error('Failed to generate QR codes');
     const data = await response.json();

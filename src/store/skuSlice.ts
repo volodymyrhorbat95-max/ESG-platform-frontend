@@ -1,9 +1,11 @@
 // SKU Slice - Redux state management for SKUs
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 
 // Type definitions (matching backend/database schema)
 // CRITICAL: gramsWeight removed - impact calculated dynamically using CURRENT_CSR_PRICE
 // CRITICAL: amplivoThreshold renamed to corsairThreshold
+// Section 5.1: Added productWeight and description fields
 interface SKU {
   id: string;
   code: string;
@@ -13,7 +15,10 @@ interface SKU {
   requiresValidation: boolean;
   corsairThreshold: number;
   impactMultiplier: number;
+  productWeight?: number; // Section 5.1: Actual grams for physical products
+  description?: string; // Section 5.1: Merchant-facing description
   partnerId?: string;
+  merchantId?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -34,7 +39,7 @@ const initialState: SKUState = {
 };
 
 // Get API URL from environment
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -108,6 +113,21 @@ export const deleteSKU = createAsyncThunk('skus/delete', async (id: string) => {
   if (!response.ok) throw new Error('Failed to delete SKU');
   return id;
 });
+
+// Section 9.3: Toggle SKU active status
+export const toggleSKUActive = createAsyncThunk(
+  'skus/toggleActive',
+  async ({ id, isActive }: { id: string; isActive: boolean }) => {
+    const response = await fetch(`${API_URL}/admin/skus/${id}/toggle-active`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ isActive }),
+    });
+    if (!response.ok) throw new Error('Failed to toggle SKU status');
+    const data = await response.json();
+    return data.data as SKU;
+  }
+);
 
 // Slice
 const skuSlice = createSlice({
@@ -198,6 +218,24 @@ const skuSlice = createSlice({
       .addCase(deleteSKU.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to delete SKU';
+      });
+
+    // Toggle SKU active status - Section 9.3
+    builder
+      .addCase(toggleSKUActive.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleSKUActive.fulfilled, (state, action: PayloadAction<SKU>) => {
+        state.loading = false;
+        const index = state.items.findIndex((sku) => sku.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+      })
+      .addCase(toggleSKUActive.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to toggle SKU status';
       });
   },
 });

@@ -7,12 +7,16 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchAllConfigs, updateConfigValue } from '../../store/configSlice';
 import CSRPriceSection from './CSRPriceSection';
 import PlatformFeeSection from './PlatformFeeSection';
+import AllocationMultiplierSection from './AllocationMultiplierSection';
+import CorsairThresholdSection from './CorsairThresholdSection';
+import MasterIdSection from './MasterIdSection';
 import StripeConfigNote from './StripeConfigNote';
 import CalculationExamples from './CalculationExamples';
+import ConfigHistoryModal from './ConfigHistoryModal';
 
 export default function AdminConfig() {
   const dispatch = useAppDispatch();
-  const { configs, currentCSRPrice, loading, error } = useAppSelector((state) => state.config);
+  const { configs, currentCSRPrice, allocationMultiplier, corsairThreshold, loading, error } = useAppSelector((state) => state.config);
   const token = localStorage.getItem('csr26_admin_token') || '';
 
   // CSR Price state
@@ -27,9 +31,36 @@ export default function AdminConfig() {
   const [feeDescription, setFeeDescription] = useState('');
   const [feeValidationError, setFeeValidationError] = useState('');
 
-  // Get platform fee from configs
+  // Allocation Multiplier state
+  const [editAllocationMode, setEditAllocationMode] = useState(false);
+  const [newAllocation, setNewAllocation] = useState('');
+  const [allocationDescription, setAllocationDescription] = useState('');
+  const [allocationValidationError, setAllocationValidationError] = useState('');
+
+  // Corsair Threshold state
+  const [editCorsairMode, setEditCorsairMode] = useState(false);
+  const [newCorsair, setNewCorsair] = useState('');
+  const [corsairDescription, setCorsairDescription] = useState('');
+  const [corsairValidationError, setCorsairValidationError] = useState('');
+
+  // Master ID state
+  const [editMasterMode, setEditMasterMode] = useState(false);
+  const [newMasterId, setNewMasterId] = useState('');
+  const [masterDescription, setMasterDescription] = useState('');
+  const [masterValidationError, setMasterValidationError] = useState('');
+
+  // History modal state
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyConfigKey, setHistoryConfigKey] = useState('');
+  const [historyConfigName, setHistoryConfigName] = useState('');
+
+  // Get values from configs
   const platformFeeConfig = configs.find((c) => c.key === 'PLATFORM_FEE_PERCENTAGE');
   const platformFee = platformFeeConfig ? parseFloat(platformFeeConfig.value) : null;
+  const allocationConfig = configs.find((c) => c.key === 'ALLOCATION_MULTIPLIER');
+  const corsairConfig = configs.find((c) => c.key === 'CORSAIR_THRESHOLD');
+  const masterConfig = configs.find((c) => c.key === 'MASTER_ID');
+  const masterId = masterConfig ? masterConfig.value : null;
 
   // Step 1: Fetch all configs on mount (following critical rule)
   useEffect(() => {
@@ -54,7 +85,28 @@ export default function AdminConfig() {
     if (platformFeeConfig) {
       setFeeDescription(platformFeeConfig.description || '');
     }
-  }, [currentCSRPrice, configs, platformFee, platformFeeConfig]);
+    // Set allocation multiplier values
+    if (allocationMultiplier !== null) {
+      setNewAllocation(allocationMultiplier.toString());
+    }
+    if (allocationConfig) {
+      setAllocationDescription(allocationConfig.description || '');
+    }
+    // Set corsair threshold values
+    if (corsairThreshold !== null) {
+      setNewCorsair(corsairThreshold.toString());
+    }
+    if (corsairConfig) {
+      setCorsairDescription(corsairConfig.description || '');
+    }
+    // Set master ID values
+    if (masterId) {
+      setNewMasterId(masterId);
+    }
+    if (masterConfig) {
+      setMasterDescription(masterConfig.description || '');
+    }
+  }, [currentCSRPrice, configs, platformFee, platformFeeConfig, allocationMultiplier, allocationConfig, corsairThreshold, corsairConfig, masterId, masterConfig]);
 
   // CSR Price handlers
   const handleUpdate = async () => {
@@ -120,6 +172,108 @@ export default function AdminConfig() {
     setFeeValidationError('');
   };
 
+  // Allocation Multiplier handlers
+  const handleAllocationUpdate = async () => {
+    const allocNum = parseFloat(newAllocation);
+    if (isNaN(allocNum) || allocNum <= 0) {
+      setAllocationValidationError('Multiplier must be a positive number');
+      return;
+    }
+
+    setAllocationValidationError('');
+
+    const result = await dispatch(
+      updateConfigValue({
+        key: 'ALLOCATION_MULTIPLIER',
+        value: newAllocation,
+        description: allocationDescription || undefined,
+        token,
+      })
+    );
+
+    if (updateConfigValue.fulfilled.match(result)) {
+      setEditAllocationMode(false);
+    }
+  };
+
+  const handleAllocationCancel = () => {
+    setEditAllocationMode(false);
+    if (allocationMultiplier !== null) {
+      setNewAllocation(allocationMultiplier.toString());
+    }
+    setAllocationValidationError('');
+  };
+
+  // Corsair Threshold handlers
+  const handleCorsairUpdate = async () => {
+    const thresholdNum = parseFloat(newCorsair);
+    if (isNaN(thresholdNum) || thresholdNum <= 0) {
+      setCorsairValidationError('Threshold must be a positive number');
+      return;
+    }
+
+    setCorsairValidationError('');
+
+    const result = await dispatch(
+      updateConfigValue({
+        key: 'CORSAIR_THRESHOLD',
+        value: newCorsair,
+        description: corsairDescription || undefined,
+        token,
+      })
+    );
+
+    if (updateConfigValue.fulfilled.match(result)) {
+      setEditCorsairMode(false);
+    }
+  };
+
+  const handleCorsairCancel = () => {
+    setEditCorsairMode(false);
+    if (corsairThreshold !== null) {
+      setNewCorsair(corsairThreshold.toString());
+    }
+    setCorsairValidationError('');
+  };
+
+  // Master ID handlers
+  const handleMasterUpdate = async () => {
+    if (!newMasterId.trim()) {
+      setMasterValidationError('Master ID cannot be empty');
+      return;
+    }
+
+    setMasterValidationError('');
+
+    const result = await dispatch(
+      updateConfigValue({
+        key: 'MASTER_ID',
+        value: newMasterId.trim(),
+        description: masterDescription || undefined,
+        token,
+      })
+    );
+
+    if (updateConfigValue.fulfilled.match(result)) {
+      setEditMasterMode(false);
+    }
+  };
+
+  const handleMasterCancel = () => {
+    setEditMasterMode(false);
+    if (masterId) {
+      setNewMasterId(masterId);
+    }
+    setMasterValidationError('');
+  };
+
+  // History modal handler
+  const handleViewHistory = (key: string, name: string) => {
+    setHistoryConfigKey(key);
+    setHistoryConfigName(name);
+    setHistoryModalOpen(true);
+  };
+
   if (loading && configs.length === 0) {
     return (
       <div className=" flex items-center justify-center">
@@ -162,6 +316,7 @@ export default function AdminConfig() {
           onDescriptionChange={setDescription}
           onUpdate={handleUpdate}
           onCancel={handleCancel}
+          onViewHistory={() => handleViewHistory('CURRENT_CSR_PRICE', 'Current CSR Price')}
         />
 
         {/* Platform Fee Section */}
@@ -179,6 +334,51 @@ export default function AdminConfig() {
           onCancel={handleFeeCancel}
         />
 
+        {/* Allocation Multiplier Section - Section 9.2 Requirement */}
+        <AllocationMultiplierSection
+          allocationMultiplier={allocationMultiplier}
+          description={allocationDescription}
+          editMode={editAllocationMode}
+          newValue={newAllocation}
+          validationError={allocationValidationError}
+          loading={loading}
+          onEditModeChange={setEditAllocationMode}
+          onValueChange={setNewAllocation}
+          onDescriptionChange={setAllocationDescription}
+          onUpdate={handleAllocationUpdate}
+          onCancel={handleAllocationCancel}
+        />
+
+        {/* Corsair Threshold Section - Section 9.2 Requirement */}
+        <CorsairThresholdSection
+          corsairThreshold={corsairThreshold}
+          description={corsairDescription}
+          editMode={editCorsairMode}
+          newValue={newCorsair}
+          validationError={corsairValidationError}
+          loading={loading}
+          onEditModeChange={setEditCorsairMode}
+          onValueChange={setNewCorsair}
+          onDescriptionChange={setCorsairDescription}
+          onUpdate={handleCorsairUpdate}
+          onCancel={handleCorsairCancel}
+        />
+
+        {/* Master ID Section - Section 9.2 Requirement */}
+        <MasterIdSection
+          masterId={masterId}
+          description={masterDescription}
+          editMode={editMasterMode}
+          newValue={newMasterId}
+          validationError={masterValidationError}
+          loading={loading}
+          onEditModeChange={setEditMasterMode}
+          onValueChange={setNewMasterId}
+          onDescriptionChange={setMasterDescription}
+          onUpdate={handleMasterUpdate}
+          onCancel={handleMasterCancel}
+        />
+
         {/* Stripe Configuration Note */}
         <StripeConfigNote />
 
@@ -186,6 +386,14 @@ export default function AdminConfig() {
         {currentCSRPrice !== null && (
           <CalculationExamples currentCSRPrice={currentCSRPrice} />
         )}
+
+        {/* Config History Modal */}
+        <ConfigHistoryModal
+          configKey={historyConfigKey}
+          configName={historyConfigName}
+          isOpen={historyModalOpen}
+          onClose={() => setHistoryModalOpen(false)}
+        />
       </div>
     </div>
   );

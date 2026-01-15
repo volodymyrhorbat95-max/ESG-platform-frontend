@@ -1,6 +1,7 @@
 // Shareable Link Slice - Redux state management for dashboard sharing
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { env } from '../config/env';
 
 // Type definitions
 interface ShareableLink {
@@ -59,7 +60,7 @@ const initialState: ShareableLinkState = {
   error: null,
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = env.apiUrl;
 
 // Async thunks
 export const createShareableLink = createAsyncThunk(

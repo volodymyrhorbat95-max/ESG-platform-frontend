@@ -6,6 +6,7 @@ import { fetchAllTransactions, type PaymentStatus } from '../../store/transactio
 import StatsCards from './StatsCards';
 import TransactionFilters from './TransactionFilters';
 import TransactionTable from './TransactionTable';
+import ManualTransactionModal from './ManualTransactionModal';
 
 export type PaymentMode = 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION' | '';
 
@@ -32,6 +33,8 @@ export default function AdminTransactions() {
     startDate: '',
     endDate: '',
   });
+
+  const [manualTxModalOpen, setManualTxModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllTransactions({}));
@@ -115,13 +118,24 @@ export default function AdminTransactions() {
               <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-on-load fade-right duration-fast">Transaction Oversight</h1>
               <p className="text-gray-600 animate-on-load fade-left duration-light-slow">Full audit trail and monitoring</p>
             </div>
-            <button
-              onClick={handleExportCSV}
-              disabled={filteredTransactions.length === 0}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load zoom-in duration-normal"
-            >
-              Export CSV
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setManualTxModalOpen(true)}
+                className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors animate-on-load zoom-in duration-normal flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Create Manual Transaction
+              </button>
+              <button
+                onClick={handleExportCSV}
+                disabled={filteredTransactions.length === 0}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed animate-on-load zoom-in duration-normal"
+              >
+                Export CSV
+              </button>
+            </div>
           </div>
         </div>
 
@@ -152,6 +166,16 @@ export default function AdminTransactions() {
             <TransactionTable transactions={filteredTransactions} loading={loading} />
           </div>
         </div>
+
+        {/* Manual Transaction Modal */}
+        <ManualTransactionModal
+          isOpen={manualTxModalOpen}
+          onClose={() => setManualTxModalOpen(false)}
+          onSuccess={() => {
+            setManualTxModalOpen(false);
+            dispatch(fetchAllTransactions({}));
+          }}
+        />
       </div>
     </div>
   );
