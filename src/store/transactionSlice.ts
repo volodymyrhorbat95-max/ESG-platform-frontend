@@ -58,9 +58,36 @@ export interface CreateTransactionInput {
   registrationData?: RegistrationInput;
 }
 
+// Section 20.4: E-commerce token-based transaction data
+// Response shape from GET /api/transactions/token/:transactionId/:token
+export interface EcommerceTransactionData {
+  transaction: {
+    id: string;
+    amount: number;
+    calculatedImpact: number;
+    paymentStatus: PaymentStatus;
+    corsairConnectFlag: boolean;
+    createdAt: string;
+  };
+  user: {
+    firstName: string;
+  };
+  sku: {
+    id: string;
+    code: string;
+    name: string;
+    paymentMode: PaymentMode;
+  };
+  tokenInfo: {
+    accessCount: number;
+    firstAccessedAt: string | null;
+  };
+}
+
 interface TransactionState {
   transactions: Transaction[];
   currentTransaction: Transaction | null;
+  ecommerceData: EcommerceTransactionData | null; // Section 20.4: Token-based transaction data
   userTotalImpact: number; // total grams for current user
   loading: boolean;
   error: string | null;
@@ -69,6 +96,7 @@ interface TransactionState {
 const initialState: TransactionState = {
   transactions: [],
   currentTransaction: null,
+  ecommerceData: null,
   userTotalImpact: 0,
   loading: false,
   error: null,
@@ -108,6 +136,26 @@ export const fetchTransactionById = createAsyncThunk(
       }
       const result = await response.json();
       return result.data as Transaction;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Section 20.4: Fetch transaction by token (for e-commerce landing page)
+// This is a PUBLIC endpoint - token IS the authentication
+// Called when URL has ?txn={transactionId}&token={token}
+export const fetchTransactionByToken = createAsyncThunk(
+  'transactions/fetchByToken',
+  async ({ transactionId, token }: { transactionId: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/transactions/token/${transactionId}/${token}`);
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.error || 'Invalid or expired access link');
+      }
+      const result = await response.json();
+      return result.data as EcommerceTransactionData;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -289,6 +337,10 @@ const transactionSlice = createSlice({
     clearTransactionError: (state) => {
       state.error = null;
     },
+    // Section 20.4: Clear e-commerce data when leaving the page
+    clearEcommerceData: (state) => {
+      state.ecommerceData = null;
+    },
   },
   extraReducers: (builder) => {
     // Create transaction
@@ -324,6 +376,23 @@ const transactionSlice = createSlice({
       .addCase(fetchTransactionById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      });
+
+    // Section 20.4: Fetch transaction by token (e-commerce landing page)
+    builder
+      .addCase(fetchTransactionByToken.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.ecommerceData = null;
+      })
+      .addCase(fetchTransactionByToken.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ecommerceData = action.payload;
+      })
+      .addCase(fetchTransactionByToken.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        state.ecommerceData = null;
       });
 
     // Fetch user transactions
@@ -433,6 +502,7 @@ export const {
   clearCurrentTransaction,
   clearTransactions,
   clearTransactionError,
+  clearEcommerceData,
 } = transactionSlice.actions;
 
 export default transactionSlice.reducer;

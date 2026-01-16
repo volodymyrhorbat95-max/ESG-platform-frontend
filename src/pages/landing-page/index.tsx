@@ -1,17 +1,19 @@
 // Smart Landing Page - Main Entry Point
-// Handles all 4 SKU types + 5 Dynamic Cases
+// Handles all 4 SKU types + 5 Dynamic Cases + E-commerce Token Flow
 // Structure: Header > Dynamic Message > Technical Block > Action > Footer
+// Section 20.4: Also handles e-commerce flow when URL has ?txn={id}&token={token}
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchSKUByCode } from '../../store/skuSlice';
 import { registerUser, registerMinimalUser, registerStandardUser } from '../../store/userSlice';
-import { createTransaction } from '../../store/transactionSlice';
+import { createTransaction, fetchTransactionByToken, clearEcommerceData } from '../../store/transactionSlice';
 import { validateGiftCard } from '../../store/giftCardSlice';
 import { loginAdmin } from '../../store/authSlice';
 import { fetchMerchantById } from '../../store/merchantSlice';
-import { fetchCurrentCSRPrice, fetchAllocationMultiplier, fetchCorsairThreshold } from '../../store/configSlice';
+// Note: fetchAllocationMultiplier removed - all modes now use same formula (amount / CSR_PRICE)
+import { fetchCurrentCSRPrice, fetchCorsairThreshold } from '../../store/configSlice';
 
 // Types and utils
 import type { CaseType, StepType } from './types';
@@ -35,6 +37,7 @@ import MinimalRegistrationForm from './MinimalRegistrationForm';
 import GiftCardInput from './GiftCardInput';
 import AdminLogin from './AdminLogin';
 import StripePayment from './StripePayment';
+import EcommerceLanding from './EcommerceLanding';
 
 export default function LandingPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,18 +50,25 @@ export default function LandingPage() {
   const partnerId = searchParams.get('partner');
   const merchantId = searchParams.get('merchant');
   const orderId = searchParams.get('order');
+  // Section 20.4: E-commerce token-based access parameters
+  const txnId = searchParams.get('txn');
+  const token = searchParams.get('token');
 
   // Redux state
   const { currentSKU, loading: skuLoading, error: skuError } = useAppSelector((state) => state.skus);
   const { currentUser } = useAppSelector((state) => state.users);
-  const { loading: transactionLoading } = useAppSelector((state) => state.transactions);
+  const { loading: transactionLoading, ecommerceData, error: transactionError } = useAppSelector((state) => state.transactions);
   const { validatedCode, loading: giftCardLoading, error: giftCardError } = useAppSelector((state) => state.giftCards);
   const { currentMerchant } = useAppSelector((state) => state.merchants);
-  const { currentCSRPrice, allocationMultiplier, corsairThreshold: dynamicCorsairThreshold } = useAppSelector((state) => state.config);
+  // Note: allocationMultiplier is no longer used - all modes use same formula (amount / CSR_PRICE)
+  const { currentCSRPrice, corsairThreshold: dynamicCorsairThreshold } = useAppSelector((state) => state.config);
 
   // Use dynamic threshold from backend, fallback to default if not loaded yet
   // Section 4.1: corsairThreshold is configurable via admin panel
   const corsairThreshold = dynamicCorsairThreshold ?? DEFAULT_CORSAIR_THRESHOLD;
+
+  // Section 20.4: Check if this is an e-commerce token-based flow
+  const isEcommerceFlow = !!(txnId && token);
 
   // Local state
   const [step, setStep] = useState<StepType>('loading');
@@ -76,9 +86,16 @@ export default function LandingPage() {
   // Fetch SKU and config on mount when skuCode is present
   useEffect(() => {
     // Always fetch global configuration for dynamic impact calculation
+    // Note: fetchAllocationMultiplier removed - all modes use same formula (amount / CSR_PRICE)
     dispatch(fetchCurrentCSRPrice());
-    dispatch(fetchAllocationMultiplier());
     dispatch(fetchCorsairThreshold());
+
+    // Section 20.4: E-commerce token-based flow
+    // If txn and token are present, fetch transaction via token (no SKU needed)
+    if (isEcommerceFlow && txnId && token) {
+      dispatch(fetchTransactionByToken({ transactionId: txnId, token }));
+      return; // Don't process SKU flow
+    }
 
     if (skuCode) {
       // Check if this is admin SKU
@@ -90,7 +107,16 @@ export default function LandingPage() {
     } else {
       setStep('sku-input');
     }
-  }, [skuCode, dispatch, ADMIN_SKU]);
+  }, [skuCode, dispatch, ADMIN_SKU, isEcommerceFlow, txnId, token]);
+
+  // Section 20.4: Cleanup e-commerce data when leaving the page
+  useEffect(() => {
+    return () => {
+      if (isEcommerceFlow) {
+        dispatch(clearEcommerceData());
+      }
+    };
+  }, [isEcommerceFlow, dispatch]);
 
   // Fetch merchant data when merchantId is present
   useEffect(() => {
@@ -135,13 +161,12 @@ export default function LandingPage() {
       case 'ALLOCATION':
         if (urlAmount) {
           amount = parseFloat(urlAmount);
-          // ALLOCATION uses SPECIAL formula: amount × ALLOCATION_MULTIPLIER × 1000
-          // CRITICAL: Uses global ALLOCATION_MULTIPLIER, NOT SKU's impactMultiplier
-          // This does NOT use CURRENT_CSR_PRICE!
-          // Example: €5 × 1.6 × 1000 = 8,000 grams (8 kg)
-          // Example: €15 × 1.6 × 1000 = 24,000 grams (24 kg)
-          const allocationMult = allocationMultiplier ?? 1.6; // Fallback to 1.6 if not loaded yet
-          impact = Math.round(amount * allocationMult * 1000);
+          // ALLOCATION uses SAME formula as all other modes (per client clarification)
+          // Formula: (amount / CURRENT_CSR_PRICE) * impactMultiplier * 1000
+          // Client message: "€1 generates 9,090 grams of removal. 1/0.11"
+          // Example: €5 / 0.11 * 1 * 1000 = 45,454 grams (45.45 kg)
+          // Example: €15 / 0.11 * 1 * 1000 = 136,363 grams (136.36 kg)
+          impact = Math.round((amount / currentCSRPrice) * multiplier * 1000);
           setStep('registration');
         } else {
           setStep('amount-input');
@@ -162,7 +187,7 @@ export default function LandingPage() {
       currentSKU.paymentMode === 'GIFT_CARD',
       amount
     ));
-  }, [currentSKU, currentCSRPrice, allocationMultiplier, urlAmount, merchantId, giftCardValidated, validatedCode]);
+  }, [currentSKU, currentCSRPrice, urlAmount, merchantId, giftCardValidated, validatedCode]);
 
   // Handlers
   const handleSkuSubmit = (sku: string) => {
@@ -341,6 +366,34 @@ export default function LandingPage() {
     setSearchParams({});
   };
 
+  // Section 20.4: Render e-commerce landing page if token flow
+  // This is "Point B" - the personalized thank-you page after e-commerce purchase
+  if (isEcommerceFlow) {
+    // Still loading
+    if (transactionLoading) {
+      return <LoadingState />;
+    }
+
+    // Error (invalid/expired token)
+    if (transactionError || !ecommerceData) {
+      return (
+        <ErrorState
+          error={transactionError || 'Invalid or expired access link'}
+          onRetry={() => navigate('/')}
+        />
+      );
+    }
+
+    // Success - show personalized e-commerce landing page
+    return (
+      <EcommerceLanding
+        data={ecommerceData}
+        threshold={corsairThreshold}
+      />
+    );
+  }
+
+  // Regular SKU-based flow below
   // Render based on step
   if (step === 'sku-input' || !skuCode) {
     return <SkuInputForm onSubmit={handleSkuSubmit} />;
