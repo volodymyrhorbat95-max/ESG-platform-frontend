@@ -1,8 +1,17 @@
-// Minimal Registration Form - Email Only (CLAIM Type)
+// Minimal Registration Form - Email Required, Name Optional (CLAIM Type)
+// Section 3.1: Minimal Registration (for CLAIM mode below €10):
+// - Email only (required)
+// - Optional: First Name, Last Name
 import { useState } from 'react';
 
+interface MinimalRegistrationData {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 interface MinimalRegistrationFormProps {
-  onSubmit: (email: string) => void;
+  onSubmit: (data: MinimalRegistrationData) => void;
   loading: boolean;
   amount?: number;
   threshold?: number;
@@ -15,6 +24,8 @@ export default function MinimalRegistrationForm({
   threshold = 10
 }: MinimalRegistrationFormProps) {
   const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
 
   // Determine button text based on €10 threshold
@@ -39,7 +50,12 @@ export default function MinimalRegistrationForm({
     e.preventDefault();
     setError('');
     if (validate()) {
-      onSubmit(email);
+      // Section 3.1: Submit email (required) and optional name fields
+      onSubmit({
+        email,
+        firstName: firstName.trim() || undefined,
+        lastName: lastName.trim() || undefined,
+      });
     }
   };
 
@@ -74,6 +90,41 @@ export default function MinimalRegistrationForm({
             {error}
           </p>
         )}
+      </div>
+
+      {/* Section 3.1: Optional Name Fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* First Name (Optional) */}
+        <div className="animate-on-load fade-up duration-light-slow">
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+            First Name <span className="text-gray-400 text-xs">(optional)</span>
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="Your first name"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            disabled={loading}
+          />
+        </div>
+
+        {/* Last Name (Optional) */}
+        <div className="animate-on-load fade-up duration-slow">
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+            Last Name <span className="text-gray-400 text-xs">(optional)</span>
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Your last name"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            disabled={loading}
+          />
+        </div>
       </div>
 
       {/* Submit Button */}

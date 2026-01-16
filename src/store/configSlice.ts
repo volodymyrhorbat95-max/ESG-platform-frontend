@@ -28,7 +28,7 @@ export interface ConfigAuditLog {
 
 interface ConfigState {
   currentCSRPrice: number | null; // Cached for frontend calculations
-  allocationMultiplier: number | null; // Cached for ALLOCATION mode impact calculations
+  allocationMultiplier: number | null; // DEPRECATED - no longer used for impact calculations
   corsairThreshold: number | null; // Cached for threshold checks
   configs: GlobalConfig[];
   configHistory: ConfigAuditLog[]; // Audit log for currently viewed config
@@ -65,7 +65,8 @@ export const fetchCurrentCSRPrice = createAsyncThunk(
   }
 );
 
-// Thunk: Fetch ALLOCATION_MULTIPLIER (for ALLOCATION mode impact calculations)
+// Thunk: Fetch ALLOCATION_MULTIPLIER - DEPRECATED
+// NOTE: This is no longer used for impact calculations. All modes use: (amount / CSR_PRICE) * SKU.impactMultiplier
 export const fetchAllocationMultiplier = createAsyncThunk(
   'config/fetchAllocationMultiplier',
   async (_, { rejectWithValue }) => {

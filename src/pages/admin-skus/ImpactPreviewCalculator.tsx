@@ -43,15 +43,13 @@ export default function ImpactPreviewCalculator({ isOpen, onClose, sku }: Impact
     }
   }, [isOpen, dispatch, sku.price]);
 
+  // UNIVERSAL FORMULA for ALL payment modes (CLAIM, PAY, GIFT_CARD, ALLOCATION):
+  // Impact (grams) = (Amount / CURRENT_CSR_PRICE) * impactMultiplier * 1000
+  // Per client clarification: "€1 generates 9,090 grams of removal. 1/0.11"
+  // NOTE: The old ALLOCATION-specific formula was WRONG and has been corrected.
   const calculateImpact = (amount: number): number => {
-    if (sku.paymentMode === 'ALLOCATION') {
-      // ALLOCATION: amount × impactMultiplier
-      return amount * sku.impactMultiplier;
-    } else {
-      // Standard: amount ÷ CSR_PRICE × impactMultiplier
-      const csrPrice = currentCSRPrice ?? 0.11; // Default to 0.11 if not loaded
-      return (amount / csrPrice) * sku.impactMultiplier;
-    }
+    const csrPrice = currentCSRPrice ?? 0.11; // Default to 0.11 if not loaded
+    return (amount / csrPrice) * sku.impactMultiplier * 1000;
   };
 
   if (!isOpen) return null;
@@ -71,7 +69,7 @@ export default function ImpactPreviewCalculator({ isOpen, onClose, sku }: Impact
             </p>
             <p className="text-sm text-gray-600">
               Type: <span className="font-semibold">{sku.paymentMode}</span> |
-              Current CSR Price: <span className="font-semibold">€{displayCSRPrice.toFixed(4)}/g</span>
+              Current CSR Price: <span className="font-semibold">€{displayCSRPrice.toFixed(2)}/kg</span>
             </p>
           </div>
           <button
@@ -84,18 +82,15 @@ export default function ImpactPreviewCalculator({ isOpen, onClose, sku }: Impact
           </button>
         </div>
 
-        {/* Calculation Formula Display */}
+        {/* Calculation Formula Display - UNIVERSAL FORMULA for ALL payment modes */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 animate-on-load fade-up duration-normal">
-          <h3 className="font-semibold text-blue-800 mb-2">Calculation Formula:</h3>
-          {sku.paymentMode === 'ALLOCATION' ? (
-            <p className="text-sm text-blue-700">
-              Impact (g) = Amount × Multiplier ({sku.impactMultiplier})
-            </p>
-          ) : (
-            <p className="text-sm text-blue-700">
-              Impact (g) = (Amount ÷ CSR Price) × Multiplier ({sku.impactMultiplier})
-            </p>
-          )}
+          <h3 className="font-semibold text-blue-800 mb-2">Universal Impact Formula:</h3>
+          <p className="text-sm text-blue-700">
+            Impact (g) = (Amount ÷ CSR Price) × Multiplier ({sku.impactMultiplier}) × 1000
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            Applies to ALL payment modes (CLAIM, PAY, GIFT_CARD, ALLOCATION)
+          </p>
         </div>
 
         {/* Standard Preview Amounts */}

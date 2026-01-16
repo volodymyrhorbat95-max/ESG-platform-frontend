@@ -1,10 +1,14 @@
 // Dynamic Message Component - Handles all 5 cases (A-E)
-// Based on client's EXACT messaging requirements from REQUIREMENTS.md Section 1.3
+// Based on client's EXACT messaging requirements from REQUIREMENTS.md Section 2.3
 // Case A: Merchant Prepaid (CLAIM) - "This product line follows a plastic certification path..."
-// Case B: Merchant Funded Accumulation (PAY with merchant payment) - merchant pays for customer
-// Case C: Customer Payment (PAY with customer payment) - customer pays via Stripe
-// Case D: Gift Card Validation (GIFT_CARD) - "Code Validated..."
-// Case E: Environmental Allocation (ALLOCATION) - "Environmental Allocation" or "Impact Recharge" terminology
+// Case B: Merchant Funded Accumulation (PAY/ALLOCATION with merchant payment) - merchant pays for customer
+// Case C: Checkout Suggestion / Customer Payment (PAY/ALLOCATION with customer payment) - customer pays
+// Case D: On-shelf Gift Card / Physical Store (GIFT_CARD) - "Code Validated..."
+// Case E: General Landing (Marketing/Direct Access) - "Build your portfolio of environmental assets..."
+//
+// IMPORTANT from Section 2.3:
+// Environmental Allocation (ALLOCATION mode) uses same dynamic messages as Case B/C depending on threshold
+// Uses terminology "Environmental Allocation" or "Impact Recharge" (never "Donation")
 
 interface DynamicMessageProps {
   caseType: 'A' | 'B' | 'C' | 'D' | 'E';
@@ -15,6 +19,7 @@ interface DynamicMessageProps {
   threshold?: number; // Default 10€
   skuCode?: string;
   skuName?: string;
+  isAllocation?: boolean; // Flag to use ALLOCATION terminology (never "Donation")
 }
 
 export default function DynamicMessage({
@@ -22,6 +27,7 @@ export default function DynamicMessage({
   impactGrams,
   amount = 0,
   threshold = 10,
+  isAllocation = false,
 }: DynamicMessageProps) {
   const isAboveThreshold = amount >= threshold;
 
@@ -45,40 +51,45 @@ export default function DynamicMessage({
         };
 
       case 'B':
-        // Case B - Merchant Funded Accumulation (CLAIM with value):
+        // Case B - Merchant Funded Accumulation (PAY/ALLOCATION with merchant payment):
+        // Also used for ALLOCATION when merchant is funding the contribution
         if (isAboveThreshold) {
           // If >= €10: "The Merchant has purchased real assets for the removal of [X]kg of plastic
           // for you. You now have a certified and auditable title."
           return {
-            title: 'Certified Asset Acquired',
+            title: isAllocation ? 'Environmental Allocation Confirmed' : 'Certified Asset Acquired',
             message: `The Merchant has purchased real assets for the removal of ${formatImpact(impactGrams)} of plastic for you. You now have a certified and auditable title.`,
           };
         }
         // If < €10: "The Merchant has funded your accrual for the removal of [X]g of plastic.
         // Upon reaching €10, your credits will become a certified asset in your name."
         return {
-          title: 'Building Your Portfolio',
+          title: isAllocation ? 'Impact Recharge Activated' : 'Building Your Portfolio',
           message: `The Merchant has funded your accrual for the removal of ${formatImpact(impactGrams)} of plastic. Upon reaching €10, your credits will become a certified asset in your name.`,
         };
 
       case 'C':
-        // Case C - Checkout Suggestion (PAY):
+        // Case C - Checkout Suggestion / Customer Payment (PAY/ALLOCATION):
+        // Also used for ALLOCATION when customer is making the contribution
+        // IMPORTANT: For ALLOCATION, use "Environmental Allocation" or "Impact Recharge" (never "Donation")
         if (isAboveThreshold) {
           // If >= €10: "Great choice. With your contribution of €[amount], you have purchased real
           // environmental assets for the removal of [X]kg of plastic. Your title is now auditable
           // and guaranteed by the CPRS protocol."
+          const contributionTerm = isAllocation ? 'Environmental Allocation' : 'contribution';
           return {
-            title: 'Certified Asset Acquired',
-            message: `Great choice. With your contribution of €${amount.toFixed(2)}, you have purchased real environmental assets for the removal of ${formatImpact(impactGrams)} of plastic. Your title is now auditable and guaranteed by the CPRS protocol.`,
+            title: isAllocation ? 'Environmental Allocation Confirmed' : 'Certified Asset Acquired',
+            message: `Great choice. With your ${contributionTerm} of €${amount.toFixed(2)}, you have purchased real environmental assets for the removal of ${formatImpact(impactGrams)} of plastic. Your title is now auditable and guaranteed by the CPRS protocol.`,
             note: 'Your Corsair Connect account will be automatically activated.',
           };
         }
         // If < €10: "Great choice. With your contribution of €[amount], you have started your accrual
         // path for the removal of [X]g of plastic. Upon reaching the €10 threshold, you will redeem
         // your first certified environmental assets."
+        const contributionTermBelow = isAllocation ? 'Impact Recharge' : 'contribution';
         return {
-          title: 'Accumulation Started',
-          message: `Great choice. With your contribution of €${amount.toFixed(2)}, you have started your accrual path for the removal of ${formatImpact(impactGrams)} of plastic. Upon reaching the €10 threshold, you will redeem your first certified environmental assets.`,
+          title: isAllocation ? 'Impact Recharge Activated' : 'Accumulation Started',
+          message: `Great choice. With your ${contributionTermBelow} of €${amount.toFixed(2)}, you have started your accrual path for the removal of ${formatImpact(impactGrams)} of plastic. Upon reaching the €10 threshold, you will redeem your first certified environmental assets.`,
         };
 
       case 'D':
@@ -91,21 +102,14 @@ export default function DynamicMessage({
         };
 
       case 'E':
-        // Case E - Environmental Allocation (ALLOCATION) per Section 1.3:
-        // Displays amount-based impact with "Environmental Allocation" or "Impact Recharge" terminology
-        // IMPORTANT: Never use "Donation" per requirements
-        if (isAboveThreshold) {
-          // If >= €10: Certified asset with "Environmental Allocation" terminology
-          return {
-            title: 'Environmental Allocation Confirmed',
-            message: `Your Environmental Allocation of €${amount.toFixed(2)} has secured the certified removal of ${formatImpact(impactGrams)} of plastic. Your environmental asset is now auditable and guaranteed by the CPRS protocol.`,
-            note: 'Your Corsair Connect account will be automatically activated.',
-          };
-        }
-        // If < €10: Accumulation phase with "Impact Recharge" terminology
+        // Case E - General Landing (Marketing/Direct Access) per Section 2.3:
+        // "Build your portfolio of environmental assets. Participate in certified plastic removal
+        // and transform your impact into a real, tracked, and guaranteed value."
+        // Used when user accesses landing page directly without specific SKU
+        // Used for marketing campaigns, social media links, general awareness
         return {
-          title: 'Impact Recharge Activated',
-          message: `Your Impact Recharge of €${amount.toFixed(2)} has started your accrual path for the removal of ${formatImpact(impactGrams)} of plastic. Upon reaching the €10 threshold, your credits will become a certified environmental asset.`,
+          title: 'Build Your Environmental Portfolio',
+          message: 'Build your portfolio of environmental assets. Participate in certified plastic removal and transform your impact into a real, tracked, and guaranteed value.',
         };
 
       default:
@@ -132,8 +136,9 @@ export default function DynamicMessage({
         </p>
       )}
 
-      {/* Progress indicator for accumulation cases (B, C, E when below threshold) */}
-      {(caseType === 'B' || caseType === 'C' || caseType === 'E') && !isAboveThreshold && (
+      {/* Progress indicator for accumulation cases (B, C when below threshold) */}
+      {/* Case E is General Landing - no progress to show */}
+      {(caseType === 'B' || caseType === 'C') && !isAboveThreshold && amount > 0 && (
         <div className="mt-4 animate-on-load zoom-in duration-slow">
           <div className="flex justify-between text-sm text-gray-600 mb-1">
             <span>Progress to certification</span>

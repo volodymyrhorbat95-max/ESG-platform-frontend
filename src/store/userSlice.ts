@@ -30,8 +30,11 @@ export interface User {
 }
 
 // Input types for different registration levels
+// Section 3.1: Minimal Registration - email required, name optional
 export interface MinimalRegistrationInput {
   email: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 export interface StandardRegistrationInput {
@@ -515,9 +518,17 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
+        // Backend returns { user, sessionToken }
+        const { user, sessionToken } = action.payload;
+        console.log('✅ registerUser.fulfilled - Setting currentUser:', user);
+        console.log('💾 Session token received, saving to localStorage');
         state.loading = false;
-        state.currentUser = action.payload;
-        saveUserIdToStorage(action.payload.id);
+        state.currentUser = user;
+        saveUserIdToStorage(user.id);
+        // Save session token to localStorage for auto-login
+        if (sessionToken) {
+          localStorage.setItem('csr26_session_token', sessionToken);
+        }
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

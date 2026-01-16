@@ -129,6 +129,33 @@ export const toggleSKUActive = createAsyncThunk(
   }
 );
 
+// Section 9.3: Bulk import SKUs from CSV data
+export interface BulkImportResult {
+  success: SKU[];
+  errors: Array<{ row: number; code: string; error: string }>;
+}
+
+export const bulkImportSKUs = createAsyncThunk(
+  'skus/bulkImport',
+  async (skus: Partial<SKU>[], { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/admin/skus/bulk-import`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ skus }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        return rejectWithValue(errorData.error || 'Import failed');
+      }
+      const data = await response.json();
+      return data.data as BulkImportResult;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // Slice
 const skuSlice = createSlice({
   name: 'skus',
@@ -236,6 +263,22 @@ const skuSlice = createSlice({
       .addCase(toggleSKUActive.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to toggle SKU status';
+      });
+
+    // Bulk import SKUs - Section 9.3
+    builder
+      .addCase(bulkImportSKUs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(bulkImportSKUs.fulfilled, (state, action: PayloadAction<BulkImportResult>) => {
+        state.loading = false;
+        // Add successfully imported SKUs to the list
+        state.items.push(...action.payload.success);
+      })
+      .addCase(bulkImportSKUs.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Failed to import SKUs';
       });
   },
 });

@@ -24,7 +24,7 @@ export default function AdminSKUs() {
     paymentMode: 'CLAIM' as 'CLAIM' | 'PAY' | 'GIFT_CARD' | 'ALLOCATION',
     requiresValidation: false,
     corsairThreshold: 10.00, // Global threshold - fixed at €10
-    impactMultiplier: 1.6,
+    impactMultiplier: 1.0, // Default 1.0 - only change for special campaigns (e.g., 10x hero brand)
     productWeight: undefined as number | undefined, // Section 5.1: Actual grams for physical products
     description: '', // Section 5.1: Merchant-facing description
   });
@@ -107,7 +107,7 @@ export default function AdminSKUs() {
       paymentMode: 'CLAIM',
       requiresValidation: false,
       corsairThreshold: 10.00, // Global threshold - fixed at €10
-      impactMultiplier: 1.6,
+      impactMultiplier: 1.0, // Default 1.0 - only change for special campaigns (e.g., 10x hero brand)
       productWeight: undefined,
       description: '',
     });

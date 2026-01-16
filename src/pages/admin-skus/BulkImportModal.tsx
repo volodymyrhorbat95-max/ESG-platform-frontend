@@ -1,6 +1,9 @@
 // Bulk SKU Import Modal - Section 9.3
 // Allows admin to upload CSV file and bulk import SKUs
+// IMPORTANT: Uses Redux dispatch per rule.txt - NO direct API calls from components
 import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { bulkImportSKUs, type BulkImportResult } from '../../store/skuSlice';
 
 interface BulkImportModalProps {
   isOpen: boolean;
@@ -9,9 +12,12 @@ interface BulkImportModalProps {
 }
 
 export default function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalProps) {
+  const dispatch = useAppDispatch();
+  const { loading: skuLoading } = useAppSelector((state) => state.skus);
+
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<{ success: any[]; errors: any[] } | null>(null);
+  const [results, setResults] = useState<BulkImportResult | null>(null);
   const [error, setError] = useState('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,32 +77,18 @@ export default function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImpo
       const text = await csvFile.text();
       const skus = parseCSV(text);
 
-      const token = localStorage.getItem('csr26_admin_token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/skus/bulk-import`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` }),
-        },
-        body: JSON.stringify({ skus }),
-      });
+      // Use Redux dispatch instead of direct API call (per rule.txt)
+      const result = await dispatch(bulkImportSKUs(skus)).unwrap();
+      setResults(result);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Import failed');
-      }
-
-      const data = await response.json();
-      setResults(data.data);
-
-      if (data.data.errors.length === 0) {
+      if (result.errors.length === 0) {
         setTimeout(() => {
           onSuccess();
           onClose();
         }, 2000);
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err || 'Import failed');
     } finally {
       setLoading(false);
     }
@@ -110,6 +102,8 @@ export default function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImpo
   };
 
   if (!isOpen) return null;
+
+  const isLoading = loading || skuLoading;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-on-load fade-in duration-fast">
@@ -153,7 +147,7 @@ export default function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImpo
             type="file"
             accept=".csv"
             onChange={handleFileChange}
-            disabled={loading}
+            disabled={isLoading}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           {csvFile && (
@@ -216,20 +210,20 @@ export default function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImpo
         <div className="flex justify-end gap-3 animate-on-load fade-up duration-normal">
           <button
             onClick={handleClose}
-            disabled={loading}
+            disabled={isLoading}
             className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {results && results.errors.length === 0 ? 'Done' : 'Cancel'}
           </button>
           <button
             onClick={handleImport}
-            disabled={!csvFile || loading}
+            disabled={!csvFile || isLoading}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {loading && (
+            {isLoading && (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             )}
-            {loading ? 'Importing...' : 'Import CSV'}
+            {isLoading ? 'Importing...' : 'Import CSV'}
           </button>
         </div>
       </div>

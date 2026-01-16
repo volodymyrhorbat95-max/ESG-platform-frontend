@@ -231,11 +231,12 @@ export default function LandingPage() {
     }
   };
 
-  const handleMinimalRegister = async (email: string) => {
+  // Section 3.1: Minimal registration handler - email required, firstName/lastName optional
+  const handleMinimalRegister = async (data: { email: string; firstName?: string; lastName?: string }) => {
     try {
-      console.log('🚀 Starting minimal registration with email:', email);
-      // Use minimal user registration for CLAIM type (email only)
-      const result = await dispatch(registerMinimalUser({ email })).unwrap();
+      console.log('🚀 Starting minimal registration with data:', data);
+      // Use minimal user registration for CLAIM type (email required, name optional)
+      const result = await dispatch(registerMinimalUser(data)).unwrap();
       console.log('✅ Minimal registration SUCCESS, result:', result);
       const { user, sessionToken } = result;
       console.log('✅ User ID:', user.id);
@@ -453,6 +454,7 @@ export default function LandingPage() {
             threshold={corsairThreshold}
             skuCode={currentSKU.code}
             skuName={currentSKU.name}
+            isAllocation={currentSKU.paymentMode === 'ALLOCATION'}
           />
         </div>
 

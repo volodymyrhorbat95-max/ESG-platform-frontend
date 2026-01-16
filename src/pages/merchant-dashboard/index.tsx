@@ -8,6 +8,7 @@ import DateRangeFilter from './DateRangeFilter';
 import TransactionHistory from './TransactionHistory';
 import ESGReport from './ESGReport';
 import ESGExportButton from './ESGExportButton';
+import SKUBreakdown from './SKUBreakdown';
 
 export default function MerchantDashboard() {
   const { merchantId } = useParams<{ merchantId: string }>();
@@ -118,6 +119,11 @@ export default function MerchantDashboard() {
               <TransactionHistory transactions={filteredTransactions} />
             </div>
           </div>
+
+        {/* Section 11.2: SKU Breakdown and Customer Count */}
+        <div className="animate-on-load fade-right duration-slow">
+          <SKUBreakdown transactions={filteredTransactions} />
+        </div>
 
         <div className="animate-on-load flip-up duration-very-slow">
           <ESGReport
